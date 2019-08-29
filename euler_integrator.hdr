@@ -1,0 +1,14 @@
+#include <iostream>
+#include <vector>
+//#include "storage.hdr"
+//#include "create.hdr"
+
+namespace integrate{
+	extern double Dt;
+	extern double prefac1, prefac2, prefac3, prefac4;
+	extern double x_euler;
+	extern double phi_euler;
+	extern double euler_init();
+	extern double euler();
+	//extern double runge_kutta();
+}

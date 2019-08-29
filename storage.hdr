@@ -1,0 +1,27 @@
+#include <iostream>
+#include <vector>
+namespace stor{
+
+	extern double L;
+	extern double Lz, Ly;
+	extern double muMs;
+	extern double alpha;
+	extern double A;
+	extern double xl,xr;
+	extern double V, V0, omega;
+	extern double cell_size;
+	extern std::vector<double> x_coord;
+	extern std::vector<double> phi_coord;
+	extern double T_sim;
+	extern double gamma;
+	//extern std::vector<double> H_demag;
+	extern double H_demag;
+	extern double Delta;
+	extern double x_dw;
+	extern double phi_dw;
+	extern double Ex, dEx;
+	extern std::vector<double> E_x;
+	extern std::vector<double> dE_x;
+	extern std::vector<double> Dw;
+} //end of namespace 
+

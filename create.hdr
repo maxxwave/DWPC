@@ -1,0 +1,13 @@
+#include <iostream>
+#include "storage.hdr"
+
+namespace create{
+	extern int N;
+	extern int a;
+	extern double rad;
+	extern double c1,c2;
+	extern double create();
+	extern double initialize();
+	extern double calculate_DW();
+	extern double update_energy(double x);
+}

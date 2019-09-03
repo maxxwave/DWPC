@@ -4,6 +4,7 @@ namespace stor{
 
 	extern double L;
 	extern double Lz, Ly;
+	extern double Ms, mu0;
 	extern double muMs;
 	extern double alpha;
 	extern double A;
@@ -20,6 +21,7 @@ namespace stor{
 	extern double x_dw;
 	extern double phi_dw;
 	extern double Ex, dEx;
+	extern double Dw_size;
 	extern std::vector<double> E_x;
 	extern std::vector<double> dE_x;
 	extern std::vector<double> Dw;

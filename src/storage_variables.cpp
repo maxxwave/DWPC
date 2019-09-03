@@ -16,13 +16,17 @@
 namespace stor{
 
 	// The length of the chain on x-component
-	double  L=400.0;
+	double  L=200.0e-9;
 
 	// Declare the section 
-	double Lz=20.0, Ly=10.0;
+	double Lz=20.0e-9, Ly=10.0e-9;
+	
+	//declare the magnetisation
+	double Ms=860e3; // J/m
+	double mu0=4*3.14*1e-7; //T^2 J^-1 m^3
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
-	double muMs=1.07;
+	double muMs=mu0*Ms;
 
 	// Gilbert Damping
 	double alpha=0.01;
@@ -43,7 +47,7 @@ namespace stor{
 
 	//defining the length of the cell
 	//needs to be around half of the exchange length
-	double cell_size=3; // in nm
+	double cell_size=3e-10; // in m
 
 	// Defining the coordinates arrays
 	// Within 1D model we assume two colective coordinates defined by the x and azimuthal angle
@@ -51,8 +55,8 @@ namespace stor{
 	std::vector <double> phi_coord;
 	
 	// defining the position of the DW
-	double x_dw=0.0;
-	double phi_dw=0.0;
+	double x_dw=0.1e-9;
+	double phi_dw=57.0;
 	
 	// defining the potential and the derivative 
 	double Ex=0.0;
@@ -64,12 +68,10 @@ namespace stor{
 	// Magnetic constants
 	// Gyromagnetic factor
 	double gamma=1.76e11; // in T^-1 s^-1
-	// Magnetic permeability of free space
-	double mu0=12.57e-7; // H/m
 
 	// Demagnetization field arrays
 	//std::vector <double> H_demag;
-	double H_demag;
+	double H_demag=0.02;
 
 	// defining the domain width
 	double Delta=0.0;
@@ -80,5 +82,6 @@ namespace stor{
 	
 	// creating an array for the domain wall width
 	std::vector<double> Dw;
+	double Dw_size=0.0;
 
 }// end of namespace

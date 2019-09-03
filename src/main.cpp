@@ -24,16 +24,18 @@ int main(){
 	// execute the initialization function
 	create::initialize();
 	/*for (int i=0; i<stor::E_x.size(); i++){
-		std::cout<< stor::E_x[i]<<"\t"<<stor::x_coord[i]<<std::endl;
+		//std::cout<< stor::E_x[i]<<"\t"<<stor::x_coord[i]<<"\t"<<stor::dE_x[i]<<std::endl;
+		create::update_energy(stor::x_coord[i]);
+		std::cout<<stor::dEx<<"\t"<<stor::Ex<<"\t"<<stor::x_coord[i]<<std::endl;
 	}*/
 
 	// perform some integrations
-	for (int i=0; i<100000; i++){
-		for(int j=0; j<10000; j++){
+	for (int i=0; i<10000; i++){
+		for(long int j=0; j<10000; j++){
 			integrate::euler();
 		}
 		
-		std::cout<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"<<i*10000*integrate::Dt<<std::endl;
+	std::cout<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"<<10000*i*integrate::Dt<<std::endl;
 	}	
 return 1;	
 

@@ -6,6 +6,7 @@ namespace stor{
 	extern double Lz, Ly;
 	extern double Ms, mu0;
 	extern double muMs;
+	extern double Nx, Ny, Nz;
 	extern double alpha;
 	extern double A;
 	extern double xl,xr;

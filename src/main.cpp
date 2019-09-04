@@ -30,12 +30,12 @@ int main(){
 	}*/
 
 	// perform some integrations
-	for (int i=0; i<10000; i++){
-		for(long int j=0; j<10000; j++){
+	for (int i=0; i<1; i++){
+		for(long int j=0; j<2; j++){
 			integrate::euler();
 		}
 		
-	std::cout<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"<<10000*i*integrate::Dt<<std::endl;
+	//std::cout<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"<<10000*i*integrate::Dt<<std::endl;
 	}	
 return 1;	
 

@@ -15,7 +15,7 @@
 
 namespace create{
 	const double Pi=3.141592653589793238462643383279502884197169399375105820974944;
-	const double rad=Pi/180.0;
+	const double one_rad=Pi/180.0;
 	// Calculating the number of cells for a given L and cell_size
 	int a = int(stor::L/stor::cell_size);
 	int N=2*a+1;
@@ -74,8 +74,9 @@ namespace create{
 		
 	// function which calculate the Domain wall width
 	double calculate_DW(double phi){
-			stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi*rad)*sin(phi*rad) + stor::muMs*stor::H_demag) )); 
+			stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi*one_rad)*sin(phi*one_rad) + stor::muMs*stor::H_demag) )); 
 	}// end of function calculate_DW
+
 }//end of namespace
 
 

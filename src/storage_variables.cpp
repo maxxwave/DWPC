@@ -22,8 +22,14 @@ namespace stor{
 	double Lz=20.0e-9, Ly=10.0e-9;
 	
 	//declare the magnetisation
-	double Ms=860e3; // J/m
+	double Ms=860e3; // A/m
 	double mu0=4*3.14*1e-7; //T^2 J^-1 m^3
+
+	// defining the Demag factors
+	double Nx=0.021829576;
+	double Ny=0.11522396;
+	double Nz=0.86294646; // This values have been calculated by Donahue et al., JoAP,2000
+
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
@@ -56,7 +62,7 @@ namespace stor{
 	
 	// defining the position of the DW
 	double x_dw=0.1e-9;
-	double phi_dw=57.0;
+	double phi_dw=1;
 	
 	// defining the potential and the derivative 
 	double Ex=0.0;
@@ -71,7 +77,7 @@ namespace stor{
 
 	// Demagnetization field arrays
 	//std::vector <double> H_demag;
-	double H_demag=0.02;
+	double H_demag=mu0*Ms*(Nz-Ny); // This formula is taken from J. Dean et al., APL 2015
 
 	// defining the domain width
 	double Delta=0.0;

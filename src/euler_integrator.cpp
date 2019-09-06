@@ -31,12 +31,13 @@ namespace integrate{
 
 	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
 	const double prefac1=(-stor::alpha*stor::gamma)/
-                        ((1+pow(stor::alpha,2))*2*stor::muMs*stor::Lz*stor::Ly);
-	const double prefac2=stor::gamma*stor::H_demag/2.0;
+                        ((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
+	const double prefac2=stor::mu0*stor::gamma*stor::H_demag/(2.0+2.0*stor::alpha*stor::alpha);
 	const double prefac3=(-stor::gamma)/
-                        ((1+pow(stor::alpha,2))*2*stor::muMs*stor::Lz*stor::Ly);
-	const double prefac4=-prefac2*stor::alpha;
-	
+                        ((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
+	const double prefac4=-stor::gamma*stor::alpha*stor::mu0*stor::H_demag/(2*(1+stor::alpha*stor::alpha));
+	const double zeeman_prefac1= stor::gamma*stor::mu0/stor::alpha;
+	const double zeeman_prefac2=stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);	
 		
 	double euler(){
 		
@@ -52,16 +53,25 @@ namespace integrate{
 		create::calculate_DW(phi_euler);	
 		//std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<stor::Dw_size<<std::endl;
 
-		//calculate the speed and angular speed
-		vx_euler= prefac1*stor::Dw_size*stor::dEx + prefac2*stor::H_demag*sin(2*phi_euler*one_rad);
-		phi_dt_euler=prefac3*stor::dEx + prefac4*stor::H_demag*sin(2*phi_euler*one_rad);
+		// calculate the speed and angular speed
+		vx_euler= prefac1*stor::Dw_size*stor::dEx +
+		       	prefac2*stor::Dw_size*sin(2*phi_euler*one_rad) +
+		       	zeeman_prefac1*stor::Dw_size*stor::V;
+
+		phi_dt_euler=prefac3*stor::dEx +
+		       	prefac4*sin(2*phi_euler*one_rad)+
+			zeeman_prefac2*stor::V;
 		
+		// transfer the speed values into storage
+		stor::vx=vx_euler;
+		stor::phi_dt=phi_dt_euler;
+
 		//calculate the final step using trivial euler method
 		stor::x_dw= x_euler + Dt*vx_euler;
 		stor::phi_dw=phi_euler + Dt*phi_dt_euler; 
 		
 		//std::cout<<stor::x_dw<<"\t"<<stor::Dw_size<<"\t"<<stor::phi_dw<<std::endl;
-		std::cout<<prefac1<<"\t"<<prefac2<<"\t"<<"DW_SIZE"<<stor::Dw_size<<"\t"<<"DEX"<<stor::dEx<<"\t"<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"<<stor::H_demag<<"\t"<<vx_euler<<std::endl;
+		//std::cout<<prefac1<<"\t"<<prefac2<<"\t"<<"DW_SIZE"<<stor::Dw_size<<"\t"<<"DEX"<<"\t"<<stor::dEx<<"\t"<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"<<stor::H_demag<<"\t"<<vx_euler<<"\t"<<phi_dt_euler<<std::endl;
 
 	}// end of euler function
 

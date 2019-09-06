@@ -30,12 +30,16 @@ int main(){
 	}*/
 
 	// perform some integrations
-	for (int i=0; i<1; i++){
-		for(long int j=0; j<2; j++){
+	for (long int i=0; i<100000; i++){
+		for(long int j=0; j<10000; j++){
+			create::Zeeman(i*j*integrate::Dt);
 			integrate::euler();
 		}
 		
-	//std::cout<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"<<10000*i*integrate::Dt<<std::endl;
+	std::cout<<"x_dw="<<"\t"<<stor::x_dw<<"\t"
+		<<"phi="<<"\t"<<stor::phi_dw<<"\t"
+		<<"vx="<<"\t"<<stor::vx<<"\t"
+		<<"t="<<"\t"<<10000*i*integrate::Dt<<std::endl;
 	}	
 return 1;	
 

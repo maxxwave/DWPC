@@ -19,7 +19,7 @@ namespace stor{
 	double  L=200.0e-9;
 
 	// Declare the section 
-	double Lz=20.0e-9, Ly=10.0e-9;
+	double Lz=50.0e-9, Ly=5.0e-9;
 	
 	//declare the magnetisation
 	double Ms=860e3; // A/m
@@ -48,8 +48,9 @@ namespace stor{
 	// The harmonic potential, V=V0cos(omega t)
 	// In V0 we incorporate the Zeeman energy and the internal fields 
 	// We note that Zeeman energy is given by an oscillatory field
-	double V=10.0, V0=10.0;
-	double omega=3.0; // in GHz
+	double V0=5000; // A/m which correspond to 62 Oe
+	double V=0.0; // Instant field V=V0cos(wt)
+	double omega=1.0e9; // in GHz
 
 	//defining the length of the cell
 	//needs to be around half of the exchange length
@@ -61,8 +62,10 @@ namespace stor{
 	std::vector <double> phi_coord;
 	
 	// defining the position of the DW
-	double x_dw=0.1e-9;
-	double phi_dw=1;
+	double x_dw=0.0;
+	double phi_dw=45.0;
+	double vx=0.0;
+	double phi_dt=0.0;
 	
 	// defining the potential and the derivative 
 	double Ex=0.0;
@@ -77,7 +80,7 @@ namespace stor{
 
 	// Demagnetization field arrays
 	//std::vector <double> H_demag;
-	double H_demag=mu0*Ms*(Nz-Ny); // This formula is taken from J. Dean et al., APL 2015
+	double H_demag=Ms*(Nz-Ny); // This formula is taken from J. Dean et al., APL 2015
 
 	// defining the domain width
 	double Delta=0.0;

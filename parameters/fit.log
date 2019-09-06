@@ -328,3 +328,224 @@ correlation matrix of the fit parameters:
 k               1.000 
 a              -0.983  1.000 
 b               0.953 -0.992  1.000 
+
+
+*******************************************************************************
+Wed Sep  4 16:02:44 2019
+
+
+FIT:    data read from "Py_potential_antinotched.data" u ($1*1.6e-19):($2*1e-9)
+        format = x:z
+        #datapoints = 25
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = c + a*x**2 +b*x**4
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   c             a             b            
+   0 2.4999999996e+01   0.00e+00  5.77e-01    1.000000e+00   1.000000e+00   1.000000e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Wed Sep  4 16:02:46 2019
+
+
+FIT:    data read from "Py_potential_antinotched.data" u ($1*1.6e-19):($2*1e-9)
+        format = x:z
+        #datapoints = 25
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = c + a*x**2 +b*x**4
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   c             a             b            
+   0 1.0321131548e-19   0.00e+00  4.40e-11    7.617491e-11   1.000000e+00   1.001000e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Wed Sep  4 16:02:48 2019
+
+
+FIT:    data read from "Py_potential_antinotched.data" u ($1*1.6e-19):($2*1e-9)
+        format = x:z
+        #datapoints = 25
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = c + a*x**2 +b*x**4
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   c             a             b            
+   0 1.0321131548e-19   0.00e+00  4.40e-11    7.617491e-11   1.000000e+00   1.002001e+00
+BREAK: Singular matrix in Invert_RtR
+
+*******************************************************************************
+Wed Sep  4 16:02:58 2019
+
+
+FIT:    data read from "Py_potential_antinotched.data" u 1:2
+        format = x:z
+        #datapoints = 25
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = c + a*x**2 +b*x**4
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   c             a             b            
+   0 2.7896997184e+18   0.00e+00  1.93e+08    7.617491e-11   1.000000e+00   1.003003e+00
+   9 4.7674003585e-02  -2.37e-09  1.93e-01    7.617491e-11  -5.136640e-06   5.283621e-10
+
+After 9 iterations the fit converged.
+final sum of squares of residuals : 0.047674
+rel. change during last iteration : -2.37245e-14
+
+degrees of freedom    (FIT_NDF)                        : 22
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.046551
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.002167
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+c               = 7.61749e-11      +/- 0.1194       (1.568e+11%)
+a               = -5.13664e-06     +/- 1.623e-05    (316%)
+b               = 5.28362e-10      +/- 5.179e-10    (98.03%)
+
+correlation matrix of the fit parameters:
+                c      a      b      
+c               1.000 
+a              -0.983  1.000 
+b               0.953 -0.992  1.000 
+
+
+*******************************************************************************
+Wed Sep  4 16:03:26 2019
+
+
+FIT:    data read from "Py_potential_antinotched.data" u 1:2
+        format = x:z
+        #datapoints = 25
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = c + a*x**2 +b*x**4
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   c             a             b            
+   0 4.7674003585e-02   0.00e+00  1.14e-01    7.617491e-11  -5.136640e-06   5.283621e-10
+   1 4.7674003585e-02  -2.91e-11  1.14e-02    7.617491e-11  -5.136640e-06   5.283621e-10
+
+After 1 iterations the fit converged.
+final sum of squares of residuals : 0.047674
+rel. change during last iteration : -2.91098e-16
+
+degrees of freedom    (FIT_NDF)                        : 22
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.046551
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.002167
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+c               = 7.61749e-11      +/- 0.1195       (1.568e+11%)
+a               = -5.13664e-06     +/- 1.624e-05    (316.1%)
+b               = 5.28362e-10      +/- 5.181e-10    (98.06%)
+
+correlation matrix of the fit parameters:
+                c      a      b      
+c               1.000 
+a              -0.983  1.000 
+b               0.953 -0.992  1.000 
+
+
+*******************************************************************************
+Wed Sep  4 16:04:46 2019
+
+
+FIT:    data read from "Py_potential_antinotched.data" u 1:2
+        format = x:z
+        #datapoints = 25
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = c + a*x**2 +b*x**4
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   c             a             b            
+   0 2.7730208154e+18   0.00e+00  1.92e+08    1.000000e+00   1.000000e+00   1.000000e+00
+  12 1.3484352221e-02  -6.48e-02  1.92e-04    4.744475e-01  -6.850385e-05   2.489742e-09
+
+After 12 iterations the fit converged.
+final sum of squares of residuals : 0.0134844
+rel. change during last iteration : -6.4766e-07
+
+degrees of freedom    (FIT_NDF)                        : 22
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.0247573
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.000612925
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+c               = 0.474448         +/- 0.06352      (13.39%)
+a               = -6.85038e-05     +/- 8.633e-06    (12.6%)
+b               = 2.48974e-09      +/- 2.755e-10    (11.06%)
+
+correlation matrix of the fit parameters:
+                c      a      b      
+c               1.000 
+a              -0.983  1.000 
+b               0.953 -0.992  1.000 
+
+
+*******************************************************************************
+Thu Sep  5 16:32:41 2019
+
+
+FIT:    data read from "Py_potential_antinotched.data" u 1:2
+        format = x:z
+        #datapoints = 25
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = a+ b*x**2 +c*x**4
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b             c            
+   0 2.7730208154e+18   0.00e+00  1.92e+08    1.000000e+00   1.000000e+00   1.000000e+00
+  12 1.3484352221e-02  -6.48e-02  1.92e-04    4.744475e-01  -6.850385e-05   2.489742e-09
+
+After 12 iterations the fit converged.
+final sum of squares of residuals : 0.0134844
+rel. change during last iteration : -6.4766e-07
+
+degrees of freedom    (FIT_NDF)                        : 22
+rms of residuals      (FIT_STDFIT) = sqrt(WSSR/ndf)    : 0.0247573
+variance of residuals (reduced chisquare) = WSSR/ndf   : 0.000612925
+
+Final set of parameters            Asymptotic Standard Error
+=======================            ==========================
+a               = 0.474448         +/- 0.06352      (13.39%)
+b               = -6.85038e-05     +/- 8.633e-06    (12.6%)
+c               = 2.48974e-09      +/- 2.755e-10    (11.06%)
+
+correlation matrix of the fit parameters:
+                a      b      c      
+a               1.000 
+b              -0.983  1.000 
+c               0.953 -0.992  1.000 
+
+
+*******************************************************************************
+Thu Sep  5 16:35:03 2019
+
+
+FIT:    data read from "Py_potential_antinotched.data" u ($1*1e-9):($2*1.6e-19)
+        format = x:z
+        #datapoints = 25
+        residuals are weighted equally (unit weight)
+
+function used for fitting: f(x)
+	f(x) = a+ b*x**2 +c*x**4
+fitted parameters initialized with current variable values
+
+iter      chisq       delta/lim  lambda   a             b             c            
+   0 5.6275118892e+00   0.00e+00  2.74e-01    4.744475e-01  -6.850385e-05   2.489742e-09
+BREAK: Singular matrix in Invert_RtR

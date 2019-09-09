@@ -21,7 +21,8 @@ namespace create{
 	int N=2*a+1;
 
 	//defining the potential parameters
-	double c1=-6.85e-5, c2=2.49e-9; // These parameters come from Pivano et al. by trivial fitting
+	double c1=-6.85e-5; 
+	double c2=2.49e-9; // These parameters come from Pivano et al. by trivial fitting
 
 	// in this function we create the chain for a given L and cell_size		
 	double create(){
@@ -74,12 +75,12 @@ namespace create{
 		
 	// function which calculate the Domain wall width
 	double calculate_DW(double phi){
-			stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi*one_rad)*sin(phi*one_rad) + stor::muMs*stor::H_demag) )); 
+		stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi*one_rad)*sin(phi*one_rad) + stor::muMs*stor::H_demag))); 
 	}// end of function calculate_DW
 
 	// In this routine we calculate the Zeeman field taking into account the frequency of the field
 	double Zeeman(double Dt){
-		stor::V=stor::V0*sin(stor::omega*Dt);
+		stor::V=stor::V0*sin(stor::omega*Dt*one_rad);
 	
 	}
 }//end of namespace

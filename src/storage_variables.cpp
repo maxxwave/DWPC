@@ -48,9 +48,9 @@ namespace stor{
 	// The harmonic potential, V=V0cos(omega t)
 	// In V0 we incorporate the Zeeman energy and the internal fields 
 	// We note that Zeeman energy is given by an oscillatory field
-	double V0=5000; // A/m which correspond to 62 Oe
+	double V0=500.0; // A/m which correspond to 6.2 Oe
 	double V=0.0; // Instant field V=V0cos(wt)
-	double omega=1.0e9; // in GHz
+	double omega=0.5e6; // in GHz
 
 	//defining the length of the cell
 	//needs to be around half of the exchange length
@@ -62,8 +62,8 @@ namespace stor{
 	std::vector <double> phi_coord;
 	
 	// defining the position of the DW
-	double x_dw=0.0;
-	double phi_dw=45.0;
+	double x_dw=1.0e-9;
+	double phi_dw=30;
 	double vx=0.0;
 	double phi_dt=0.0;
 	

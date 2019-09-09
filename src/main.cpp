@@ -23,11 +23,6 @@ int main(){
 	create::create();
 	// execute the initialization function
 	create::initialize();
-	/*for (int i=0; i<stor::E_x.size(); i++){
-		//std::cout<< stor::E_x[i]<<"\t"<<stor::x_coord[i]<<"\t"<<stor::dE_x[i]<<std::endl;
-		create::update_energy(stor::x_coord[i]);
-		std::cout<<stor::dEx<<"\t"<<stor::Ex<<"\t"<<stor::x_coord[i]<<std::endl;
-	}*/
 
 	// perform some integrations
 	for (long int i=0; i<100000; i++){

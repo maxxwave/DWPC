@@ -36,7 +36,7 @@ namespace integrate{
 	const double prefac3=(-stor::gamma)/
                         ((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
 	const double prefac4=-stor::gamma*stor::alpha*stor::mu0*stor::H_demag/(2*(1+stor::alpha*stor::alpha));
-	const double zeeman_prefac1= stor::gamma*stor::mu0/stor::alpha;
+	const double zeeman_prefac1= stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
 	const double zeeman_prefac2=stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);	
 		
 	double euler(){

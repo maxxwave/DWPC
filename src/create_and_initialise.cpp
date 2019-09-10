@@ -21,8 +21,8 @@ namespace create{
 	int N=2*a+1;
 
 	//defining the potential parameters
-	double c1=-6.85e-5; 
-	double c2=2.49e-9; // These parameters come from Pivano et al. by trivial fitting
+	double c1=6.85e-5; 
+	double c2=-2.49e-9; // These parameters come from Pivano et al. by trivial fitting
 
 	// in this function we create the chain for a given L and cell_size		
 	double create(){

@@ -10,6 +10,7 @@
 
 #include <iostream>
 #include <cstdlib>
+#include <fstream>
 
 // include the headers
 #include "../hdr/storage.hdr"
@@ -19,23 +20,30 @@
 //int main(int argc, char* argv[])
 
 int main(){
+	
+	// declare the output file
+	std::ofstream outputfile;
+	outputfile.open ("output");
+ 
 	// execute the creation function
 	create::create();
 	// execute the initialization function
 	create::initialize();
-
+		
 	// perform some integrations
-	for (long int i=0; i<100000; i++){
-		for(long int j=0; j<10000; j++){
+	for (long int i=1; i<6000; i++){
+		for(long int j=1; j<10000; j++){
 			create::Zeeman(i*j*integrate::Dt);
 			integrate::euler();
 		}
-		
-	std::cout<<"x_dw="<<"\t"<<stor::x_dw<<"\t"
+	outputfile<<"x_dw="<<"\t"<<stor::x_dw<<"\t"
 		<<"phi="<<"\t"<<stor::phi_dw<<"\t"
 		<<"vx="<<"\t"<<stor::vx<<"\t"
+		<<"V=" <<"\t"<<stor::V<<"\t"
 		<<"t="<<"\t"<<10000*i*integrate::Dt<<std::endl;
+
 	}	
 return 1;	
-
+	//close the file
+	outputfile.close();
 }// end of program 

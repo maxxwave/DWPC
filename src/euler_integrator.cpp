@@ -33,11 +33,11 @@ namespace integrate{
 	const double prefac1=(-stor::alpha*stor::gamma)/
                         ((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
 	const double prefac2=stor::mu0*stor::gamma*stor::H_demag/(2.0+2.0*stor::alpha*stor::alpha);
-	const double prefac3=(-stor::gamma)/
-                        ((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
+	const double prefac3=-stor::gamma/
+                        ((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
 	const double prefac4=-stor::gamma*stor::alpha*stor::mu0*stor::H_demag/(2*(1+stor::alpha*stor::alpha));
 	const double zeeman_prefac1= stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
-	const double zeeman_prefac2=stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);	
+	const double zeeman_prefac2= stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);	
 		
 	double euler(){
 		
@@ -71,8 +71,16 @@ namespace integrate{
 		stor::phi_dw=phi_euler + Dt*phi_dt_euler; 
 		
 		//std::cout<<stor::x_dw<<"\t"<<stor::Dw_size<<"\t"<<stor::phi_dw<<std::endl;
-		//std::cout<<prefac1<<"\t"<<prefac2<<"\t"<<"DW_SIZE"<<stor::Dw_size<<"\t"<<"DEX"<<"\t"<<stor::dEx<<"\t"<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"<<stor::H_demag<<"\t"<<vx_euler<<"\t"<<phi_dt_euler<<std::endl;
-
+		/*std::cout<<prefac1<<"\t"<<prefac2<<"\t"<<
+			"DW_SIZE"<<stor::Dw_size<<"\t"
+			<<"DEX"<<"\t"<<stor::dEx<<"\t"
+			<<stor::x_dw<<"\t"<<stor::phi_dw<<"\t"
+			<<stor::H_demag<<"\t"<<vx_euler<<"\t"<<phi_dt_euler<<"\t"
+			<<prefac1*stor::Dw_size*stor::dEx<<"\t"<<
+			prefac2*stor::Dw_size*sin(2*phi_euler*one_rad)<<"\t"<<
+			zeeman_prefac1*stor::Dw_size*stor::V<<"\t"<<stor::V<<
+			std::endl;
+	*/
 	}// end of euler function
 
 

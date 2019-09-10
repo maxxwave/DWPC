@@ -11,8 +11,9 @@
 
 #include <iostream>
 #include <vector> 
+#include <cmath>
 #include "../hdr/storage.hdr"
-
+#define PI 3.14159265
 namespace stor{
 
 	// The length of the chain on x-component
@@ -23,13 +24,12 @@ namespace stor{
 	
 	//declare the magnetisation
 	double Ms=860e3; // A/m
-	double mu0=4*3.14*1e-7; //T^2 J^-1 m^3
+	double mu0=PI*4e-7; //T^2 J^-1 m^3
 
 	// defining the Demag factors
-	double Nx=0.021829576;
-	double Ny=0.11522396;
-	double Nz=0.86294646; // This values have been calculated by Donahue et al., JoAP,2000
-
+	//double Nx=0.021829576;
+	double Ny=1 - (2/PI)*atan(L/Lz) + (1/(2*PI))*(Lz/L)*log10(1 + (L/Lz)*(L/Lz)) - (1/(2*PI))*(L/Lz)*log10(1 + (Lz/L)*(Lz/L));
+	double Nz=1 - (2/PI)*atan(Lz/L) + (1/(2*PI))*(L/Lz)*log10(1 + (Lz/L)*(Lz/L)) - (1/(2*PI))*(Lz/L)*log10(1 + (L/Lz)*(L/Lz));
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
@@ -48,9 +48,9 @@ namespace stor{
 	// The harmonic potential, V=V0cos(omega t)
 	// In V0 we incorporate the Zeeman energy and the internal fields 
 	// We note that Zeeman energy is given by an oscillatory field
-	double V0=500.0; // A/m which correspond to 6.2 Oe
+	double V0=0.0; // A/m which correspond to 6.2 Oe
 	double V=0.0; // Instant field V=V0cos(wt)
-	double omega=0.5e6; // in GHz
+	double omega=3E9; // in Hz
 
 	//defining the length of the cell
 	//needs to be around half of the exchange length
@@ -62,8 +62,8 @@ namespace stor{
 	std::vector <double> phi_coord;
 	
 	// defining the position of the DW
-	double x_dw=1.0e-9;
-	double phi_dw=30;
+	double x_dw=1.0e-10;
+	double phi_dw=90;
 	double vx=0.0;
 	double phi_dt=0.0;
 	
@@ -80,7 +80,7 @@ namespace stor{
 
 	// Demagnetization field arrays
 	//std::vector <double> H_demag;
-	double H_demag=Ms*(Nz-Ny); // This formula is taken from J. Dean et al., APL 2015
+	double H_demag= Ms*(Nz-Ny);//Ms*(Nz-Ny); // This formula is taken from J. Dean et al., APL 2015
 
 	// defining the domain width
 	double Delta=0.0;

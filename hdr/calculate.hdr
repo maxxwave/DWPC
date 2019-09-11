@@ -1,7 +1,7 @@
 #include <iostream>
 #include "storage.hdr"
 
-namespace create{
+namespace calculate{
 	extern int N;
 	extern int a;
 	extern double rad;

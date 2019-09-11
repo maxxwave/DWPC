@@ -12,7 +12,7 @@
 #include <vector>
 #include <cmath>
 #include "../hdr/storage.hdr"
-#include "../hdr/create.hdr"
+#include "../hdr/calculate.hdr"
 #include "../hdr/euler_integrator.hdr"
 //#include "../hdr/update.hdr"
 
@@ -48,15 +48,16 @@ namespace integrate{
 		//std::cout<<x_euler<<"\t"<<stor::x_dw<<std::endl;
 		
 		// calculate the domain width 
-		create::update_energy(x_euler);
-		create::calculate_DW(phi_euler);
+		calculate::update_energy(x_euler);
+		calculate::calculate_DW(phi_euler);
 		
 		//std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<stor::Dw_size<<std::endl;
 
 		// calculate the speed and angular speed
 		phi_dt_euler = prefac3*stor::dEx +
 		       	       prefac4*sin(2*phi_euler)+
-			       zeeman_prefac2*stor::V;
+			       zeeman_prefac2*stor::V; 
+
 		vx_euler = 2*stor::Dw_size*stor::gamma*stor::mu0*stor::V/stor::alpha+stor::Dw_size*phi_dt_euler/stor::alpha;
 			
 		

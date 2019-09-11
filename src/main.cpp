@@ -14,7 +14,7 @@
 
 // include the headers
 #include "../hdr/storage.hdr"
-#include "../hdr/create.hdr"
+#include "../hdr/calculate.hdr"
 #include "../hdr/euler_integrator.hdr"
 //#include "euler_integrator.cpp"
 //int main(int argc, char* argv[])
@@ -24,14 +24,9 @@ int main(){
 	// declare the output file
 	std::ofstream outputfile;
 	outputfile.open ("output");
- 
-	// execute the creation function
-	create::create();
-	// execute the initialization function
-	create::initialize();
 
 	for (int l=-200;l<200; l++){
-		create::update_energy(l*1e-9);
+		calculate::update_energy(l*1e-9);
 		std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
 	}
 	double time=0.0;
@@ -39,7 +34,7 @@ int main(){
 	for (long int i=1; i<200000; i++){
 		for(long int j=1; j<10000; j++){
 			time += integrate::Dt;
-			create::Zeeman(time);
+			calculate::Zeeman(time);
 			integrate::euler();
 		}
 	outputfile<<"x_dw="<<"\t"<<stor::x_dw<<"\t"

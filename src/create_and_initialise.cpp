@@ -21,8 +21,20 @@ namespace create{
 	int N=2*a+1;
 
 	//defining the potential parameters
-	double c1=6.85e-5; 
-	double c2=-2.49e-9; // These parameters come from Pivano et al. by trivial fitting
+	double c1=-8.21e-7; 
+	double c2=8.45e7; // These parameters come from Pivano et al. by trivial fitting
+	
+	// some parameters from origin fit
+	// The expression is F(X)= A0 + A1*X**2 + A2*X**2 + A3*X**3 + A4*X**4 + ... + A8*X**8
+	double a0 = 9.023e-20;	
+	double a1 = -8.11e-14;
+	double a2 = -1.30e-5;
+	double a3 = 5.42;
+	double a4 = 4.66e8;
+	//double a5 = 1.068e15;	
+	//double a6 = 1.62e22;
+	//double a7 = -1.64e28;
+	//double a8 = 1.32e35;
 
 	// in this function we create the chain for a given L and cell_size		
 	double create(){
@@ -64,23 +76,21 @@ namespace create{
 		
                         // this is the potential for notches
                         // need to find out who is a and b ???
-                        stor::Ex = c1*pow(x,2) + c2*pow(x,4);
+                        stor::Ex =a0 + a1*x + a2*x*x + a3*pow(x,3) + a4*pow(x,4);// + a5*pow(x,5) + a6*pow(x,6) + a7*pow(x,7)+ a8*pow(x,8);
 
                         // this is the analytical derivative of the potential dE/dx
-                        stor::dEx= (2*c1*x + 4*c2*pow(x,3));
-               
-	return 0;
+                        stor::dEx=a1+ 2*a2*x + 3*a3*x*x + 4*a4*pow(x,3);// + 5*a5*pow(x,4) + 6*a6*pow(x,5) + 7*a7*pow(x,6) + 8*a8*pow(x,7);
 
 	}// end of function 
 		
 	// function which calculate the Domain wall width
 	double calculate_DW(double phi){
-		stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi*one_rad)*sin(phi*one_rad) + stor::muMs*stor::H_demag))); 
+		stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi)*sin(phi) + stor::muMs*stor::H_demag))); 
 	}// end of function calculate_DW
 
 	// In this routine we calculate the Zeeman field taking into account the frequency of the field
-	double Zeeman(double Dt){
-		stor::V=stor::V0*sin(stor::omega*Dt*one_rad);
+	double Zeeman(double time){
+		stor::V=stor::V0*sin(stor::omega*time);
 	
 	}
 }//end of namespace

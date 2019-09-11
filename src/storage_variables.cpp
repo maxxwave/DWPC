@@ -23,13 +23,13 @@ namespace stor{
 	double Lz=50.0e-9, Ly=5.0e-9;
 	
 	//declare the magnetisation
-	double Ms=860e3; // A/m
+	double Ms=860E3; // A/m
 	double mu0=PI*4e-7; //T^2 J^-1 m^3
 
 	// defining the Demag factors
 	//double Nx=0.021829576;
-	double Ny=1 - (2/PI)*atan(L/Lz) + (1/(2*PI))*(Lz/L)*log10(1 + (L/Lz)*(L/Lz)) - (1/(2*PI))*(L/Lz)*log10(1 + (Lz/L)*(Lz/L));
-	double Nz=1 - (2/PI)*atan(Lz/L) + (1/(2*PI))*(L/Lz)*log10(1 + (Lz/L)*(Lz/L)) - (1/(2*PI))*(Lz/L)*log10(1 + (L/Lz)*(L/Lz));
+	double Ny = 1 - (2/PI)*atan(L/Lz) + (1/(2*PI))*(Lz/L)*log10(1 + (L/Lz)*(L/Lz)) - (1/(2*PI))*(L/Lz)*log10(1 + (Lz/L)*(Lz/L));
+	double Nz = 1 - (2/PI)*atan(Lz/L) + (1/(2*PI))*(L/Lz)*log10(1 + (Lz/L)*(Lz/L)) - (1/(2*PI))*(Lz/L)*log10(1 + (L/Lz)*(L/Lz));
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
@@ -40,17 +40,12 @@ namespace stor{
 	// Exchange Stiffness
 	double A=1.3e-11; // J/m
 	
-	// Position of the notches or anti-notches. We define 2 nothces or anti-notches ditributted symmetrically from the middle of the chain
-	// We define these as a ratio of the total length, L with respect to a symmetry 
-	double xl=-0.75*L; 
-	double xr=0.75*L;
-	
 	// The harmonic potential, V=V0cos(omega t)
 	// In V0 we incorporate the Zeeman energy and the internal fields 
 	// We note that Zeeman energy is given by an oscillatory field
-	double V0=0.0; // A/m which correspond to 6.2 Oe
+	double V0=4000.0; // A/m which correspond to 18 Oe
 	double V=0.0; // Instant field V=V0cos(wt)
-	double omega=3E9; // in Hz
+	double omega=2*PI*400E6; // in Hz
 
 	//defining the length of the cell
 	//needs to be around half of the exchange length
@@ -62,8 +57,8 @@ namespace stor{
 	std::vector <double> phi_coord;
 	
 	// defining the position of the DW
-	double x_dw=1.0e-10;
-	double phi_dw=90;
+	double x_dw=0.0;
+	double phi_dw=1.57;
 	double vx=0.0;
 	double phi_dt=0.0;
 	
@@ -76,7 +71,7 @@ namespace stor{
 
 	// Magnetic constants
 	// Gyromagnetic factor
-	double gamma=1.76e11; // in T^-1 s^-1
+	double gamma=1.76E11; // in T^-1 s^-1
 
 	// Demagnetization field arrays
 	//std::vector <double> H_demag;

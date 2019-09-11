@@ -29,11 +29,17 @@ int main(){
 	create::create();
 	// execute the initialization function
 	create::initialize();
-		
+
+	for (int l=-200;l<200; l++){
+		create::update_energy(l*1e-9);
+		std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
+	}
+	double time=0.0;
 	// perform some integrations
-	for (long int i=1; i<6000; i++){
+	for (long int i=1; i<200000; i++){
 		for(long int j=1; j<10000; j++){
-			create::Zeeman(i*j*integrate::Dt);
+			time += integrate::Dt;
+			create::Zeeman(time);
 			integrate::euler();
 		}
 	outputfile<<"x_dw="<<"\t"<<stor::x_dw<<"\t"

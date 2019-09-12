@@ -24,8 +24,6 @@ namespace stor{
 	extern double Ex, dEx;
 	extern double vx, phi_dt;
 	extern double Dw_size;
-	extern std::vector<double> E_x;
-	extern std::vector<double> dE_x;
-	extern std::vector<double> Dw;
+	extern double initialize(); 
 } //end of namespace 
 

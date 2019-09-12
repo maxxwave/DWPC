@@ -16,18 +16,19 @@
 #include "../hdr/storage.hdr"
 #include "../hdr/calculate.hdr"
 #include "../hdr/euler_integrator.hdr"
-//#include "euler_integrator.cpp"
-//int main(int argc, char* argv[])
 
-int main(){
-	
+
+int main(){	
+	// In this step we initialize the variables from the input file set by the user
+	stor::initialize();
+
 	// declare the output file
 	std::ofstream outputfile;
-	outputfile.open ("output");
+	outputfile.open("output");
 
 	for (int l=-200;l<200; l++){
 		calculate::update_energy(l*1e-9);
-		std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
+		//std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
 	}
 	double time=0.0;
 	// perform some integrations

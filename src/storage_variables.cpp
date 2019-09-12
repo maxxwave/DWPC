@@ -1,11 +1,11 @@
 // Author: Razvan V Ababei
 // University of Sheffield
-// date:19th of August, 2019
-//
+// date:19.08.2019
+// (c)
 //
 // In this file we aim to declare and store the main variables of the code used throughout the modeling process
 // This file is dedicated to store the variables for a chain whose magnetic properties come from a multiscale approach previously computed by a micromagnetic software
-// The magnetic properties can be changed depending on the magnetic material. In this case we refer for Nickel.
+// The magnetic properties can be changed depending on the magnetic material. In this case we refer for Py.
 
 
 
@@ -45,7 +45,7 @@ namespace stor{
 	// We note that Zeeman energy is given by an oscillatory field
 	double V0=4000.0; // A/m which correspond to 18 Oe
 	double V=0.0; // Instant field V=V0cos(wt)
-	double omega=2*PI*400E6; // in Hz
+	double omega=2*PI*400e6; // in Hz
 
 	//defining the length of the cell
 	//needs to be around half of the exchange length

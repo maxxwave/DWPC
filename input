@@ -3,16 +3,16 @@ Ms=860e3
 L=200e-9
 Ly=50e-9
 Lz=5e-9
-Exc=1.31e-11
-alpha=0.01 
-
+Aex=1.3e-11
+alpha=0.01
+ 
 # Field's parameters:
-H=1432 #A/m
-omega=1200e6
+H=0.0 #A/m
+omega=500e6
 
 # Simulation's parameters:
 Dt=1e-15
-totaltime=500e9
+totaltime=1600e6
 
 #Pinning field:
-pin 0 
+pin=0 

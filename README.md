@@ -1,5 +1,6 @@
 # DWPC
-This code is dedicated to simulate a 1D domain-wall propagation into a nano-strip with two notches or anti-notches 
+This code is dedicated to simulate a 1D domain-wall propagation into a nano-strip with two notches or anti-notches wich give power law pinning energy.
+The domain wall is driven by an oscillating magnetic field between the notches.
 This code is developed by Razvan Ababei in collaboration with Tom Hayward.
 
 # Installing DWPC
@@ -7,7 +8,7 @@ DWPC requires to be run on Linux OS using g++ compiler. The installation can be 
 
 "git clone https://github.com/maxxwave/DWPC.git"
 
-Once this is download in your local Linux computer you can run the installation script by following:
+Once this is downloaded in your local Linux computer you can run the installation script following:
 
 "cd DWPC"
 "sh makefile.sh"

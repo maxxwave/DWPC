@@ -7,6 +7,7 @@
 // date: 11.08.2019
 //
 //
+
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -17,6 +18,7 @@
 #include "../hdr/storage.hdr"
 #include "../hdr/euler_integrator.hdr"
 
+#define Pi  3.14159265358979323846
 namespace stor{
 	double initialize(){
 		std::ifstream input ("input");
@@ -41,7 +43,7 @@ namespace stor{
      				if((strstr(line.c_str(),test4.c_str()))){
 					stor::Lz=std::stod(line.substr(3));
 				}
-				test5="Exc=";
+				test5="Aex=";
      				if((strstr(line.c_str(),test5.c_str()))){
 					stor::A=std::stod(line.substr(4));
 				}
@@ -55,7 +57,7 @@ namespace stor{
 				}
 				test8="omega=";
      				if((strstr(line.c_str(),test8.c_str()))){
-					stor::omega=std::stod(line.substr(6));
+					stor::omega=2*Pi*std::stod(line.substr(6));
 				}
 				test9="Dt=";
      				if((strstr(line.c_str(),test9.c_str()))){
@@ -70,7 +72,7 @@ namespace stor{
 			std::cout<<"Length of the strip = "<<stor::L<<"m"<<std::endl;			
 			std::cout<<"Width = "<<stor::Ly<<"m"<<std::endl;			
 			std::cout<<"Thickness = "<<stor::Lz<<"m"<<std::endl;			
-			std::cout<<"Exchange stiffness, A = "<<stor::Lz<<"J/m"<<std::endl;			
+			std::cout<<"Exchange stiffness, A = "<<stor::A<<"J/m"<<std::endl;			
 			std::cout<<"Gilbert damping, alpha = "<<stor::alpha<<""<<std::endl;			
 			std::cout<<"Amplitude of oscillating field, H0 = "<<stor::V0<<"A/m"<<std::endl;			
 			std::cout<<"Frequency of the field, omega = " <<stor::omega<<"Hz"<<std::endl;			   

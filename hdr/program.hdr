@@ -1,0 +1,10 @@
+#include <iostream>
+
+#include "../hdr/calculate.hdr"
+#include "../hdr/storage.hdr"
+#include "../hdr/euler_integrator.hdr"
+
+namespace programs{
+	extern double bifurcation();
+
+}

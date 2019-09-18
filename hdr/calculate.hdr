@@ -10,5 +10,8 @@ namespace calculate{
 	extern double initialize();
 	extern double calculate_DW(double phi);
 	extern double update_energy(double x);
+	extern double update_energy_notches(double x);
+	extern double update_energy_antinotches(double x);
 	extern double Zeeman(double Dt);
+
 }

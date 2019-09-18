@@ -48,7 +48,7 @@ namespace integrate{
 		//std::cout<<x_euler<<"\t"<<stor::x_dw<<std::endl;
 		
 		// calculate the domain width 
-		calculate::update_energy(x_euler);
+		calculate::update_energy_antinotches(x_euler);
 		calculate::calculate_DW(phi_euler);
 		
 		//std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<stor::Dw_size<<std::endl;
@@ -58,8 +58,11 @@ namespace integrate{
 		       	       prefac4*sin(2*phi_euler)+
 			       zeeman_prefac2*stor::V; 
 
-		vx_euler = 2*stor::Dw_size*stor::gamma*stor::mu0*stor::V/stor::alpha+stor::Dw_size*phi_dt_euler/stor::alpha;
-			
+		//vx_euler = stor::Dw_size*stor::gamma*stor::mu0*stor::V/stor::alpha+
+			   stor::Dw_size*phi_dt_euler/stor::alpha;
+	
+		vx_euler = (stor::Dw_size/stor::alpha)*(stor::gamma*stor::mu0*stor::V+phi_dt_euler);
+		//vx_euler= prefac1*stor::dEx + prefac2*stor::Dw_size+ zeeman_prefac1*stor::V;	
 		
 		// transfer the speed values into storage
 		stor::vx=vx_euler;

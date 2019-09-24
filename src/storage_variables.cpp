@@ -57,8 +57,9 @@ namespace stor{
 	std::vector <double> phi_coord;
 	
 	// defining the position of the DW
-	double x_dw=0.0;
-	double phi_dw=1.57;
+	double x_dw=0;
+	double phi_dw=0;
+
 	double vx=0.0;
 	double phi_dt=0.0;
 	

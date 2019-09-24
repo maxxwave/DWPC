@@ -26,12 +26,12 @@ int main(){
 	std::ofstream outputfile;
 	outputfile.open("output");
 	
-	/*for (int l=-200;l<200; l++){
+	for (int l=-200;l<200; l++){
 		calculate::update_energy_antinotches(l*1e-9);
 		std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
-	}*/
+	}
 	// calculate the bifurcation diagram
-	programs::bifurcation();
+//	programs::bifurcation();
 
 	//perform some equilibration steps
 	double time=0.0;

@@ -55,9 +55,9 @@ namespace stor{
      				if((strstr(line.c_str(),test7.c_str()))){
 					stor::V0=std::stod(line.substr(2));
 				}
-				test8="omega=";
+				test8="f=";
      				if((strstr(line.c_str(),test8.c_str()))){
-					stor::omega=2*Pi*std::stod(line.substr(6));
+					stor::omega=2*Pi*std::stod(line.substr(2));
 				}
 				test9="Dt=";
      				if((strstr(line.c_str(),test9.c_str()))){

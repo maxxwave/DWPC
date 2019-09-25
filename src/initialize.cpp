@@ -18,7 +18,7 @@
 #include "../hdr/storage.hdr"
 #include "../hdr/euler_integrator.hdr"
 
-#define Pi  3.14159265358979323846
+#define Pi  3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace stor{
 	double initialize(){
 		std::ifstream input ("input");
@@ -57,7 +57,8 @@ namespace stor{
 				}
 				test8="f=";
      				if((strstr(line.c_str(),test8.c_str()))){
-					stor::omega=2*Pi*std::stod(line.substr(2));
+					stor::freq=std::stod(line.substr(2));
+					stor::omega=2*Pi*stor::freq;
 				}
 				test9="Dt=";
      				if((strstr(line.c_str(),test9.c_str()))){

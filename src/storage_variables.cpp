@@ -13,7 +13,7 @@
 #include <vector> 
 #include <cmath>
 #include "../hdr/storage.hdr"
-#define PI 3.14159265
+#define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace stor{
 
 	// The length of the chain on x-component
@@ -45,7 +45,8 @@ namespace stor{
 	// We note that Zeeman energy is given by an oscillatory field
 	double V0=4000.0; // A/m which correspond to 18 Oe
 	double V=0.0; // Instant field V=V0cos(wt)
-	double omega=2*PI*400e6; // in Hz
+	double freq=0.0;
+	double omega=0.0;
 
 	//defining the length of the cell
 	//needs to be around half of the exchange length
@@ -76,7 +77,7 @@ namespace stor{
 
 	// Demagnetization field arrays
 	//std::vector <double> H_demag;
-	double H_demag= Ms*(Nz-Ny);//Ms*(Nz-Ny); // This formula is taken from J. Dean et al., APL 2015
+	double H_demag= Ms*(Nz-Ny); // This formula is taken from J. Dean et al., APL 2015
 
 	// defining the domain width
 	double Delta=0.0;

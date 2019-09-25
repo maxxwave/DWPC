@@ -26,21 +26,15 @@ int main(){
 	std::ofstream outputfile;
 	outputfile.open("output");
 	
-	for (int l=-200;l<200; l++){
+	/*for (int l=-200;l<200; l++){
 		calculate::update_energy_antinotches(l*1e-9);
 		std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
-	}
+	}*/
 	// calculate the bifurcation diagram
-//	programs::bifurcation();
+	programs::bifurcation();
 
 	//perform some equilibration steps
 	double time=0.0;
-	/*for (int k=0; k<stor::omega*integrate::Dt; k++){
-			time += integrate::Dt;
-			calculate::Zeeman(time);
-			integrate::euler();
-	}//end of equilibration loop
-	*/
 	// perform some integrations
 	for (long int i=1; i<100000; i++){
 		for(long int j=1; j<10000; j++){

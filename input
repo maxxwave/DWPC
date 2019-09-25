@@ -7,7 +7,7 @@ Aex=1.05e-11
 alpha=0.02
  
 # Field's parameters:
-H=800 #A/m
+H=706 #A/m
 f=500e6
 
 # Simulation's parameters:

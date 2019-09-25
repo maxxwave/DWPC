@@ -10,7 +10,7 @@ namespace stor{
 	extern double alpha;
 	extern double A;
 	extern double xl,xr;
-	extern double V, V0, omega;
+	extern double V, V0, freq, omega;
 	extern double cell_size;
 	extern std::vector<double> x_coord;
 	extern std::vector<double> phi_coord;

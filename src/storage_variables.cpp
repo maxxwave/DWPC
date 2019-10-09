@@ -38,12 +38,12 @@ namespace stor{
 	double alpha=0.01;
 
 	// Exchange Stiffness
-	double A=1.3e-11; // J/m
+	double A=0.0; // J/m
 	
 	// The harmonic potential, V=V0cos(omega t)
 	// In V0 we incorporate the Zeeman energy and the internal fields 
 	// We note that Zeeman energy is given by an oscillatory field
-	double V0=4000.0; // A/m which correspond to 18 Oe
+	double V0=0.0; // A/m which correspond to 18 Oe
 	double V=0.0; // Instant field V=V0cos(wt)
 	double freq=0.0;
 	double omega=0.0;

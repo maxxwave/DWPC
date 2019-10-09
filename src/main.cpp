@@ -51,5 +51,6 @@ int main(){
 	}		
 	//close the file
 	outputfile.close();
+	std::cout<<"Simulation ended successfully!"<<std::endl;
 	return 1;
 }// end of program 

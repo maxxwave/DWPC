@@ -6,6 +6,7 @@
 // This file is dedicated to implement the basic Euler integration scheme
 // for DW propagation code. This file comes without any warranty
 //
+// This version is in agreement with Boulle et al. 
 //
 
 #include <iostream>
@@ -59,7 +60,7 @@ namespace integrate{
 			       zeeman_prefac2*stor::V; 
 
 		//vx_euler = stor::Dw_size*stor::gamma*stor::mu0*stor::V/stor::alpha+
-			   stor::Dw_size*phi_dt_euler/stor::alpha;
+			   //stor::Dw_size*phi_dt_euler/stor::alpha;
 	
 		vx_euler = prefac2*sin(2*phi_euler)*stor::Dw_size + stor::alpha*stor::Dw_size*phi_dt_euler;
 		//vx_euler= prefac1*stor::dEx + prefac2*stor::Dw_size+ zeeman_prefac1*stor::V;	

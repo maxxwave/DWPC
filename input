@@ -1,13 +1,13 @@
 # Material parameters:
-Ms=477e3
+Ms=860e3
 L=200e-9
 Ly=50e-9
 Lz=5e-9
-Aex=1.05e-11
-alpha=0.02
+Aex=1.3e-11
+alpha=0.01
  
 # Field's parameters:
-H=706 #A/m
+H=0 #A/m
 f=500e6
 
 # Simulation's parameters:

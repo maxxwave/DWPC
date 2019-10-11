@@ -12,6 +12,7 @@
 #include "../hdr/update.hdr"
 #include "../hdr/storage.hdr"
 #include "../hdr/create.hdr"
+#include "../hdr/euler_integrator.hdr"
 #include "../hdr/runge_kutta.hdr"
 
 namespace integrate{
@@ -25,6 +26,13 @@ namespace integrate{
 	// k4 = h f(tn + h, yn + k3)
 	// h = xn+1-xn
 	//
+	// we define two function for speed and angular speed
+	double phi_t(double dEx, double phi_rk, double H){
+		return prefac3*dEx+prefac4*sin(2*phi_rk)+zeeman_prefac2*V;	
+	}
+	double x_t(double DWs, double phi){
+		return 
+	}
 	double runge_kutta(){
 	}
 

@@ -4,14 +4,14 @@ L=200e-9
 Ly=50e-9
 Lz=5e-9
 Aex=1.05e-11
-alpha=0.01
+alpha=0.02
  
 # Field's parameters:
 H=1432 #A/m
 f=400e6
 
 # Simulation's parameters:
-Dt=1e-16
+Dt=1e-14
 totaltime=1600e6
 
 #Pinning field:

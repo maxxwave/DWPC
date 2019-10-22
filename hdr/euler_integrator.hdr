@@ -15,7 +15,7 @@ namespace integrate{
 	extern double phi_dt_euler;
 	extern double euler_init();
 	extern double euler();
-	extern double x_t(double DWs, double phi);
+	extern double x_t(double DWs, double phi, double phi_t);
 	extern double phi_t(double dEx, double phi_rk, double H);
 	extern double runge_kutta();
 }

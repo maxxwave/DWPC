@@ -1,16 +1,21 @@
 #include <iostream>
 #include <vector>
-//#include "storage.hdr"
+#include "storage.hdr"
 //#include "create.hdr"
 
 namespace integrate{
 	extern double Dt;
-	extern const double prefac1, prefac2, prefac3, prefac4;
+	extern const double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
+	extern double k1, k2, k3, k4;
+	extern double kp1, kp2, kp3, kp4;
+	extern double phi_k, x_k;
 	extern double x_euler;
 	extern double phi_euler;
 	extern double vx_euler;
 	extern double phi_dt_euler;
 	extern double euler_init();
 	extern double euler();
-	//extern double runge_kutta();
+	extern double x_t(double DWs, double phi);
+	extern double phi_t(double dEx, double phi_rk, double H);
+	extern double runge_kutta();
 }

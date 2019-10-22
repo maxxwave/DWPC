@@ -22,7 +22,7 @@ namespace calculate{
 	// some parameters from origin fit
 	// The expression is F(X)= A0 + A1*X**2 + A2*X**2 + A3*X**3 + A4*X**4 + ... + A8*X**8
 	// These values correspond to Py antinotches
-	double a0 = 2.395e-20;	
+	/*double a0 = 2.395e-20;	
 	double a1 = 6.741e-15;
 	double a2 = -1.29e-7;
 	double a3 = -2.94244;
@@ -30,9 +30,9 @@ namespace calculate{
 	double a5 = 2.91623e14;	
 	double a6 = 6.77e21;
 	double a7 = -7.728e27;
-	double a8 = 2.6771e35;
+	double a8 = 2.6771e35;*/
 	//These values correspond to Ni antinotches
-	/*double a0 = 2.21117e-21;
+	double a0 = 2.21117e-21;
 	double a1 = -3.8271e-15;
 	double a2 = -1.2866e-6;
 	double a3 =  0.61164;
@@ -41,7 +41,7 @@ namespace calculate{
 	double a6 = 0.0;
 	double a7 = 0.0;
 	double a8 = 0.0;
-	*/
+	
 	
 	// function which calculate the potential energy depending on x
 	double update_energy_antinotches(double x){

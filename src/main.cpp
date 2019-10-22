@@ -41,6 +41,7 @@ int main(){
 			time += integrate::Dt;
 			calculate::Zeeman(time);
 			integrate::euler();
+			//integrate::runge_kutta();
 		}
 	outputfile<<"x_dw="<<"\t"<<stor::x_dw<<"\t"
 		<<"phi="<<"\t"<<stor::phi_dw<<"\t"

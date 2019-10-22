@@ -1,17 +1,17 @@
 # Material parameters:
-Ms=860e3
+Ms=477e3
 L=200e-9
 Ly=50e-9
 Lz=5e-9
-Aex=1.3e-11
+Aex=1.05e-11
 alpha=0.01
  
 # Field's parameters:
-H=0 #A/m
-f=500e6
+H=1432 #A/m
+f=400e6
 
 # Simulation's parameters:
-Dt=1e-15
+Dt=1e-16
 totaltime=1600e6
 
 #Pinning field:

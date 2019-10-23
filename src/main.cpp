@@ -9,8 +9,10 @@
 //
 
 #include <iostream>
+#include <iomanip>
 #include <cstdlib>
 #include <fstream>
+#include <cmath>
 
 // include the headers
 #include "../hdr/storage.hdr"
@@ -35,22 +37,23 @@ int main(){
 
 	//perform some equilibration steps
 	double time=0.0;
-	int Nsteps = integrate::totaltime / integrate::Dt;
-	int Nout = 1;
+	int Nsteps = std::ceil(integrate::totaltime / integrate::Dt);
+	int Nout = std::ceil(integrate::out_time / integrate::Dt);
 
 	std::cout << "Using integrator: " << integrate::scheme << std::endl;
 	std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
+	std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
 	
-	outputfile << "#time(s)      X       phi      dx/dt      V" << std::endl;
+	outputfile << "#time(ns)       X(nm)           phi             dx/dt           V" << std::endl;
+	outputfile << std::fixed; 
+	
 	// perform some integrations
-	for (long int i=0; i<Nsteps; i++){
+	for (long int i=0; i<Nsteps/Nout; i++){
 		for(long int j=0; j<Nout; j++){
-			time += integrate::Dt;
-			calculate::Zeeman(time);
 			if( integrate::scheme.compare("EULER") == 0)
-				integrate::euler();
+				integrate::euler(time);
 			else if( integrate::scheme.compare("RK4") == 0)
-				integrate::runge_kutta();
+				integrate::runge_kutta(time);
 			else {
 				std::cerr << "ERROR: Integrator not identified!" << std::endl;
 				exit(-1);
@@ -62,7 +65,12 @@ int main(){
 		<<"vx="<<"\t"<<stor::vx<<"\t"
 		<<"V=" <<"\t"<<stor::V<<"\t"
 		<<"t="<<"\t"<<i*integrate::Dt<<std::endl;*/
-	outputfile << time << "\t" << stor::x_dw << "\t" << stor::phi_dw << "\t" << stor::vx << "\t" << stor::V <<std::endl;
+
+	outputfile << std::setprecision(6) << time*1e9 << "\t" 
+		   << stor::x_dw*1e9 << "\t" 
+		   << stor::phi_dw << "\t" 
+		   << stor::vx << "\t" 
+		   << stor::V <<std::endl;
 	
 
 

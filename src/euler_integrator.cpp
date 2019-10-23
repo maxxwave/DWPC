@@ -30,6 +30,7 @@ namespace integrate{
 	// setting the time step of integration
 	double Dt=1e-15; // in seconds
 	double totaltime = 1e-9; 
+	double out_time = 1e-10; 
 	std::string scheme;
 
 	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
@@ -41,8 +42,9 @@ namespace integrate{
 	const double zeeman_prefac1= stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
 	const double zeeman_prefac2= stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);	
 		
-	double euler(){
+	double euler( double &time){
 		
+		calculate::Zeeman(time);
 		//std::cout<<prefac1<<"\t"<<prefac2<<"\t"<<prefac3<<"\t"<<prefac4<<std::endl;
 
 		// transfer the coordinates into eurler variables
@@ -85,6 +87,7 @@ namespace integrate{
 			zeeman_prefac1*stor::Dw_size*stor::V<<"\t"<<
 			std::endl;
 		*/
+		time += integrate::Dt;
 	}// end of euler function
 
 

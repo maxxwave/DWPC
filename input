@@ -13,6 +13,7 @@ f=400e6
 # Simulation's parameters:
 Dt=1e-10
 totaltime=100e-9
+out_time=1e-10
 integrator=RK4
 
 #Pinning field:

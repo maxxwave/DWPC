@@ -67,6 +67,9 @@ namespace stor{
 				if( strstr(line.c_str(), "totaltime=")){
 					integrate::totaltime = std::stod(line.substr(10));
 				}
+				if( strstr(line.c_str(), "out_time=")){
+					integrate::out_time = std::stod(line.substr(9));
+				}
 				if( strstr(line.c_str(), "integrator=")){
 					integrate::scheme = line.substr(11);
 				}

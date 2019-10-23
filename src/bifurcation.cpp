@@ -30,17 +30,13 @@ namespace programs{
 			double time=0.0;
 			//perform some equilibration steps
 			for (int i = 0; i<(10.25*no_steps_per_period); i++){
-				time+=integrate::Dt;
-				calculate::Zeeman(time);
-				integrate::euler();
+				integrate::euler(time);
 			}//end of equilibration
 
 			// In this loop we perform a number of integration steps equal to a period
 			for (int l=0; l<200; l++){
 				for (int t=0; t<no_steps_per_period; t++){
-					time += integrate::Dt;
-				       	calculate::Zeeman(time);
-					integrate::euler();		
+					integrate::euler(time);		
 				}
 				// print the value of the DW position after each loop (period)
 				output << "H="<<"\t"<<stor::V<<"\t"<<"X="<<"\t"<<stor::x_dw<<"\t"<<"V="<<"\t"<<stor::vx<<std::endl;

@@ -37,8 +37,8 @@ int main(){
 
 	//perform some equilibration steps
 	double time=0.0;
-	int Nsteps = std::ceil(integrate::totaltime / integrate::Dt);
-	int Nout = std::ceil(integrate::out_time / integrate::Dt);
+	int Nsteps = std::round(integrate::totaltime / integrate::Dt);
+	int Nout = std::round(integrate::out_time / integrate::Dt);
 
 	std::cout << "Using integrator: " << integrate::scheme << std::endl;
 	std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
@@ -66,7 +66,9 @@ int main(){
 		<<"V=" <<"\t"<<stor::V<<"\t"
 		<<"t="<<"\t"<<i*integrate::Dt<<std::endl;*/
 
-	outputfile << std::setprecision(6) << time*1e9 << "\t" 
+	outputfile << std::setprecision(4) 
+		   << time*1e9 << "\t\t" 
+		   << std::setprecision(8)
 		   << stor::x_dw*1e9 << "\t" 
 		   << stor::phi_dw << "\t" 
 		   << stor::vx << "\t" 

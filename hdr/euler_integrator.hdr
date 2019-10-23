@@ -1,9 +1,12 @@
 #include <iostream>
 #include <vector>
+#include <string>
 #include "storage.hdr"
 //#include "create.hdr"
 
-namespace integrate{
+namespace integrate {
+	extern std::string scheme; 
+	extern double totaltime;
 	extern double Dt;
 	extern const double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
 	extern double k1, k2, k3, k4;

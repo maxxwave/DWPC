@@ -29,6 +29,8 @@ namespace integrate{
 
 	// setting the time step of integration
 	double Dt=1e-15; // in seconds
+	double totaltime = 1e-9; 
+	std::string scheme;
 
 	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
 	const double prefac1=(-stor::alpha*stor::gamma)/

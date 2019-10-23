@@ -35,19 +35,36 @@ int main(){
 
 	//perform some equilibration steps
 	double time=0.0;
+	int Nsteps = integrate::totaltime / integrate::Dt;
+	int Nout = 1;
+
+	std::cout << "Using integrator: " << integrate::scheme << std::endl;
+	std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
+	
+	outputfile << "#time(s)      X       phi      dx/dt      V" << std::endl;
 	// perform some integrations
-	for (long int i=1; i<100000; i++){
-		for(long int j=1; j<10000; j++){
+	for (long int i=0; i<Nsteps; i++){
+		for(long int j=0; j<Nout; j++){
 			time += integrate::Dt;
 			calculate::Zeeman(time);
-			integrate::euler();
-			//integrate::runge_kutta();
+			if( integrate::scheme.compare("EULER") == 0)
+				integrate::euler();
+			else if( integrate::scheme.compare("RK4") == 0)
+				integrate::runge_kutta();
+			else {
+				std::cerr << "ERROR: Integrator not identified!" << std::endl;
+				exit(-1);
+			}
 		}
+		/*
 	outputfile<<"x_dw="<<"\t"<<stor::x_dw<<"\t"
 		<<"phi="<<"\t"<<stor::phi_dw<<"\t"
 		<<"vx="<<"\t"<<stor::vx<<"\t"
 		<<"V=" <<"\t"<<stor::V<<"\t"
-		<<"t="<<"\t"<<10000*i*integrate::Dt<<std::endl;
+		<<"t="<<"\t"<<i*integrate::Dt<<std::endl;*/
+	outputfile << time << "\t" << stor::x_dw << "\t" << stor::phi_dw << "\t" << stor::vx << "\t" << stor::V <<std::endl;
+	
+
 
 	}		
 	//close the file

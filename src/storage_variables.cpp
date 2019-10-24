@@ -17,25 +17,27 @@
 namespace stor{
 
 	// The length of the chain on x-component
-	double  L=200.0e-9;
+	double L=200.0e-9;
 
 	// Declare the section 
-	double Lz=50.0e-9, Ly=5.0e-9;
+	double Ly=50e-9, Lz=5.0e-9;
+	//Ly -width,w
+	//Lz -thickness,t
 	
 	//declare the magnetisation
-	double Ms=860E3; // A/m
+	double Ms=277e3; // A/m
 	double mu0=PI*4e-7; //T^2 J^-1 m^3
 
 	// defining the Demag factors
 	//double Nx=0.021829576;
-	double Ny = 1 - (2/PI)*atan(L/Lz) + (1/(2*PI))*(Lz/L)*log10(1 + (L/Lz)*(L/Lz)) - (1/(2*PI))*(L/Lz)*log10(1 + (Lz/L)*(Lz/L));
-	double Nz = 1 - (2/PI)*atan(Lz/L) + (1/(2*PI))*(L/Lz)*log10(1 + (Lz/L)*(Lz/L)) - (1/(2*PI))*(Lz/L)*log10(1 + (L/Lz)*(L/Lz));
+	double Ny = 1 - (2/PI)*atan(Ly/Lz) + (1/(2*PI))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*PI))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly));
+	double Nz = 1 - (2/PI)*atan(Lz/Ly) + (1/(2*PI))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*PI))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz));
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
 
 	// Gilbert Damping
-	double alpha=0.01;
+	double alpha=0.02;
 
 	// Exchange Stiffness
 	double A=0.0; // J/m

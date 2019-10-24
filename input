@@ -1,5 +1,5 @@
 # Material parameters:
-Ms=477e3
+Ms=277e3
 L=200e-9
 Ly=50e-9
 Lz=5e-9
@@ -8,10 +8,10 @@ alpha=0.02
  
 # Field's parameters:
 H=1432 #A/m
-f=400e6
+f=500e6
 
 # Simulation's parameters:
-Dt=1e-11
+Dt=1e-13
 totaltime=100e-9
 out_time=1e-10
 integrator=RK4

@@ -23,7 +23,7 @@
 int main(){	
 	// In this step we initialize the variables from the input file set by the user
 	stor::initialize();
-
+	std::cout<<stor::H_demag<<"\t"<<stor::Nz<<"\t"<<stor::Ny<<std::endl;
 	// declare the output file
 	std::ofstream outputfile;
 	outputfile.open("output");
@@ -33,7 +33,7 @@ int main(){
 		std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
 	}*/
 	// calculate the bifurcation diagram
-	//programs::bifurcation();
+	programs::bifurcation();
 
 	//perform some equilibration steps
 	double time=0.0;

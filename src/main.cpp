@@ -19,6 +19,7 @@
 #include "../hdr/calculate.hdr"
 #include "../hdr/euler_integrator.hdr"
 #include "../hdr/program.hdr"
+#include "../hdr/rc.hdr"
 
 int main(){	
 	// In this step we initialize the variables from the input file set by the user
@@ -32,8 +33,12 @@ int main(){
 		calculate::update_energy_antinotches(l*1e-9);
 		std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
 	}*/
+	
 	// calculate the bifurcation diagram
-	programs::bifurcation();
+	//programs::bifurcation();
+	//
+	// calculate the reservoir response
+	reservoir::oscillation_response();
 
 	//perform some equilibration steps
 	double time=0.0;
@@ -74,9 +79,8 @@ int main(){
 		   << stor::vx << "\t" 
 		   << stor::V <<std::endl;
 	
+	}
 
-
-	}		
 	//close the file
 	outputfile.close();
 	std::cout<<"Simulation ended successfully!"<<std::endl;

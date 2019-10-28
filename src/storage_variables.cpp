@@ -25,7 +25,7 @@ namespace stor{
 	//Lz -thickness,t
 	
 	//declare the magnetisation
-	double Ms=277e3; // A/m
+	double Ms=477e3; // A/m
 	double mu0=PI*4e-7; //T^2 J^-1 m^3
 
 	// defining the Demag factors

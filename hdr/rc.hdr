@@ -1,0 +1,14 @@
+#include <iostream>
+
+#include "../hdr/storage.hdr"
+#include "../hdr/calculate.hdr"
+#include "../hdr/euler_integrator.hdr"
+
+namespace reservoir{
+	extern int no_nodes;
+	extern double tau, theta;
+	extern double mask();
+	extern double oscillation_response();
+
+
+}

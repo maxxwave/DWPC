@@ -20,9 +20,12 @@ namespace reservoir{
 	int no_nodes=24;
 	//define the time for a 
 	// In this variable we set the time need for a single discrete input
-	double tau=4.3e-7; //s
+	double tau=4.3e-6; //s
 	// In this variable we se how long is the time applied for a single node
 	double theta=tau/no_nodes;
+
+	// we define a variable to store the no of steps needed to be performed on each node
+	int long no_steps_per_node=0;
 
 	// In this function we create a mask for the input signal 
 	// This mask has a number of neurons defined above with specific weights w1, w2, w3 ...
@@ -37,29 +40,40 @@ namespace reservoir{
 		{n=-1;}
 
 		return n;
-	}
-	
+	}	
 	// In this routine we get the oscillator response x_i(t), where i is the sequential node
 	// i=0..24
 	double time=0.0;
-	double V_min=10;
-	double V_max=40;
+	double V_min=100;
+	double V_max=400;
 	double oscillation_response(){
+		// we calculate the no of steps needed to be performed per node
+		no_steps_per_node=std::round(theta / integrate::Dt);
+
        		// In this loop we apply a sequence of input fields from 	
 		for (stor::V0=V_min; stor::V0<=V_max; stor::V0 +=V_max*0.25){
+
 			//we loop over the nodes
 			for (int i=1; i<=no_nodes;i++){
+
 				// In this stage we apply the mask to the input signal
 				double mask_rand=mask();
-				stor::V = stor::V0*mask_rand;
-				for (i=0; i<=theta; i+=integrate::Dt)
+				stor::V0 *= mask_rand;
+				//std::cout<<no_steps_per_node<<"\t"<<theta<<"\t"<<integrate::Dt<<std::endl;
+				//std::cout<<stor::V0<<std::endl;
+				
+				// In this loop we average over a time=theta
+				for (int j=0; j<=no_steps_per_node; j++){
 					integrate::runge_kutta(time);
-					std::cout<<stor::V<<"\t"<<stor::V0<<"\t"<<
-                        		stor::x_dw<<"\t"<<time*1e9<<std::endl;
+				//	std::cout<<stor::V<<"\t"<<stor::V0<<"\t"<<
+                        	//	stor::x_dw<<"\t"<<time*1e9<<std::endl;
+				}
+
+				std::cout<<stor::V<<"\t"<<stor::V0<<"\t"<<
+                        	stor::x_dw<<"\t"<<time*1e9<<std::endl;
 			}
-
 		}
+
+
 	}
-
-
 }

@@ -7,6 +7,9 @@
 namespace reservoir{
 	extern int no_nodes;
 	extern double tau, theta;
+	extern double V_min, V_max;
+	extern long int no_steps_per_node;
+	extern double time;
 	extern double mask();
 	extern double oscillation_response();
 

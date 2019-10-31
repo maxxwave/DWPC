@@ -1,13 +1,14 @@
 #include <iostream>
-
+#include <vector>
 #include "../hdr/storage.hdr"
 #include "../hdr/calculate.hdr"
 #include "../hdr/euler_integrator.hdr"
 
 namespace reservoir{
+	extern std::vector<double> H0;
 	extern int no_nodes;
 	extern double tau, theta;
-	extern double V_min, V_max;
+	//extern double V_min, V_max;
 	extern long int no_steps_per_node;
 	extern double time;
 	extern double mask();

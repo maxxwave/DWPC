@@ -9,13 +9,18 @@
 #include <cmath>
 #include <cstdlib>
 #include <vector>
-
+#include <iomanip>
 #include "../hdr/storage.hdr"
 #include "../hdr/calculate.hdr"
 #include "../hdr/euler_integrator.hdr"
 #include "../hdr/rc.hdr"
 
 namespace reservoir{
+
+	// Define a vector to store the amplitudes of the field
+	// 
+	std::vector <double> H0{5,15,20,15,5,-10,-20,-10,20,20,20,20,-20,-20,-20,-20}; //in Oe
+
 	// Define the number of neurons alias nodes
 	int no_nodes=24;
 	//define the time for a 
@@ -44,14 +49,18 @@ namespace reservoir{
 	// In this routine we get the oscillator response x_i(t), where i is the sequential node
 	// i=0..24
 	double time=0.0;
-	double V_min=100;
-	double V_max=400;
 	double oscillation_response(){
+		// define a output file to store the data
+		std::ofstream outputfile;
+        	outputfile.open("reservoir.data");
+
+
 		// we calculate the no of steps needed to be performed per node
 		no_steps_per_node=std::round(theta / integrate::Dt);
 
        		// In this loop we apply a sequence of input fields from 	
-		for (stor::V0=V_min; stor::V0<=V_max; stor::V0 +=V_max*0.25){
+		for (int t=0; t<H0.size(); t++){
+			stor::V0=H0[t]*80;
 
 			//we loop over the nodes
 			for (int i=1; i<=no_nodes;i++){
@@ -68,12 +77,15 @@ namespace reservoir{
 				//	std::cout<<stor::V<<"\t"<<stor::V0<<"\t"<<
                         	//	stor::x_dw<<"\t"<<time*1e9<<std::endl;
 				}
-
-				std::cout<<stor::V<<"\t"<<stor::V0<<"\t"<<
-                        	stor::x_dw<<"\t"<<time*1e9<<std::endl;
+				
+				outputfile << std::setprecision(4)
+					   << stor::V<< "\t"
+					   << stor::V0<<"\t"
+					   << stor::x_dw<<"\t"
+					   << time*1e9<<std::endl;
 			}
 		}
 
-
+	outputfile.close();
 	}
 }

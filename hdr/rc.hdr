@@ -8,6 +8,13 @@ namespace reservoir{
 	extern std::vector<double> H0;
 	extern int no_nodes;
 	extern double tau, theta;
+	extern double y_p;
+	extern const double r;
+	extern const double sigma;
+	extern std::vector <double> W;
+	extern std::vector <double> s_x;
+	extern std::vector <double> t_p;
+	extern double training();
 	//extern double V_min, V_max;
 	extern long int no_steps_per_node;
 	extern double time;

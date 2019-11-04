@@ -38,7 +38,8 @@ int main(){
 	//programs::bifurcation();
 	//
 	// calculate the reservoir response
-	reservoir::oscillation_response();
+	//reservoir::oscillation_response();
+	reservoir::training();
 
 	//perform some equilibration steps
 	double time=0.0;

@@ -14,6 +14,8 @@ namespace reservoir{
 	extern std::vector <double> W;
 	extern std::vector <double> s_x;
 	extern std::vector <double> t_p;
+	extern std::vector <double> H_class;
+	extern double classification();
 	extern double training();
 	//extern double V_min, V_max;
 	extern long int no_steps_per_node;

@@ -24,7 +24,6 @@ namespace stor{
 		std::ifstream input ("input");
   		std::string line;
 		std::string test1, test2, test3, test4, test5, test6, test7, test8, test9;
-		std::string::size_type sz;
 		if (input.is_open()){
 			while ( getline (input,line) ){
 				test1="Ms=";
@@ -96,6 +95,6 @@ namespace stor{
 			std::cout<<"The program couldn't open the input file! Check the spelling of the name. This must be named 'input'"<<std::endl;
 		}
 		input.close();
-	
+	return 1;
 	}
 }//end of namespace

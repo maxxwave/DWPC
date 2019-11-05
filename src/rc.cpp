@@ -19,14 +19,14 @@ namespace reservoir{
 
 	// Define a vector to store the amplitudes of the field
 	// 
-	std::vector <double> H0{5,15,20,15,5,-10,-20,-10,20,20,20,20,-20,-20,-20,-20}; //in Oe
+	std::vector <double> H0{5,15,20,15,5,-10,-20,-10};//,20,20,20,20,-20,-20,-20,-20}; //in Oe
 	//define a target vector for the input
-	std::vector <double> t_p{0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
+	std::vector <double> t_p{0,0,0,0,0,0,0,0};//,1,1,1,1,1,1,1,1};
 	// Define the number of neurons alias nodes
 	int no_nodes=24;
 	//define the time for a 
 	// In this variable we set the time need for a single discrete input
-	double tau=4.3e-6; //s
+	double tau=4.3e-7; //s
 	// In this variable we se how long is the time applied for a single node
 	double theta=tau/no_nodes;
 	// In this vector we store the arrays of outputs
@@ -85,7 +85,7 @@ namespace reservoir{
 					   << stor::x_dw<<"\t"
 					   << time*1e9<<std::endl;
 			// stor the position of the domain wall into array of outputs
-			s_x.push_back(stor::x_dw);
+			s_x.push_back(stor::x_dw*1e9/150);
 			}
 	//close the file
 	outputfile.close();
@@ -93,7 +93,7 @@ namespace reservoir{
 	}
 	// here we define new variables for the following training process
 	std::vector<double> W; // in this array we store the output weights
-	const double r=0.001; // rate of learning 
+	const double r=0.1; // rate of learning 
 	double y_p=0.0; // target & output weight
 	const double sigma=0.001;
 	double e_p=0.0;
@@ -102,32 +102,68 @@ namespace reservoir{
 	// in this subroutine we determine the wight matrix of the output
 	// the aim is to obtain a trainer capable to classify the corresponding inputs
 	// the training process is implemented using gradient method detailed in Ref. "An Introduction to Neural Networks" by Kevin Gurney, p. 90
-	// Dwi= rate*d(sigma(a))/d(a) (t_p-y_p)x_i, where Dwi are the weights adjustements
+	// Dwi= rate*(t_p-y_p)x_i, where Dwi are the weights adjustements
 	double training(){
+
+		double bias = 0.0;
 		// initialize the output weight array W
 		for (int z=0; z<no_nodes; z++){
 			// the weight are initialized randomly between 0 and 1
 			W.push_back(rand()%2);
 		}
-		while(e_p<sigma){
+		do{
+			// clear s_x
 			// loop over samples
 			for (int t=0; t<H0.size(); t++){
-                        stor::V0=H0[t]*80;
+				
+				stor::V0=H0[t]*150;
 
-			// calculate the response per node
-			oscillation_response();
-			// In this loo we calculate the activation y_p;
-			for(int l=0; l<no_nodes; l++){
-				y_p += W[l]*s_x[l];
-				//re-adjust the weights
-				W[l] += r*(t_p[t] - W[l]*s_x[l]);
+				// delete the elements of the vector
+				s_x.clear();
+				// calculate the response per node
+				oscillation_response();
+				// In this loo we calculate the activation y_p;
+				y_p = bias;
+				for(int l=0; l<no_nodes; l++){
+					y_p += W[l] * s_x[l];
+					e_p=(t_p[t]-y_p)*(t_p[t] - y_p);
 				}
 
-			e_p=t_p[t]-y_p;
-			std::cout<<e_p<<std::endl;
+				for(int l=0; l<no_nodes; l++){
+					//re-adjust the weights
+					W[l] += r*(t_p[t] - y_p)*s_x[l];
+					//bias += r*(t_p[t] - y_p);
+				}
+
+				std::cout<<e_p << "\t" << y_p << "\t" << W[0] <<std::endl;
 
 			}
 		}
+		while(e_p>sigma);
 		
 	}
+	
+	double classification(){
+		std::vector <double> H_class{7.5,17.5,20,15,5,-12,-20,-12};  
+		// loop over test values of H
+		for (int t=0; t<H_class.size(); t++){
+			stor::V0=H0[t]*80;
+			// delete the elements of the vector
+                        s_x.clear();
+			// calculate the response per node
+                        oscillation_response();
+
+			//loop over the nodes and sum the x_ki
+			for (int z=0; z<no_nodes; z++){
+				y_p += W[z] * s_x[z];
+			}
+
+			std::cout<<y_p<<std::endl;
+			if(y_p<0.5){
+				std::cout<< "You got a sine input!"<<std::endl;}
+
+		}
+
+	return 1;
+	}//end of classification function
 }

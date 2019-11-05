@@ -88,6 +88,7 @@ namespace integrate{
 			std::endl;
 		*/
 		time += integrate::Dt;
+	return 1;
 	}// end of euler function
 
 

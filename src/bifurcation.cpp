@@ -17,9 +17,9 @@ namespace programs{
 		std::ofstream output;
 		output.open("Bifurcation.data");
 		// In this variable we store the no of integration steps performed within one period of the applied field
-		double no = 1/(stor::omega*integrate::Dt);
+		//double no = 1/(stor::omega*integrate::Dt);
 		//std::cout<<no<<std::endl;
-		const double Pi_omega=Pi/stor::omega;
+		//const double Pi_omega=Pi/stor::omega;
 		const double no_steps_per_period= (1/stor::freq)/integrate::Dt;
 		// the applied field amplitude is varied from 1000A/M to 5000A/M with a step of 4A/m
 	       	for(int i=0;i<1000;i++){
@@ -46,6 +46,7 @@ namespace programs{
 		}	
 		
 		output.close();
+		return 1;
 	}//end of bifurcation function
 	
 }// end of namespace

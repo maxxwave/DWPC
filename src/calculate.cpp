@@ -53,6 +53,7 @@ namespace calculate{
 		// this is the analytical derivative of the potential dE/dx
 		stor::dEx=a1+ 2*a2*x + 3*a3*x*x + 4*a4*pow(x,3) + 5*a5*pow(x,4) + 6*a6*pow(x,5) + 7*a7*pow(x,6) + 8*a8*pow(x,7);
 
+		return 0;
 	}// end of function 
 	
 	// in this function we will calculate the pinning energy for anti-notches
@@ -70,11 +71,14 @@ namespace calculate{
 	double calculate_DW(double phi){
 		stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi)*sin(phi) + stor::muMs*stor::H_demag))); // Pivano form of DW
 		//stor::Dw_size=sqrt(2*stor::A/(stor::mu0*stor::Ms*stor::Ms*(stor::Ny*sin(phi)*sin(phi) + stor::Nz*cos(phi)*cos(phi)))); // Matt form 
+		return 0;
 	}// end of function calculate_DW
 
 	// In this routine we calculate the Zeeman field taking into account the frequency of the field
 	double Zeeman(double time){
-		stor::V=stor::V0*sin(stor::omega*time);	
+		//stor::V=stor::V0*sin(stor::omega*time);	
+		stor::V=stor::V0*cos(stor::omega*time);
+		return 0 ;
 	}
 }//end of namespace
 

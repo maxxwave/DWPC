@@ -40,7 +40,7 @@ int main(){
 	// calculate the reservoir response
 	//reservoir::oscillation_response();
 	reservoir::training();
-
+	reservoir::classification();
 	//perform some equilibration steps
 	double time=0.0;
 	int Nsteps = std::round(integrate::totaltime / integrate::Dt);

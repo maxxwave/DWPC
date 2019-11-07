@@ -76,8 +76,8 @@ namespace calculate{
 
 	// In this routine we calculate the Zeeman field taking into account the frequency of the field
 	double Zeeman(double time){
-		//stor::V=stor::V0*sin(stor::omega*time);	
-		stor::V=stor::V0*cos(stor::omega*time);
+		stor::V=stor::V0*sin(stor::omega*time);	
+		//stor::V=stor::V0*cos(stor::omega*time);
 		return 0 ;
 	}
 }//end of namespace

@@ -15,13 +15,16 @@ namespace reservoir{
 	extern std::vector <double> s_x;
 	extern std::vector <double> t_p;
 	extern std::vector <double> H_class;
+	extern std::vector <double> mask_array;
+	extern double sigmoid(double x);
+	extern double mask_values();
 	extern double classification();
 	extern double training();
 	//extern double V_min, V_max;
 	extern long int no_steps_per_node;
 	extern double time;
 	extern double mask();
-	extern double oscillation_response();
+	extern double oscillation_response(double Hi);
 
 
 	void get_input_data(std::string&, std::vector<double> &, std::vector<double> &);

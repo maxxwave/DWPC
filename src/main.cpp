@@ -39,18 +39,14 @@ int main(){
 	//
 	// calculate the reservoir response
 	//reservoir::oscillation_response();
-<<<<<<< Updated upstream
 
     if( stor::program.compare("RC") == 0) {
         std::cout << "Running Reservoir Computing (RC) program." << std::endl;
         reservoir::run();
         return 0;
     }
-=======
-	reservoir::training();
-	//reservoir::classification();
->>>>>>> Stashed changes
-	//perform some equilibration steps
+
+    //perform some equilibration steps
 	double time=0.0;
 	int Nsteps = std::round(integrate::totaltime / integrate::Dt);
 	int Nout = std::round(integrate::out_time / integrate::Dt);

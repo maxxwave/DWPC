@@ -24,4 +24,6 @@ namespace reservoir{
 	extern double oscillation_response();
 
 
+	void get_input_data(std::string&, std::vector<double> &, std::vector<double> &);
+	void get_input_parameters(const char*);
 }

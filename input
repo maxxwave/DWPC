@@ -5,7 +5,7 @@ Ly=50e-9
 Lz=5e-9
 Aex=1.05e-11
 alpha=0.02
- 
+
 # Field's parameters:
 H=0 #A/m
 f=0
@@ -17,4 +17,4 @@ out_time=1e-10
 integrator=RK4
 
 #Pinning field:
-pin=0 
+pin=0

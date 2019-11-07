@@ -39,6 +39,12 @@ int main(){
 	//
 	// calculate the reservoir response
 	//reservoir::oscillation_response();
+	std::vector<double> input_x;
+	std::vector<double> input_y;
+	std::string filename("sine_square");
+	reservoir::get_input_parameters("rc_input");
+	reservoir::get_input_data(filename, input_x, input_y);
+	exit(-1);
 	reservoir::training();
 	reservoir::classification();
 	//perform some equilibration steps

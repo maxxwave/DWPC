@@ -1,0 +1,21 @@
+#input filename
+file=sine_square
+
+#time duration
+T=1e-8
+
+#number of virtual nodes
+Nv=24
+
+#number of epochs
+Ne=100
+
+#learning rate
+lr=0.1
+
+#momentum
+la=0.5
+
+#field parameters
+H0=10
+dH=5

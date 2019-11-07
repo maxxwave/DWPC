@@ -10,20 +10,23 @@
 
 
 #include <iostream>
-#include <vector> 
+#include <vector>
 #include <cmath>
+#include <string>
 #include "../hdr/storage.hdr"
 #define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace stor{
 
+    std::string program("RC");
+
 	// The length of the chain on x-component
 	double L=200.0e-9;
 
-	// Declare the section 
+	// Declare the section
 	double Ly=50e-9, Lz=5.0e-9;
 	//Ly -width,w
 	//Lz -thickness,t
-	
+
 	//declare the magnetisation
 	double Ms=477e3; // A/m
 	double mu0=PI*4e-7; //T^2 J^-1 m^3
@@ -41,9 +44,9 @@ namespace stor{
 
 	// Exchange Stiffness
 	double A=0.0; // J/m
-	
+
 	// The harmonic potential, V=V0cos(omega t)
-	// In V0 we incorporate the Zeeman energy and the internal fields 
+	// In V0 we incorporate the Zeeman energy and the internal fields
 	// We note that Zeeman energy is given by an oscillatory field
 	double V0=0.0; // A/m which correspond to 18 Oe
 	double V=0.0; // Instant field V=V0cos(wt)
@@ -58,15 +61,15 @@ namespace stor{
 	// Within 1D model we assume two colective coordinates defined by the x and azimuthal angle
 	std::vector <double> x_coord;
 	std::vector <double> phi_coord;
-	
+
 	// defining the position of the DW
 	double x_dw=0;
 	double phi_dw=0;
 
 	double vx=0.0;
 	double phi_dt=0.0;
-	
-	// defining the potential and the derivative 
+
+	// defining the potential and the derivative
 	double Ex=0.0;
 	double dEx=0.0;
 
@@ -83,11 +86,11 @@ namespace stor{
 
 	// defining the domain width
 	double Delta=0.0;
-	
-	// creating the potential arrays Ex and the derivative dEx	
+
+	// creating the potential arrays Ex and the derivative dEx
 	std::vector<double> E_x;
 	std::vector<double> dE_x;
-	
+
 	// creating an array for the domain wall width
 	std::vector<double> Dw;
 	double Dw_size=0.0;

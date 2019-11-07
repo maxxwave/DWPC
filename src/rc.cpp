@@ -18,6 +18,7 @@
 
 namespace reservoir{
 
+
 	// Define a vector to store the amplitudes of the field
 	//
 	std::vector <double> H0{5,15,20,15,5,-10,-20,-10};//,20,20,20,20,-20,-20,-20,-20}; //in Oe
@@ -181,21 +182,6 @@ namespace reservoir{
 	};
 
 
-	void get_input_parameters(const char* in_fname)
-	{
-		std::ifstream input(in_fname);
-
-		rc_inputs_t rc_inputs;
-        input_map_t inputs;
-        inputs.read_file("rc_input");
-
-        std::cout << inputs.get<double>("T") / inputs.get<int>("Nv") << std::endl;
-        std::cout << "Stored values: " << std::endl;
-
-        inputs.print();
-
-	}
-
 	void get_input_data(std::string &filename, std::vector<double> &input_x, std::vector<double> &input_y)
 	{
 		std::ifstream input (filename.c_str());
@@ -207,6 +193,31 @@ namespace reservoir{
 			}
 		}
 	}
+
+
+    int run()
+    {
+        std::vector<double> input_x;
+        std::vector<double> input_y;
+
+        // Input is read and stored in a map class
+        input_map_t rc_inputs;
+        rc_inputs.read_file("rc_input");
+
+        // Print out the input values that have been recognised
+        std::cout << "Stored values: " << std::endl;
+        rc_inputs.print();
+
+        // Access input values through get function with type template
+        std::string filename = rc_inputs.get<std::string>("filename");
+        reservoir::get_input_data(filename, input_x, input_y);
+
+
+        reservoir::training();
+        reservoir::classification();
+
+        return 1;
+    }
 
 
 }

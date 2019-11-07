@@ -1,7 +1,7 @@
 // This file is dedicated to initialize the program variables from a file allowing the user to set preffered parameters
 // This file takes part from DWPC code
-// 
-// 
+//
+//
 // (c) author: Razvan Ababei
 // University of Sheffield
 // date: 11.08.2019
@@ -72,24 +72,27 @@ namespace stor{
 				if( strstr(line.c_str(), "integrator=")){
 					integrate::scheme = line.substr(11);
 				}
+				if( strstr(line.c_str(), "program=")){
+					stor::program = line.substr(8);
+				}
 
 				// and few more others
-     					
+
     			}//end of while loop
-			
+
 			std::cout<<"The program has been initialized with following parameters:"<<std::endl;
-			std::cout<<"Saturation, Ms = "<<stor::Ms<<"A/m"<<std::endl;			
-			std::cout<<"Length of the strip = "<<stor::L<<"m"<<std::endl;			
-			std::cout<<"Width = "<<stor::Ly<<"m"<<std::endl;			
-			std::cout<<"Thickness = "<<stor::Lz<<"m"<<std::endl;			
-			std::cout<<"Exchange stiffness, A = "<<stor::A<<"J/m"<<std::endl;			
-			std::cout<<"Gilbert damping, alpha = "<<stor::alpha<<""<<std::endl;			
-			std::cout<<"Amplitude of oscillating field, H0 = "<<stor::V0<<"A/m"<<std::endl;			
-			std::cout<<"Frequency of the field, omega = " <<stor::omega<<"Hz"<<std::endl;			   
-			std::cout<<"Integration time step, Dt = "<<integrate::Dt <<"s"<<std::endl;		
+			std::cout<<"Saturation, Ms = "<<stor::Ms<<"A/m"<<std::endl;
+			std::cout<<"Length of the strip = "<<stor::L<<"m"<<std::endl;
+			std::cout<<"Width = "<<stor::Ly<<"m"<<std::endl;
+			std::cout<<"Thickness = "<<stor::Lz<<"m"<<std::endl;
+			std::cout<<"Exchange stiffness, A = "<<stor::A<<"J/m"<<std::endl;
+			std::cout<<"Gilbert damping, alpha = "<<stor::alpha<<""<<std::endl;
+			std::cout<<"Amplitude of oscillating field, H0 = "<<stor::V0<<"A/m"<<std::endl;
+			std::cout<<"Frequency of the field, omega = " <<stor::omega<<"Hz"<<std::endl;
+			std::cout<<"Integration time step, Dt = "<<integrate::Dt <<"s"<<std::endl;
 			std::cout<<"Initialization completed!"<<std::endl;
-			std::cout<<"=====================================================================<"<<std::endl;	
-		
+			std::cout<<"=====================================================================<"<<std::endl;
+
 		}
 		else{
 			std::cout<<"The program couldn't open the input file! Check the spelling of the name. This must be named 'input'"<<std::endl;

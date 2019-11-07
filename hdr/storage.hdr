@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
+#include <string>
 namespace stor{
 
+    extern std::string program;
 	extern double L;
 	extern double Lz, Ly;
 	extern double Ms, mu0;
@@ -24,6 +26,6 @@ namespace stor{
 	extern double Ex, dEx;
 	extern double vx, phi_dt;
 	extern double Dw_size;
-	extern double initialize(); 
-} //end of namespace 
+	extern double initialize();
+} //end of namespace
 

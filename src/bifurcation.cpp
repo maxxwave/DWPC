@@ -4,7 +4,7 @@
 
 #include <iostream>
 #include <cmath>
-#include <fstream> 
+#include <fstream>
 
 #include "../hdr/calculate.hdr"
 #include "../hdr/storage.hdr"
@@ -12,7 +12,7 @@
 #include "../hdr/program.hdr"
 #define Pi 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace programs{
-	// in this function we plot the bifurcation diagram of domain wall propagation 
+	// in this function we plot the bifurcation diagram of domain wall propagation
 	double bifurcation(){
 		std::ofstream output;
 		output.open("Bifurcation.data");
@@ -24,7 +24,7 @@ namespace programs{
 		// the applied field amplitude is varied from 1000A/M to 5000A/M with a step of 4A/m
 	       	for(int i=0;i<1000;i++){
 			stor::V0=i*5+250;
-		
+
 			// This is a local variable dedicated to control the time simulation
 			double time=0.0;
 			//perform some equilibration steps
@@ -35,18 +35,18 @@ namespace programs{
 			// In this loop we perform a number of integration steps equal to a period
 			for (int l=0; l<200; l++){
 				for (int t=0; t<no_steps_per_period; t++){
-					integrate::runge_kutta(time);		
+					integrate::runge_kutta(time);
 				}
 				// print the value of the DW position after each loop (period)
 				output << "H="<<"\t"<<stor::V<<"\t"<<"X="<<"\t"<<stor::x_dw<<"\t"<<"V="<<"\t"<<stor::vx<<std::endl;
 
 			}// end of loop
 
-		
-		}	
-		
+
+		}
+
 		output.close();
 		return 1;
 	}//end of bifurcation function
-	
+
 }// end of namespace

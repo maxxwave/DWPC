@@ -120,7 +120,7 @@ namespace reservoir{
 	// the aim is to obtain a trainer capable to classify the corresponding inputs
 	// the training process is implemented using gradient method detailed in Ref. "An Introduction to Neural Networks" by Kevin Gurney, p. 90
 	// Dwi= rate*(t_p-y_p)x_i, where Dwi are the weiactoghts adjustements
-	double training(){
+	double training( std::vector<double> &input_x, std::vector<double> &input_y){
 		//initialize the mask
 		mask_values();
 
@@ -133,27 +133,28 @@ namespace reservoir{
 		do{
 			// clear s_x
 			// loop over samples
-			for (int t=0; t<H0.size(); t++){
+			for (int t=0; t<input_x.size(); t++){
 
 				// delete the elements of the vector
 				s_x.clear();
 
 				// calculate the response per node
-				oscillation_response(H0[t]);
+				oscillation_response(input_x[t]);
 				// In this loo we calculate the activation y_p;
-				// y_p = 0.00; //bias;
+				y_p = 0.00; //bias;
 				for(int l=0; l<no_nodes; l++){
 					y_p += W[l] * s_x[l];
-					e_p=(t_p[t]-y_p)*(t_p[t] - y_p);
 				}
 
+				e_p=(input_y[t]-y_p)*(input_y[t] - y_p);
 				for(int l=0; l<no_nodes; l++){
 					//re-adjust the weights
-					W[l] += r*(sigmoid(y_p)*(1-(sigmoid(y_p))))*(t_p[t] - sigmoid(y_p))*s_x[l];
-					//bias += r*(t_p[t] - y_p);
+					W[l] += r*(input_y[t] - y_p)*s_x[l];
+					bias += r*(input_y[t] - y_p);
 				}
 
-				std::cout<<e_p << "\t" << y_p << "\t" << W[0] <<std::endl;
+				std::cout << std::fixed << std::setprecision(0) << t << "\t"
+                    << std::setprecision(6)<< input_x[t] << "\t" << e_p << "\t" << y_p << "\t" << W[0] << "\t" << bias <<std::endl;
 
 			}
 		}
@@ -229,11 +230,11 @@ namespace reservoir{
         rc_inputs.print();
 
         // Access input values through get function with type template
-        std::string filename = rc_inputs.get<std::string>("filename");
+        std::string filename = rc_inputs.get<std::string>("file");
         reservoir::get_input_data(filename, input_x, input_y);
 
 
-        reservoir::training();
+        reservoir::training(input_x, input_y);
         reservoir::classification();
 
         return 1;

@@ -142,6 +142,7 @@ namespace reservoir{
 
         int epoch = 0;
 		do{
+            std::cout << epoch << std::endl;
 			// clear s_x
 			// loop over samples
 			for (int t=0; t<input_x.size(); t++){
@@ -257,8 +258,12 @@ namespace reservoir{
         Hc = rc_inputs.get<double>("H0");
         dH = rc_inputs.get<double>("dH");
         no_nodes = rc_inputs.get<int>("Nv");
-        tau = rc_inputs.get<int>("T");
+        tau = rc_inputs.get<double>("T");
         theta = tau/no_nodes;
+
+        std::cout << "tau = " << tau << std::endl;
+        std::cout << "theta = " << theta << std::endl;
+        std::cout << "Number of nodes = " << no_nodes << std::endl;
 
         // Access input values through get function with type template
         std::string filename = rc_inputs.get<std::string>("file");

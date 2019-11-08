@@ -69,7 +69,7 @@ namespace reservoir{
 	double mask_values(){
         mask_array.assign( no_nodes, 0);
 		for (int j=0; j<no_nodes; j++){
-			mask_array[j] =  rng_int_dist(rng)*2 - 1  ;
+			mask_array[j] =  rng_int_dist(rng)*0.25 + 0.45  ;
 			std::cout<<mask_array[j]<<std::endl;
 		}
 	}
@@ -85,7 +85,7 @@ namespace reservoir{
        		// In this loop we apply a sequence of input fields from
 
 		//we loop over the nodes
-		for (int i=1; i<=no_nodes;i++){
+		for (int i=0; i<no_nodes;i++){
 
 			//std::cout<<no_steps_per_node<<"\t"<<theta<<"\t"<<integrate::Dt<<std::endl;
 			//std::cout<<stor::V0<<std::endl;
@@ -96,12 +96,7 @@ namespace reservoir{
 			// In this loop we average over a time=theta
 			for (int j=0; j<no_steps_per_node; j++){
 				integrate::runge_kutta(time);
-				//	std::cout<<stor::V<<"\t"<<stor::V0<<"\t"<<
-                        	//	stor::x_dw<<"\t"<<time*1e9<<std::endl;
-				}
-
-			// stor the position of the domain wall into array of outputs
-			s_x.push_back(stor::x_dw*1e9/150);
+                if ( j % 10 == 0)
 			outputfile << std::fixed
                        << std::setprecision(6)
 					   << time*1e9 << "\t"
@@ -109,6 +104,12 @@ namespace reservoir{
 					   << stor::V0 << "\t"
 					   << stor::x_dw*1e9 << "\t"
                        <<std::endl;
+				//	std::cout<<stor::V<<"\t"<<stor::V0<<"\t"<<
+                        	//	stor::x_dw<<"\t"<<time*1e9<<std::endl;
+				}
+
+			// stor the position of the domain wall into array of outputs
+			s_x.push_back(stor::x_dw*1e9/150);
 			}
 
 	}
@@ -142,7 +143,6 @@ namespace reservoir{
 
         int epoch = 0;
 		do{
-            std::cout << epoch << std::endl;
 			// clear s_x
 			// loop over samples
 			for (int t=0; t<input_x.size(); t++){

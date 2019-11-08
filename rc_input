@@ -17,5 +17,5 @@ lr=0.00001
 la=0.5
 
 #field parameters
-H0=10
-dH=5
+H0=1600
+dH=200

@@ -8,10 +8,10 @@ alpha=0.02
 
 # Field's parameters:
 H=1500 #A/m
-f=500
+f=500e6
 
 # Simulation's parameters:
-Dt=1e-12
+Dt=1e-11
 totaltime=100e-9
 out_time=1e-10
 integrator=RK4

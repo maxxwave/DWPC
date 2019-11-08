@@ -1,8 +1,8 @@
-// Author: Razvan Ababei & Matt Ellis	
+// Author: Razvan Ababei & Matt Ellis
 // University of Sheffield
 // date 21st of August, 2019
 //
-// This file is dedicated to implement the integrator based on Runge Kutta method 
+// This file is dedicated to implement the integrator based on Runge Kutta method
 //
 
 #include <iostream>
@@ -23,7 +23,7 @@ namespace integrate{
 	// k3 = h f(tn + h/2, yn + k2/2)
 	// k4 = h f(tn + h, yn + k3)
 	// h = xn+1-xn
-	
+
 	double k1=0.0, k2=0.0, k3=0.0, k4=0.0;
 	double kp1=0.0, kp2=0.0, kp3=0.0, kp4=0.0;
 	double phi_k=0.0, x_k=0.0;
@@ -31,37 +31,37 @@ namespace integrate{
 
 	// we define two function for speed and angular speed
 	double phi_t(double dEx, double phi_rk, double H){
-		return prefac3*dEx+prefac4*sin(2*phi_rk)+ zeeman_prefac2*H;	
+		return prefac3*dEx+prefac4*sin(2*phi_rk)+ zeeman_prefac2*H;
 	}
 	double x_t(double DWs, double phi, double phi_t){
-		return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t; 
+		return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
 	}
 	double runge_kutta(double &time){
 		phi_k=stor::phi_dw;
 		x_k=stor::x_dw;
 
-		// calculate the domain width 
+		// calculate the domain width
                 calculate::update_energy_antinotches(x_k);
                 calculate::calculate_DW(phi_k);
 		calculate::Zeeman(time);
 
 		kp1 = integrate::Dt*phi_t(stor::dEx, phi_k, stor::V);
 		k1 = integrate::Dt*x_t(stor::Dw_size, phi_k, phi_t(stor::dEx, phi_k, stor::V));
-		
+
 		calculate::update_energy_antinotches(x_k+0.5*k1);
                 calculate::calculate_DW(phi_k+0.5*kp1);
 		calculate::Zeeman(time+integrate::Dt*0.5);
 
 		kp2=integrate::Dt*phi_t(stor::dEx, phi_k+0.5*kp1, stor::V);
 		k2=integrate::Dt*x_t(stor::Dw_size, phi_k+0.5*kp1, phi_t(stor::dEx, phi_k+0.5*kp1, stor::V));
-		
+
 		calculate::update_energy_antinotches(x_k+0.5*k2);
                 calculate::calculate_DW(phi_k+0.5*kp2);
 		calculate::Zeeman(time+integrate::Dt*0.5);
 
 		kp3=integrate::Dt*phi_t(stor::dEx, phi_k+0.5*kp2, stor::V);
 		k3=integrate::Dt*x_t(stor::Dw_size,phi_k+0.5*kp2,phi_t(stor::dEx, phi_k+0.5*kp2, stor::V));
-		
+
 		calculate::update_energy_antinotches(x_k+k3);
                 calculate::calculate_DW(phi_k+kp3);
 		calculate::Zeeman(time+integrate::Dt);

@@ -20,8 +20,17 @@
 
 namespace reservoir{
 
+    std::default_random_engine rng;
+    std::uniform_real_distribution<double> rng_dist(0.0,1.0);
+    std::uniform_int_distribution<int> rng_int_dist(0,1);
+
+	std::ofstream outputfile;
+
 	// Define a vector to store the amplitudes of the field
-	//
+    //Hc defines the centre field amplitude
+    double Hc = 1000;
+    // dH defines the width of the field amplitude
+    double dH = 100;
 	std::vector <double> H0{0.25,0.75,1,0.75,0.25,-0.5,-1,-0.5,1,1,1,1,-1,-1,-1,-1}; //in Oe
 
     //define a target vector for the input
@@ -30,7 +39,7 @@ namespace reservoir{
 	int no_nodes=24;
 	//define the time for a
 	// In this variable we set the time need for a single discrete input
-	double tau=4.3e-7; //s
+	double tau=12e-8; //s
 	// In this variable we se how long is the time applied for a single node
 	double theta=tau/no_nodes;
 	// In this vector we store the arrays of outputs
@@ -58,8 +67,9 @@ namespace reservoir{
 
     // in this function we generate random number for the mask which can be either -1 or +1
 	double mask_values(){
-		for (int j=1; j<=no_nodes; j++){
-			mask_array.push_back(mask());
+        mask_array.assign( no_nodes, 0);
+		for (int j=0; j<no_nodes; j++){
+			mask_array[j] =  rng_int_dist(rng)*2 - 1  ;
 			std::cout<<mask_array[j]<<std::endl;
 		}
 	}
@@ -68,8 +78,6 @@ namespace reservoir{
 	double time=0.0;
 	double oscillation_response(double Hi){
 		// define a output file to store the data
-		std::ofstream outputfile;
-        	outputfile.open("reservoir.data");
 
 		// we calculate the no of steps needed to be performed per node
 		no_steps_per_node=std::round(theta / integrate::Dt);
@@ -83,7 +91,7 @@ namespace reservoir{
 			//std::cout<<stor::V0<<std::endl;
 			//
 			// recalculate the field
-			stor::V0=1200*(1+Hi*mask_array[i]);
+			stor::V0 = Hc + dH*Hi*mask_array[i];
 
 			// In this loop we average over a time=theta
 			for (int j=0; j<no_steps_per_node; j++){
@@ -92,24 +100,23 @@ namespace reservoir{
                         	//	stor::x_dw<<"\t"<<time*1e9<<std::endl;
 				}
 
-			outputfile << std::setprecision(5)<<"\t"
-					   << i <<"\t"
-					   << stor::V<< "\t"
-					   << stor::V0<<"\t"
-					   << stor::x_dw<<"\t"
-					   << time*1e9<<std::endl;
 			// stor the position of the domain wall into array of outputs
 			s_x.push_back(stor::x_dw*1e9/150);
+			outputfile << std::fixed
+                       << std::setprecision(6)
+					   << time*1e9 << "\t"
+					   << stor::V << "\t"
+					   << stor::V0 << "\t"
+					   << stor::x_dw*1e9 << "\t"
+                       <<std::endl;
 			}
-	//close the file
-	outputfile.close();
 
 	}
 	// here we define new variables for the following training process
 	std::vector<double> W; // in this array we store the output weights
 	const double r=0.001; // rate of learning
 	double y_p=0.0; // target & output weight
-	const double sigma=0.1;
+	const double sigma=0.00001;
 	double e_p=0.0;
 
 	double sigmoid(double x){
@@ -120,16 +127,20 @@ namespace reservoir{
 	// the aim is to obtain a trainer capable to classify the corresponding inputs
 	// the training process is implemented using gradient method detailed in Ref. "An Introduction to Neural Networks" by Kevin Gurney, p. 90
 	// Dwi= rate*(t_p-y_p)x_i, where Dwi are the weiactoghts adjustements
-	double training( std::vector<double> &input_x, std::vector<double> &input_y){
+	double training( double lr, double la, int Nepoch, std::vector<double> &input_x, std::vector<double> &input_y){
+        outputfile.open("reservoir.data");
 		//initialize the mask
 		mask_values();
 
 		double bias = 0.0;
 		// initialize the output weight array W
 		for (int z=0; z<no_nodes; z++){
-			// the weight are initialized randomly between 0 and 1
-			W.push_back(rand()%2);
+			// the weight are initialized randomly between -0.5 and 0.5
+			W.push_back( rng_dist(rng) - 0.5);
 		}
+
+
+        int epoch = 0;
 		do{
 			// clear s_x
 			// loop over samples
@@ -141,7 +152,8 @@ namespace reservoir{
 				// calculate the response per node
 				oscillation_response(input_x[t]);
 				// In this loo we calculate the activation y_p;
-				y_p = 0.00; //bias;
+                // Calculate y_p = \sum_j W_j S_j
+				y_p = bias;
 				for(int l=0; l<no_nodes; l++){
 					y_p += W[l] * s_x[l];
 				}
@@ -149,16 +161,29 @@ namespace reservoir{
 				e_p=(input_y[t]-y_p)*(input_y[t] - y_p);
 				for(int l=0; l<no_nodes; l++){
 					//re-adjust the weights
-					W[l] += r*(input_y[t] - y_p)*s_x[l];
-					bias += r*(input_y[t] - y_p);
+					W[l] += lr*(input_y[t] - y_p)*s_x[l];
+					bias += lr*(input_y[t] - y_p);
 				}
 
-				std::cout << std::fixed << std::setprecision(0) << t << "\t"
-                    << std::setprecision(6)<< input_x[t] << "\t" << e_p << "\t" << y_p << "\t" << W[0] << "\t" << bias <<std::endl;
+				std::cout << std::fixed
+                    << std::setprecision(0)
+                    << t << "\t"
+                    << std::setprecision(6)
+                    << input_x[t] << "\t"
+                    << input_y[t] << "\t"
+                    << e_p << "\t"
+                    << y_p << "\t"
+                    << W[0] << "\t"
+                    << bias
+                    << std::endl;
 
 			}
+            epoch++;
+            if( epoch > Nepoch) break;
 		}
 		while(e_p>sigma);
+	//close the file
+	outputfile.close();
 
 	}
 
@@ -229,12 +254,21 @@ namespace reservoir{
         std::cout << "Stored values: " << std::endl;
         rc_inputs.print();
 
+        Hc = rc_inputs.get<double>("H0");
+        dH = rc_inputs.get<double>("dH");
+        no_nodes = rc_inputs.get<int>("Nv");
+        tau = rc_inputs.get<int>("T");
+        theta = tau/no_nodes;
+
         // Access input values through get function with type template
         std::string filename = rc_inputs.get<std::string>("file");
         reservoir::get_input_data(filename, input_x, input_y);
 
 
-        reservoir::training(input_x, input_y);
+        double lr = rc_inputs.get<double>("lr"); // input learning rate
+        double la = rc_inputs.get<double>("la"); // input learning momentum
+        int Nepoch = rc_inputs.get<double>("Ne"); // input number of epochs
+        reservoir::training(lr, la, Nepoch, input_x, input_y);
         reservoir::classification();
 
         return 1;

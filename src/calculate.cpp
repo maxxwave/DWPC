@@ -5,7 +5,7 @@
 //
 // This file is dedicated to create the chain including the potential for strip
 // This model includes two anti-notches where the potential follows a form given by:
-// 
+//
 //
 #include <iostream>
 #include <vector>
@@ -18,16 +18,16 @@ namespace calculate{
 	// Calculating the number of cells for a given L and cell_size
 	int a = int(stor::L/stor::cell_size);
 	int N=2*a+1;
-	
+
 	// some parameters from origin fit
 	// The expression is F(X)= A0 + A1*X**2 + A2*X**2 + A3*X**3 + A4*X**4 + ... + A8*X**8
 	// These values correspond to Py antinotches
-	/*double a0 = 2.395e-20;	
+	/*double a0 = 2.395e-20;
 	double a1 = 6.741e-15;
 	double a2 = -1.29e-7;
 	double a3 = -2.94244;
 	double a4 = -2.567e8;
-	double a5 = 2.91623e14;	
+	double a5 = 2.91623e14;
 	double a6 = 6.77e21;
 	double a7 = -7.728e27;
 	double a8 = 2.6771e35;*/
@@ -41,11 +41,11 @@ namespace calculate{
 	double a6 = 0.0;
 	double a7 = 0.0;
 	double a8 = 0.0;
-	
-	
+
+
 	// function which calculate the potential energy depending on x
 	double update_energy_antinotches(double x){
-	
+
 		// this is the potential for notches
 		// need to find out who is a and b ???
 		//stor::Ex = a0 + a1*x + a2*x*x + a3*pow(x,3) + a4*pow(x,4) + a5*pow(x,5) + a6*pow(x,6) + a7*pow(x,7)+ a8*pow(x,8);
@@ -54,14 +54,14 @@ namespace calculate{
 		stor::dEx=a1+ 2*a2*x + 3*a3*x*x + 4*a4*pow(x,3) + 5*a5*pow(x,4) + 6*a6*pow(x,5) + 7*a7*pow(x,6) + 8*a8*pow(x,7);
 
 		return 0;
-	}// end of function 
-	
+	}// end of function
+
 	// in this function we will calculate the pinning energy for anti-notches
 	/*double update_energy_notches(double x){
 		stor::Ex=U0-U1*(exp(-(double x + stor::xl)*(double x + stor::xl)/(stor::L*stor::L) )
 			      -(exp(-(double x + stor::xl)*(double x + stor::xr)/(stor::L*stor::L) )
 		stor::dEx=-2*U1/(stor::L*stor::L)*(x+stor::xl)*exp(-(x+stor::xl)*(x+stor::xl)/(stor::L*stor::L)) +
-			  +2*U1/(stor::L*stor::L)*(x+stor::xr)*exp(-(x+stor::xr)*(x+stor::xr)/(stor::L*stor::L))	
+			  +2*U1/(stor::L*stor::L)*(x+stor::xr)*exp(-(x+stor::xr)*(x+stor::xr)/(stor::L*stor::L))
 
 	}// end of function
 	*/
@@ -70,13 +70,13 @@ namespace calculate{
 	// function which calculate the Domain wall width
 	double calculate_DW(double phi){
 		stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi)*sin(phi) + stor::muMs*stor::H_demag))); // Pivano form of DW
-		//stor::Dw_size=sqrt(2*stor::A/(stor::mu0*stor::Ms*stor::Ms*(stor::Ny*sin(phi)*sin(phi) + stor::Nz*cos(phi)*cos(phi)))); // Matt form 
+		//stor::Dw_size=sqrt(2*stor::A/(stor::mu0*stor::Ms*stor::Ms*(stor::Ny*sin(phi)*sin(phi) + stor::Nz*cos(phi)*cos(phi)))); // Matt form
 		return 0;
 	}// end of function calculate_DW
 
 	// In this routine we calculate the Zeeman field taking into account the frequency of the field
 	double Zeeman(double time){
-		stor::V=stor::V0*sin(stor::omega*time);	
+		stor::V = stor::V0*sin(stor::omega*time);
 		//stor::V=stor::V0*cos(stor::omega*time);
 		return 0 ;
 	}

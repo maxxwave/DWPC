@@ -2,16 +2,16 @@
 file=sine_square
 
 #time duration
-T=1e-8
+T=12e-8
 
 #number of virtual nodes
 Nv=24
 
 #number of epochs
-Ne=100
+Ne=20
 
 #learning rate
-lr=0.1
+lr=0.00001
 
 #momentum
 la=0.5

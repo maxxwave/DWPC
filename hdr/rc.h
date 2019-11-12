@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
-#include "../hdr/storage.hdr"
-#include "../hdr/calculate.hdr"
-#include "../hdr/euler_integrator.hdr"
+#include "../hdr/storage.h"
+#include "../hdr/calculate.h"
+#include "../hdr/euler_integrator.h"
 #ifndef __RC_H__
 #define __RC_H__
 

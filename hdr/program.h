@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "../hdr/calculate.hdr"
-#include "../hdr/storage.hdr"
-#include "../hdr/euler_integrator.hdr"
+#include "../hdr/calculate.h"
+#include "../hdr/storage.h"
+#include "../hdr/euler_integrator.h"
 #ifndef __PROGRAMS_H__
 #define __PROGRAMS_H__
 

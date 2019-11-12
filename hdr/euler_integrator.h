@@ -1,13 +1,13 @@
 #include <iostream>
 #include <vector>
 #include <string>
-#include "storage.hdr"
-//#include "create.hdr"
+#include "storage.h"
+//#include "create.h"
 #ifndef __EULER_H__
 #define __EULER_H__
 
 namespace integrate {
-	extern std::string scheme; 
+	extern std::string scheme;
 	extern double totaltime;
 	extern double out_time;
 	extern double Dt;

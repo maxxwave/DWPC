@@ -1,5 +1,5 @@
 #include <iostream>
-#include "storage.hdr"
+#include "storage.h"
 
 #ifndef __CALCULATE_H__
 #define __CALCULATE_H__

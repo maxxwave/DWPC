@@ -15,8 +15,8 @@
 #include <sstream>
 #include <stdio.h>
 #include <string.h>
-#include "../hdr/storage.hdr"
-#include "../hdr/euler_integrator.hdr"
+#include "../hdr/storage.h"
+#include "../hdr/euler_integrator.h"
 
 #define Pi  3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace stor{

@@ -9,9 +9,9 @@
 #include <vector>
 #include <cmath>
 
-#include "../hdr/storage.hdr"
-#include "../hdr/euler_integrator.hdr"
-#include "../hdr/calculate.hdr"
+#include "../hdr/storage.h"
+#include "../hdr/euler_integrator.h"
+#include "../hdr/calculate.h"
 namespace integrate{
 
 

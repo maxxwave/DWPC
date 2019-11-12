@@ -13,7 +13,7 @@
 #include <vector>
 #include <cmath>
 #include <string>
-#include "../hdr/storage.hdr"
+#include "../hdr/storage.h"
 #define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace stor{
 

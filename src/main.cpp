@@ -15,11 +15,11 @@
 #include <cmath>
 
 // include the headers
-#include "../hdr/storage.hdr"
-#include "../hdr/calculate.hdr"
-#include "../hdr/euler_integrator.hdr"
-#include "../hdr/program.hdr"
-#include "../hdr/rc.hdr"
+#include "../hdr/storage.h"
+#include "../hdr/calculate.h"
+#include "../hdr/euler_integrator.h"
+#include "../hdr/program.h"
+#include "../hdr/rc.h"
 
 int main(){
 	// In this step we initialize the variables from the input file set by the user
@@ -39,11 +39,11 @@ int main(){
 	//
 	// calculate the reservoir response
 	//reservoir::oscillation_response();
-    	
+
 	if (stor::program.compare("Bifurcation")==0){
 		programs::bifurcation();
 	}
-    
+
 	if( stor::program.compare("RC") == 0) {
         	std::cout << "Running Reservoir Computing (RC) program." << std::endl;
         	reservoir::run();

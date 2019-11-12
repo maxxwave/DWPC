@@ -12,10 +12,10 @@
 #include <iomanip>
 #include <random>
 
-#include "../hdr/storage.hdr"
-#include "../hdr/calculate.hdr"
-#include "../hdr/euler_integrator.hdr"
-#include "../hdr/rc.hdr"
+#include "../hdr/storage.h"
+#include "../hdr/calculate.h"
+#include "../hdr/euler_integrator.h"
+#include "../hdr/rc.h"
 #include "../hdr/input_map.h"
 
 namespace reservoir{

@@ -10,8 +10,8 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
-#include "../hdr/storage.hdr"
-//#include "../hdr/calculate.hdr"
+#include "../hdr/storage.h"
+//#include "../hdr/calculate.h"
 #define Pi 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace calculate{
 	const double one_rad=Pi/180.0;

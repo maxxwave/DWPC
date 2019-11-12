@@ -18,7 +18,7 @@ namespace reservoir{
 	extern std::vector <double> mask_array;
 	extern double sigmoid(double x);
 	extern double mask_values();
-	double classification();
+	double classification(std::vector<double>&, std::vector<double>&);
 	double training( std::vector<double>&, std::vector<double>&);
 	//extern double V_min, V_max;
 	extern long int no_steps_per_node;

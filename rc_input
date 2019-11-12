@@ -2,7 +2,7 @@
 file=sine_square
 
 #time duration
-T=12e-8
+T=24e-9
 
 #number of virtual nodes
 Nv=24
@@ -11,11 +11,11 @@ Nv=24
 Ne=20
 
 #learning rate
-lr=0.00001
+lr=0.01
 
 #momentum
 la=0.5
 
 #field parameters
-H0=1600
-dH=200
+H=900
+dH=900

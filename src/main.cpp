@@ -39,12 +39,16 @@ int main(){
 	//
 	// calculate the reservoir response
 	//reservoir::oscillation_response();
-
-    if( stor::program.compare("RC") == 0) {
-        std::cout << "Running Reservoir Computing (RC) program." << std::endl;
-        reservoir::run();
-        return 0;
-    }
+    	
+	if (stor::program.compare("Bifurcation")==0){
+		programs::bifurcation();
+	}
+    
+	if( stor::program.compare("RC") == 0) {
+        	std::cout << "Running Reservoir Computing (RC) program." << std::endl;
+        	reservoir::run();
+        	return 0;
+    	}
 
     //perform some equilibration steps
 	double time=0.0;

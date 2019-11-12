@@ -1,5 +1,5 @@
 // This file is dedicated to simulate the reservoir computing using a nano-strip DW oscillator
-// Author: Razvan Ababei
+// Author: Razvan Ababei & Matt Ellis
 // University of Sheffield
 // date: 28th Oct, 2019
 // This file is a part of DWPC code dedicated to simulate the domain-wall propagation for a range of field inputs aiming to reproduce a neuronal network
@@ -20,20 +20,19 @@
 
 namespace reservoir{
 
-    std::default_random_engine rng;
-    std::uniform_real_distribution<double> rng_dist(0.0,1.0);
-    std::uniform_int_distribution<int> rng_int_dist(0,1);
+    	std::default_random_engine rng;
+    	std::uniform_real_distribution<double> rng_dist(0.0,1.0);
+    	std::uniform_int_distribution<int> rng_int_dist(0,1);
 
 	std::ofstream outputfile;
 
 	// Define a vector to store the amplitudes of the field
-    //Hc defines the centre field amplitude
-    double Hc = 1000;
-    // dH defines the width of the field amplitude
-    double dH = 100;
-	std::vector <double> H0{0.25,0.75,1,0.75,0.25,-0.5,-1,-0.5,1,1,1,1,-1,-1,-1,-1}; //in Oe
+    	// Hc defines the centre field amplitude
+    	double Hc = 1000;
+    	// dH defines the width of the field amplitude
+    	double dH = 100;
 
-    //define a target vector for the input
+    	//define a target vector for the input
 	std::vector <double> t_p{0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
 	// Define the number of neurons alias nodes
 	int no_nodes=24;
@@ -65,7 +64,7 @@ namespace reservoir{
 		return n;
 	}
 
-    // in this function we generate random number for the mask which can be either -1 or +1
+	// in this function we generate random number for the mask which can be either -1 or +1
 	double mask_values(){
         mask_array.assign( no_nodes, 0);
 		for (int j=0; j<no_nodes; j++){
@@ -77,8 +76,7 @@ namespace reservoir{
 	// i=0..24
 	double time=0.0;
 	double oscillation_response(double Hi){
-		// define a output file to store the data
-
+		
 		// we calculate the no of steps needed to be performed per node
 		no_steps_per_node=std::round(theta / integrate::Dt);
 
@@ -86,30 +84,28 @@ namespace reservoir{
 
 		//we loop over the nodes
 		for (int i=0; i<no_nodes;i++){
+			//store the average position of the DW 
+                	double average_position=0.0;
 
-			//std::cout<<no_steps_per_node<<"\t"<<theta<<"\t"<<integrate::Dt<<std::endl;
-			//std::cout<<stor::V0<<std::endl;
-			//
 			// recalculate the field
 			stor::V0 = Hc + dH*Hi*mask_array[i];
 
 			// In this loop we average over a time=theta
 			for (int j=0; j<no_steps_per_node; j++){
 				integrate::runge_kutta(time);
-                if ( j % 10 == 0)
+				average_position+=stor::x_dw;
+
+                	if ( j % 100 == 0)
 			outputfile << std::fixed
-                       << std::setprecision(6)
+                       	<< std::setprecision(6)
 					   << time*1e9 << "\t"
 					   << stor::V << "\t"
 					   << stor::V0 << "\t"
-					   << stor::x_dw*1e9 << "\t"
-                       <<std::endl;
-				//	std::cout<<stor::V<<"\t"<<stor::V0<<"\t"<<
-                        	//	stor::x_dw<<"\t"<<time*1e9<<std::endl;
+					   << stor::x_dw*1e9 << "\t" <<std::endl;
 				}
 
 			// stor the position of the domain wall into array of outputs
-			s_x.push_back(stor::x_dw*1e9/150);
+			s_x.push_back(average_position/(no_steps_per_node*1e-7));
 			}
 
 	}
@@ -117,14 +113,14 @@ namespace reservoir{
 	std::vector<double> W; // in this array we store the output weights
 	const double r=0.001; // rate of learning
 	double y_p=0.0; // target & output weight
-	const double sigma=0.00001;
+	const double sigma=0.01;
 	double e_p=0.0;
 
 	double sigmoid(double x){
 	return 1/(1+exp(-x));
 	}
 
-	// in this subroutine we determine the wight matrix of the output
+	double bias;
 	// the aim is to obtain a trainer capable to classify the corresponding inputs
 	// the training process is implemented using gradient method detailed in Ref. "An Introduction to Neural Networks" by Kevin Gurney, p. 90
 	// Dwi= rate*(t_p-y_p)x_i, where Dwi are the weiactoghts adjustements
@@ -133,7 +129,7 @@ namespace reservoir{
 		//initialize the mask
 		mask_values();
 
-		double bias = 0.0;
+		bias = 0.0;
 		// initialize the output weight array W
 		for (int z=0; z<no_nodes; z++){
 			// the weight are initialized randomly between -0.5 and 0.5
@@ -153,17 +149,18 @@ namespace reservoir{
 				// calculate the response per node
 				oscillation_response(input_x[t]);
 				// In this loo we calculate the activation y_p;
-                // Calculate y_p = \sum_j W_j S_j
-				y_p = bias;
+                		// Calculate y_p = \sum_j W_j S_j
+				y_p =bias;
 				for(int l=0; l<no_nodes; l++){
 					y_p += W[l] * s_x[l];
 				}
+				y_p = sigmoid(y_p);
 
 				e_p=(input_y[t]-y_p)*(input_y[t] - y_p);
 				for(int l=0; l<no_nodes; l++){
 					//re-adjust the weights
-					W[l] += lr*(input_y[t] - y_p)*s_x[l];
-					bias += lr*(input_y[t] - y_p);
+					W[l] += lr*(input_y[t] - y_p)*s_x[l]*(y_p*(1-y_p));
+					bias += lr*(input_y[t] - y_p)*(y_p*(1.0 - y_p));
 				}
 
 				std::cout << std::fixed
@@ -187,31 +184,35 @@ namespace reservoir{
 	outputfile.close();
 
 	}
-
-	double classification(){
+	
+	double classification(std::vector<double> &input_x, std::vector<double> &input_y){
+		// Define a variable to store the average error
+		double average_e=0.0;
 		// print the weights values
 		std::cout<<"Print the values of weights:"<<std::endl;
 		for (int k =0; k<no_nodes;k++){
 			std::cout<<W[k]<<std::endl;
 		}
-		std::vector <double> H_class{7.5,17.5,20,15,5,-12,-20,-12};
+		std::cout<<"Print the values of yk:"<<std::endl;
+		
 		// loop over test values of H
-		for (int t=0; t<H_class.size(); t++){
+		for (int t=0; t<input_x.size(); t++){
 			// delete the elements of the vector
                         s_x.clear();
 			// calculate the response per node
-                        oscillation_response(H_class[t]);
-
+                        oscillation_response(input_x[t]);
+			y_p=bias;	
 			//loop over the nodes and sum the x_ki
 			for (int z=0; z<no_nodes; z++){
 				y_p += W[z] * s_x[z];
 			}
+			
+			y_p = sigmoid(y_p);
 
-			std::cout<<y_p<<std::endl;
-			if(y_p<0.5){
-				std::cout<< "You got a sine input!"<<std::endl;}
-
+			std::cout<<"Validation Error:" << "\t"<<fabs(y_p - input_y[t])<<"\t"<<input_y[t]<<"\t"<<y_p <<"\t"<<bias <<std::endl;
+			average_e += fabs(y_p - input_y[t]); 
 		}
+		std::cout<<"Average error:" << "\t"<<average_e/input_x.size()<<std::endl;
 
 	return 1;
 	}//end of classification function
@@ -274,7 +275,7 @@ namespace reservoir{
         double la = rc_inputs.get<double>("la"); // input learning momentum
         int Nepoch = rc_inputs.get<double>("Ne"); // input number of epochs
         reservoir::training(lr, la, Nepoch, input_x, input_y);
-        reservoir::classification();
+        reservoir::classification(input_x, input_y);
 
         return 1;
     }

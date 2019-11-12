@@ -4,14 +4,14 @@ L=200e-9
 Ly=50e-9
 Lz=5e-9
 Aex=1.05e-11
-alpha=0.002
+alpha=0.02
 
 # Field's parameters:
-H=1500 #A/m
+H=900 #A/m
 f=500e6
 
 # Simulation's parameters:
-Dt=1e-11
+Dt=1e-12
 totaltime=100e-9
 out_time=1e-10
 integrator=RK4

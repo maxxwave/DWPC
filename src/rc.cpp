@@ -149,11 +149,8 @@ namespace reservoir{
 				oscillation_response(input_x[t]);
 				// In this loo we calculate the activation y_p;
                 		// Calculate y_p = \sum_j W_j S_j
-<<<<<<< HEAD
-				y_p =0;//bias;
-=======
+				
 				y_p = 0.0;//bias;
->>>>>>> 18abe7f70c1d643f0e7bf3e094e25a51853961ed
 				for(int l=0; l<no_nodes; l++){
 					y_p += W[l] * s_x[l];
 				}
@@ -204,11 +201,8 @@ namespace reservoir{
                         s_x.clear();
 			// calculate the response per node
                         oscillation_response(input_x[t]);
-<<<<<<< HEAD
-			y_p=0;//bias;	
-=======
+			
 			y_p=0.0;//bias;
->>>>>>> 18abe7f70c1d643f0e7bf3e094e25a51853961ed
 			//loop over the nodes and sum the x_ki
 			for (int z=0; z<no_nodes; z++){
 				y_p += W[z] * s_x[z];

@@ -137,36 +137,32 @@ namespace reservoir{
 
 
         int epoch = 0;
-		do{
-			// clear s_x
-			// loop over samples
-			for (int t=0; t<input_x.size(); t++){
+        do{
+            // clear s_x
+            // loop over samples
+            for (int t=0; t<input_x.size(); t++){
 
-				// delete the elements of the vector
-				s_x.clear();
+                // delete the elements of the vector
+                s_x.clear();
 
-				// calculate the response per node
-				oscillation_response(input_x[t]);
-				// In this loo we calculate the activation y_p;
-                		// Calculate y_p = \sum_j W_j S_j
-<<<<<<< HEAD
-				y_p =0;//bias;
-=======
-				y_p = 0.0;//bias;
->>>>>>> 18abe7f70c1d643f0e7bf3e094e25a51853961ed
-				for(int l=0; l<no_nodes; l++){
-					y_p += W[l] * s_x[l];
-				}
-				y_p = sigmoid(y_p);
+                // calculate the response per node
+                oscillation_response(input_x[t]);
+                // In this loo we calculate the activation y_p;
+                // Calculate y_p = \sum_j W_j S_j
+                y_p = 0.0;//bias;
+                for(int l=0; l<no_nodes; l++){
+                    y_p += W[l] * s_x[l];
+                }
+                y_p = sigmoid(y_p);
 
-				e_p=(input_y[t]-y_p)*(input_y[t] - y_p);
-				for(int l=0; l<no_nodes; l++){
-					//re-adjust the weights
-					W[l] += lr*(input_y[t] - y_p)*s_x[l]*(y_p*(1-y_p));
-					bias += lr*(input_y[t] - y_p)*(y_p*(1.0 - y_p));
-				}
+                e_p=(input_y[t]-y_p)*(input_y[t] - y_p);
+                for(int l=0; l<no_nodes; l++){
+                    //re-adjust the weights
+                    W[l] += lr*(input_y[t] - y_p)*s_x[l]*(y_p*(1-y_p));
+                    bias += lr*(input_y[t] - y_p)*(y_p*(1.0 - y_p));
+                }
 
-				std::cout << std::fixed
+                std::cout << std::fixed
                     << std::setprecision(0)
                     << t << "\t"
                     << std::setprecision(6)
@@ -178,11 +174,11 @@ namespace reservoir{
                     << bias
                     << std::endl;
 
-			}
+            }
             epoch++;
             if( epoch > Nepoch) break;
-		}
-		while(e_p>sigma);
+        }
+        while(e_p>sigma);
 	//close the file
 	outputfile.close();
 
@@ -190,39 +186,35 @@ namespace reservoir{
 
 	double classification(std::vector<double> &input_x, std::vector<double> &input_y){
 		// Define a variable to store the average error
-		double average_e=0.0;
-		// print the weights values
-		std::cout<<"Print the values of weights:"<<std::endl;
-		for (int k =0; k<no_nodes;k++){
-			std::cout<<W[k]<<std::endl;
-		}
-		std::cout<<"Print the values of yk:"<<std::endl;
+        double average_e=0.0;
+        // print the weights values
+        std::cout<<"Print the values of weights:"<<std::endl;
+        for (int k =0; k<no_nodes;k++){
+            std::cout<<W[k]<<std::endl;
+        }
+        std::cout<<"Print the values of yk:"<<std::endl;
 
-		// loop over test values of H
-		for (int t=0; t<input_x.size(); t++){
-			// delete the elements of the vector
-                        s_x.clear();
-			// calculate the response per node
-                        oscillation_response(input_x[t]);
-<<<<<<< HEAD
-			y_p=0;//bias;	
-=======
-			y_p=0.0;//bias;
->>>>>>> 18abe7f70c1d643f0e7bf3e094e25a51853961ed
-			//loop over the nodes and sum the x_ki
-			for (int z=0; z<no_nodes; z++){
-				y_p += W[z] * s_x[z];
-			}
+        // loop over test values of H
+        for (int t=0; t<input_x.size(); t++){
+            // delete the elements of the vector
+            s_x.clear();
+            // calculate the response per node
+            oscillation_response(input_x[t]);
+            y_p=0.0;//bias;
+            //loop over the nodes and sum the x_ki
+            for (int z=0; z<no_nodes; z++){
+                y_p += W[z] * s_x[z];
+            }
 
-			y_p = sigmoid(y_p);
+            y_p = sigmoid(y_p);
 
-			std::cout<<"Validation Error:" << "\t"<<fabs(y_p - input_y[t])<<"\t"<<input_y[t]<<"\t"<<y_p <<"\t"<<bias <<std::endl;
-			average_e += fabs(y_p - input_y[t]);
-		}
-		std::cout<<"Average error:" << "\t"<<average_e/input_x.size()<<std::endl;
+            std::cout<<"Validation Error:" << "\t"<<fabs(y_p - input_y[t])<<"\t"<<input_y[t]<<"\t"<<y_p <<"\t"<<bias <<std::endl;
+            average_e += fabs(y_p - input_y[t]);
+        }
+        std::cout<<"Average error:" << "\t"<<average_e/input_x.size()<<std::endl;
 
-	return 1;
-	}//end of classification function
+        return 1;
+    }//end of classification function
 
 
 	void get_input_data(std::string &filename, std::vector<double> &input_x, std::vector<double> &input_y)

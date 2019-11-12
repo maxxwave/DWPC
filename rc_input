@@ -1,5 +1,5 @@
 #input filename
-file=sine_square
+file=sine_square_init
 
 #time duration
 T=24e-9
@@ -8,14 +8,14 @@ T=24e-9
 Nv=24
 
 #number of epochs
-Ne=20
+Ne=10
 
 #learning rate
-lr=0.01
+lr=0.1
 
 #momentum
 la=0.5
 
 #field parameters
-H=900
-dH=900
+H0=1950
+dH=930

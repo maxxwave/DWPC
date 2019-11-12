@@ -8,6 +8,7 @@ SRCFILES= src/main.cpp \
 	  src/euler_integrator.cpp \
 	  src/runge_kutta4th.cpp \
 	  src/bifurcation.cpp \
+	  src/benchmark.cpp\
 	  src/rc.cpp
 EXE=EXEC
 

@@ -3,8 +3,11 @@
 #include "../hdr/calculate.hdr"
 #include "../hdr/storage.hdr"
 #include "../hdr/euler_integrator.hdr"
+#ifndef __PROGRAMS_H__
+#define __PROGRAMS_H__
 
 namespace programs{
 	extern double bifurcation();
 
 }
+#endif

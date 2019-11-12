@@ -3,6 +3,8 @@
 #include <string>
 #include "storage.hdr"
 //#include "create.hdr"
+#ifndef __EULER_H__
+#define __EULER_H__
 
 namespace integrate {
 	extern std::string scheme; 
@@ -23,3 +25,4 @@ namespace integrate {
 	extern double phi_t(double dEx, double phi_rk, double H);
 	extern double runge_kutta(double &time);
 }
+#endif

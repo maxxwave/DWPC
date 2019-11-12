@@ -3,6 +3,8 @@
 #include "../hdr/storage.hdr"
 #include "../hdr/calculate.hdr"
 #include "../hdr/euler_integrator.hdr"
+#ifndef __RC_H__
+#define __RC_H__
 
 namespace reservoir{
 	extern std::vector<double> H0;
@@ -30,3 +32,4 @@ namespace reservoir{
 	void get_input_data(std::string&, std::vector<double> &, std::vector<double> &);
     int run();
 }
+#endif

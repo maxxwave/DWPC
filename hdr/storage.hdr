@@ -1,6 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <string>
+
+#ifndef __STORAGE_H__
+#define __STORAGE_H__
+
 namespace stor{
 
     extern std::string program;
@@ -28,4 +32,4 @@ namespace stor{
 	extern double Dw_size;
 	extern double initialize();
 } //end of namespace
-
+#endif

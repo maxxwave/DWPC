@@ -32,8 +32,6 @@ namespace reservoir{
     	// dH defines the width of the field amplitude
     	double dH = 100;
 
-    	//define a target vector for the input
-	std::vector <double> t_p{0,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1};
 	// Define the number of neurons alias nodes
 	int no_nodes=24;
 	//define the time for a
@@ -150,7 +148,7 @@ namespace reservoir{
 				oscillation_response(input_x[t]);
 				// In this loo we calculate the activation y_p;
                 		// Calculate y_p = \sum_j W_j S_j
-				y_p =bias;
+				y_p =0;//bias;
 				for(int l=0; l<no_nodes; l++){
 					y_p += W[l] * s_x[l];
 				}
@@ -201,7 +199,7 @@ namespace reservoir{
                         s_x.clear();
 			// calculate the response per node
                         oscillation_response(input_x[t]);
-			y_p=bias;	
+			y_p=0;//bias;	
 			//loop over the nodes and sum the x_ki
 			for (int z=0; z<no_nodes; z++){
 				y_p += W[z] * s_x[z];

@@ -1,6 +1,9 @@
 #include <iostream>
 #include "storage.hdr"
 
+#ifndef __CALCULATE_H__
+#define __CALCULATE_H__
+
 namespace calculate{
 	extern int N;
 	extern int a;
@@ -15,3 +18,4 @@ namespace calculate{
 	extern double Zeeman(double Dt);
 
 }
+#endif

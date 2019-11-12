@@ -74,7 +74,7 @@ namespace reservoir{
 	// i=0..24
 	double time=0.0;
 	double oscillation_response(double Hi){
-		
+
 		// we calculate the no of steps needed to be performed per node
 		no_steps_per_node=std::round(theta / integrate::Dt);
 
@@ -82,7 +82,7 @@ namespace reservoir{
 
 		//we loop over the nodes
 		for (int i=0; i<no_nodes;i++){
-			//store the average position of the DW 
+			//store the average position of the DW
                 	double average_position=0.0;
 
 			// recalculate the field
@@ -93,19 +93,20 @@ namespace reservoir{
 				integrate::runge_kutta(time);
 				average_position+=stor::x_dw;
 
-                	if ( j % 100 == 0)
-			outputfile << std::fixed
-                       	<< std::setprecision(6)
-					   << time*1e9 << "\t"
-					   << stor::V << "\t"
-					   << stor::V0 << "\t"
-					   << stor::x_dw*1e9 << "\t" <<std::endl;
-				}
 
 			// stor the position of the domain wall into array of outputs
 			s_x.push_back(average_position/(no_steps_per_node*1e-7));
 			}
+			outputfile << std::fixed
+                       << std::setprecision(6)
+					   << time*1e9 << "\t"
+					   << stor::V << "\t"
+					   << stor::V0 << "\t"
+					   << stor::x_dw*1e9 << "\t"
+                       << average_position/(no_steps_per_node*1e-7) << "\t"
+                       <<std::endl;
 
+        }
 	}
 	// here we define new variables for the following training process
 	std::vector<double> W; // in this array we store the output weights
@@ -148,7 +149,11 @@ namespace reservoir{
 				oscillation_response(input_x[t]);
 				// In this loo we calculate the activation y_p;
                 		// Calculate y_p = \sum_j W_j S_j
+<<<<<<< HEAD
 				y_p =0;//bias;
+=======
+				y_p = 0.0;//bias;
+>>>>>>> 18abe7f70c1d643f0e7bf3e094e25a51853961ed
 				for(int l=0; l<no_nodes; l++){
 					y_p += W[l] * s_x[l];
 				}
@@ -182,7 +187,7 @@ namespace reservoir{
 	outputfile.close();
 
 	}
-	
+
 	double classification(std::vector<double> &input_x, std::vector<double> &input_y){
 		// Define a variable to store the average error
 		double average_e=0.0;
@@ -192,40 +197,32 @@ namespace reservoir{
 			std::cout<<W[k]<<std::endl;
 		}
 		std::cout<<"Print the values of yk:"<<std::endl;
-		
+
 		// loop over test values of H
 		for (int t=0; t<input_x.size(); t++){
 			// delete the elements of the vector
                         s_x.clear();
 			// calculate the response per node
                         oscillation_response(input_x[t]);
+<<<<<<< HEAD
 			y_p=0;//bias;	
+=======
+			y_p=0.0;//bias;
+>>>>>>> 18abe7f70c1d643f0e7bf3e094e25a51853961ed
 			//loop over the nodes and sum the x_ki
 			for (int z=0; z<no_nodes; z++){
 				y_p += W[z] * s_x[z];
 			}
-			
+
 			y_p = sigmoid(y_p);
 
 			std::cout<<"Validation Error:" << "\t"<<fabs(y_p - input_y[t])<<"\t"<<input_y[t]<<"\t"<<y_p <<"\t"<<bias <<std::endl;
-			average_e += fabs(y_p - input_y[t]); 
+			average_e += fabs(y_p - input_y[t]);
 		}
 		std::cout<<"Average error:" << "\t"<<average_e/input_x.size()<<std::endl;
 
 	return 1;
 	}//end of classification function
-
-
-	struct rc_inputs_t {
-		std::string filename;
-		double T;
-		int Nv;
-		int Ne;
-		double lr;
-		double la;
-		double H0;
-		double dH;
-	};
 
 
 	void get_input_data(std::string &filename, std::vector<double> &input_x, std::vector<double> &input_y)
@@ -268,12 +265,21 @@ namespace reservoir{
         std::string filename = rc_inputs.get<std::string>("file");
         reservoir::get_input_data(filename, input_x, input_y);
 
+        std::vector<double> x_train, y_train, x_valid, y_valid;
+        for( int i = 0; i < input_x.size()/2; i++) {
+            x_train.push_back(input_x[i]);
+            y_train.push_back(input_y[i]);
+            x_valid.push_back(input_x[i + input_x.size()/2]);
+            y_valid.push_back(input_y[i + input_x.size()/2]);
+        }
+
+
 
         double lr = rc_inputs.get<double>("lr"); // input learning rate
         double la = rc_inputs.get<double>("la"); // input learning momentum
         int Nepoch = rc_inputs.get<double>("Ne"); // input number of epochs
-        reservoir::training(lr, la, Nepoch, input_x, input_y);
-        reservoir::classification(input_x, input_y);
+        reservoir::training(lr, la, Nepoch, x_train, y_train);
+        reservoir::classification(x_valid, y_valid);
 
         return 1;
     }

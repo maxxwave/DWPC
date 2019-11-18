@@ -2,20 +2,20 @@
 file=sine_square_init
 
 #time duration
-T=48e-9
+T=60e-9
 
 #number of virtual nodes
-Nv=24
+Nv=10
 
 #number of epochs
 Ne=10
 
 #learning rate
-lr=0.005
+lr=0.01
 
 #momentum
 la=0.5
 
 #field parameters
-H0=1950
-dH=930
+H0=2000
+dH=750

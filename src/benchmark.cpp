@@ -35,14 +35,14 @@ namespace programs{
                 outputfile << std::fixed;
 
 		for (int k=0; k<no_h_values;k++)
-		{	
-			// update the field 
+		{
+			// update the field
 			stor::V0 *= (k+1);
-			
+
 			// perform some integrations
         		for (long int i=0; i<Nsteps/Nout; i++)
-			{	 
-		
+			{
+
                 		for(long int j=0; j<Nout; j++)
 				{
                         		if(integrate::scheme.compare("EULER") == 0)
@@ -63,14 +63,14 @@ namespace programs{
                         	<< stor::V0 << "\t"
                         	<< stor::V << "\t"
 				<< stor::vx <<std::endl;
-	
+
 			}
 		}
 		outputfile.close();
 		return 1;
 
 	}//end of benchmark1 function
-	
+
 	// in this subroutine we appply a oscillatory field and we extract the dynamics
 	double benchmark2()
 
@@ -101,7 +101,7 @@ namespace programs{
                                 	exit(-1);
                         }
                 }
-                
+
         	outputfile << std::setprecision(4)
                    << time*1e9 << "\t\t"
                    << std::setprecision(8)
@@ -112,8 +112,8 @@ namespace programs{
 
         	}
 
-	
-	
+
+
 	}// end of benchmark2
 
 	double show_potential(){
@@ -121,7 +121,7 @@ namespace programs{
                 calculate::update_energy_antinotches(l*1e-9);
                 std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
         	}
-	}//end of show_potential 
+	}//end of show_potential
 
 
 

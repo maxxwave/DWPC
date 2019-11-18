@@ -66,7 +66,7 @@ namespace reservoir{
 	double mask_values(){
         mask_array.assign( no_nodes, 0);
 		for (int j=0; j<no_nodes; j++){
-			mask_array[j] =  rng_int_dist(rng)*0.25 + 0.45  ;
+			mask_array[j] =  rng_int_dist(rng)*2.0 - 1.0  ;
 			std::cout<<mask_array[j]<<std::endl;
 		}
 	}
@@ -86,16 +86,17 @@ namespace reservoir{
                 	double average_position=0.0;
 
 			// recalculate the field
-			stor::V0 = Hc + dH*Hi*mask_array[i];
+			stor::V0 = Hc + dH*(0.001 +Hi)*mask_array[i];
 
 			// In this loop we average over a time=theta
 			for (int j=0; j<no_steps_per_node; j++){
 				integrate::runge_kutta(time);
-				average_position+=stor::x_dw;
+				average_position+=stor::x_dw*1e9*stor::x_dw*1e9;
 
 
 			// stor the position of the domain wall into array of outputs
-			s_x.push_back(average_position/(no_steps_per_node*1e-7));
+			s_x.push_back(sqrt(average_position/no_steps_per_node));
+            //s_x.push_back(stor::x_dw/1e-7);
 			}
 			outputfile << std::fixed
                        << std::setprecision(6)
@@ -103,7 +104,8 @@ namespace reservoir{
 					   << stor::V << "\t"
 					   << stor::V0 << "\t"
 					   << stor::x_dw*1e9 << "\t"
-                       << average_position/(no_steps_per_node*1e-7) << "\t"
+                       << sqrt(average_position/(no_steps_per_node)) << "\t"
+                       << Hi
                        <<std::endl;
 
         }
@@ -170,8 +172,8 @@ namespace reservoir{
                     << input_y[t] << "\t"
                     << e_p << "\t"
                     << y_p << "\t"
-                    << W[0] << "\t"
-                    << bias
+                    << s_x[0] << "\t"
+                    << s_x[1]
                     << std::endl;
 
             }

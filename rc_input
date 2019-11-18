@@ -8,7 +8,7 @@ T=60e-9
 Nv=10
 
 #number of epochs
-Ne=10
+Ne=1
 
 #learning rate
 lr=0.01

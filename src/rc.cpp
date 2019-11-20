@@ -114,7 +114,7 @@ namespace reservoir{
 	std::vector<double> W; // in this array we store the output weights
 	const double r=0.001; // rate of learning
 	double y_p=0.0; // target & output weight
-	const double sigma=0.01;
+	const double sigma=0.001;
 	double e_p=0.0;
 
 	double sigmoid(double x){
@@ -187,14 +187,16 @@ namespace reservoir{
 	}
 
 	double classification(std::vector<double> &input_x, std::vector<double> &input_y){
-		// Define a variable to store the average error
+	// Define a variable to store the average error
         double average_e=0.0;
+	int Rate_success_sine=0, Rate_success_square=0;
+	int count=0;
         // print the weights values
         std::cout<<"Print the values of weights:"<<std::endl;
         for (int k =0; k<no_nodes;k++){
             std::cout<<W[k]<<std::endl;
         }
-        std::cout<<"Print the values of yk:"<<std::endl;
+       	 std::cout<<"Print the values of yk:"<<std::endl;
 
         // loop over test values of H
         for (int t=0; t<input_x.size(); t++){
@@ -210,15 +212,22 @@ namespace reservoir{
             y_p = sigmoid(y_p);
 
             // if predict sine
-            if( y_p <0.5 && input_y[t]==0.0){std::cout <<"Success"<<std::endl;}
+            if( y_p <0.5 && input_y[t]==0.0){
+	    	Rate_success_sine++;
+	        }
 
-            std::cout<<"Validation Error:" << "\t"<<fabs(y_p - input_y[t])<<"\t"<<input_y[t]<<"\t"<<y_p <<"\t"<<bias <<std::endl;
-            average_e += fabs(y_p - input_y[t]);
+	    if(y_p>=0.5 && input_y[t]==1.0){
+	    	Rate_success_square++;
+	        }
+
+        count ++;
+
+        std::cout<<"Validation Error:" << "\t"<<fabs(y_p - input_x[t])<<"\t"<<input_y[t]<<"\t"<<y_p <<"\t"<<bias <<std::endl;
         }
-        std::cout<<"Average error:" << "\t"<<average_e/input_x.size()<<std::endl;
+        std::cout<<"Rate of success" << "\t"<<(Rate_success_sine+Rate_success_square)/(input_x.size()*0.5)<<"\t"<<"No of sines & sqaures detected"<<  "\t"<<Rate_success_sine<<"\t"<<Rate_success_square<<std::endl;
 
         return 1;
-    }//end of classification function
+    	}//end of classification function
 
 
 	void get_input_data(std::string &filename, std::vector<double> &input_x, std::vector<double> &input_y)

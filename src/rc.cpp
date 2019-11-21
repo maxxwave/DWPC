@@ -18,6 +18,8 @@
 #include "../hdr/rc.h"
 #include "../hdr/input_map.h"
 
+#include "../hdr/arrays.h"
+
 namespace reservoir{
 
     	std::default_random_engine rng;
@@ -70,6 +72,7 @@ namespace reservoir{
 			std::cout<<mask_array[j]<<std::endl;
 		}
 	}
+
 	// In this routine we get the oscillator response x_i(t), where i is the sequential node
 	// i=0..24
 	double time=0.0;
@@ -110,6 +113,7 @@ namespace reservoir{
 
         }
 	}
+
 	// here we define new variables for the following training process
 	std::vector<double> W; // in this array we store the output weights
 	const double r=0.001; // rate of learning
@@ -118,8 +122,166 @@ namespace reservoir{
 	double e_p=0.0;
 
 	double sigmoid(double x){
-	return 1/(1+exp(-x));
+	    return 1/(1+exp(-x));
 	}
+
+
+    void generate_signal( array_t<2,double> &Signal, std::vector<double> &input_x, const char* file)
+    {
+
+        std::ofstream outstream;
+        outstream.open(file);
+
+        // we calculate the no of steps needed to be performed per node
+        no_steps_per_node=std::round(theta / integrate::Dt);
+        std::cout << "Steps per node = " << no_steps_per_node << std::endl;
+
+        double time = 0.0;
+        for (int t=0; t<input_x.size(); t++){
+            outstream << t << "\t" << input_x[t] << "\t";
+
+            for (int i=0; i<no_nodes;i++){
+                //store the average position of the DW
+                double average_position=0.0;
+
+                // recalculate the field
+                stor::V0 = Hc + dH*(0.001 + input_x[t])*mask_array[i];
+
+                // In this loop we average over a time=theta
+                for (int j=0; j<no_steps_per_node; j++){
+                    integrate::runge_kutta(time);
+                    average_position+= (stor::x_dw*1e9)*(stor::x_dw*1e9);
+                    //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
+                }
+
+                // store the position of the domain wall into array of outputs
+                //Signal(t,i) = (sqrt(average_position/no_steps_per_node));
+                Signal(t,i) = (stor::x_dw/1e-7);
+                if ( outstream.is_open() )
+                    outstream << Signal(t,i) << "\t";
+            }
+            outstream << std::endl;
+        }
+        outstream.close();
+    }
+
+    extern "C" {
+        extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
+    }
+
+
+    void linear_regression( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, std::vector<double> &input_y)
+    {
+        Weights.assign(Nout, no_nodes, 0.0);
+
+        array_t<2,double> STS;
+        STS.assign( no_nodes, no_nodes, 0.0);
+
+        array_t<2,double> STY;
+        STY.assign( no_nodes, Nout, 0.0);
+
+        // Regularisation param
+        double alpha = 0.1;
+
+        for (int i = 0; i < no_nodes; i++) {
+            for (int j = 0; j < no_nodes; j++) {
+                for( int k = 0; k < S.size(0); k++) {
+                    // Store the transpose
+                    STS(i,j) = STS(i,j) + S(k,j) * S(k,i);
+                }
+            }
+            // STS += alpha*I
+            STS(i,i) = STS(i,i) + alpha*alpha;
+        }
+
+        for (int i = 0; i < no_nodes; i++) {
+            for (int j = 0; j < Nout; j++) {
+                for( int k = 0; k < S.size(0); k++) {
+                    STY(i,j) = STY(i,j) + input_y[k] * S(k,i);
+                }
+            }
+        }
+
+        int N = no_nodes;
+        int NRHS = Nout;
+        int LDA = no_nodes;
+        int *IPIV = new int[N];
+        int LDB = no_nodes;
+        int INFO;
+
+        dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
+
+        // Check if linear solver has completed correctly
+        if( INFO == 0) {
+            // Store the result as the transposed weights
+            for( int i = 0; i < Nout; i++)
+                for (int j = 0; j < no_nodes; j++)
+                    Weights(i,j) = STY(j,i);
+        } else {
+            std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
+        }
+
+    }
+
+    int accuracy( std::vector<double> &pred, std::vector<double> &corr)
+    {
+        int Ncorrect = 0;
+        for( int i = 0; i < corr.size(); i++)
+            Ncorrect += ( ((pred[i] > 0.5) ? 1 : 0) == int(corr[i])) ? 1 : 0;
+
+        return Ncorrect;
+    }
+
+
+    void linear_model( std::vector<double> &pred, array_t<2,double> &Signal, array_t<2,double> &Weights)
+    {
+        pred.assign(Signal.size(0), 0.0);
+        for( int i = 0; i < Signal.size(0); i++) {
+            for( int j = 0; j < no_nodes; j++) {
+                pred[i] += Weights(0,j) * Signal(i,j);
+            }
+        }
+    }
+
+    void batch_training( std::vector<double> &input_x, std::vector<double> &input_y, std::vector<double> &valid_x, std::vector<double> &valid_y)
+    {
+		//initialize the mask
+		mask_values();
+
+        const int Nout = 1;
+        array_t<2,double> Signal;
+        array_t<2,double> Weights;
+
+        Signal.assign( input_x.size(), no_nodes, 0.0);
+
+        generate_signal( Signal, input_x, "Signal.out");
+
+        linear_regression( Nout, Weights, Signal, input_y);
+
+        std::cout << "Weights = " << std::endl;
+        for( int i = 0; i < no_nodes; i++)
+            std::cout << Weights(0,i) << std::endl;
+
+        std::vector<double> pred;
+        linear_model(pred, Signal, Weights);
+
+        int Ncorrect = accuracy(pred, input_y);
+
+        std::cout << "Number correct = " << Ncorrect << " out of " << input_y.size() << std::endl;
+
+        Signal.assign( valid_x.size(), no_nodes, 0.0);
+
+        generate_signal( Signal, valid_x, "Valid_Signal.out");
+
+        pred.clear();
+        linear_model( pred, Signal, Weights);
+
+        Ncorrect = accuracy(pred, valid_y);
+
+        std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
+
+    }
+
 
 	double bias;
 	// the aim is to obtain a trainer capable to classify the corresponding inputs
@@ -283,8 +445,11 @@ namespace reservoir{
         double lr = rc_inputs.get<double>("lr"); // input learning rate
         double la = rc_inputs.get<double>("la"); // input learning momentum
         int Nepoch = rc_inputs.get<double>("Ne"); // input number of epochs
-        reservoir::training(lr, la, Nepoch, x_train, y_train);
-        reservoir::classification(x_valid, y_valid);
+
+        batch_training( x_train, y_train, x_valid, y_valid);
+
+        //reservoir::training(lr, la, Nepoch, x_train, y_train);
+        //reservoir::classification(x_valid, y_valid);
 
         return 1;
     }

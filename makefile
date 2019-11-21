@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-O3 #-Wall 
+CFLAGS=-O3 #-Wall
 
 SRCFILES= src/main.cpp \
 	  src/initialize.cpp \
@@ -13,4 +13,4 @@ SRCFILES= src/main.cpp \
 EXE=EXEC
 
 ${EXE} : ${SRCFILES}
-	${CC} $^ ${CFLAGS}  -o ${EXE}
+	${CC} $^ ${CFLAGS}  -o ${EXE} -llapack

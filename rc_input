@@ -1,8 +1,8 @@
 #input filename
-file=sine_square
+file=sine_square_init
 
 #time duration
-T=60e-9
+T=20e-9
 
 #number of virtual nodes
 Nv=10

@@ -40,29 +40,29 @@ namespace integrate{
 		x_k=stor::x_dw;
 
 		// calculate the domain width
-                calculate::update_energy_antinotches(x_k);
-                calculate::calculate_DW(phi_k);
+        calculate::update_energy_antinotches(x_k);
+        calculate::calculate_DW(phi_k);
 		calculate::Zeeman(time);
 
 		kp1 = integrate::Dt*phi_t(stor::dEx, phi_k, stor::V);
 		k1 = integrate::Dt*x_t(stor::Dw_size, phi_k, phi_t(stor::dEx, phi_k, stor::V));
 
 		calculate::update_energy_antinotches(x_k+0.5*k1);
-                calculate::calculate_DW(phi_k+0.5*kp1);
+        calculate::calculate_DW(phi_k+0.5*kp1);
 		calculate::Zeeman(time+integrate::Dt*0.5);
 
 		kp2=integrate::Dt*phi_t(stor::dEx, phi_k+0.5*kp1, stor::V);
 		k2=integrate::Dt*x_t(stor::Dw_size, phi_k+0.5*kp1, phi_t(stor::dEx, phi_k+0.5*kp1, stor::V));
 
 		calculate::update_energy_antinotches(x_k+0.5*k2);
-                calculate::calculate_DW(phi_k+0.5*kp2);
+        calculate::calculate_DW(phi_k+0.5*kp2);
 		calculate::Zeeman(time+integrate::Dt*0.5);
 
 		kp3=integrate::Dt*phi_t(stor::dEx, phi_k+0.5*kp2, stor::V);
 		k3=integrate::Dt*x_t(stor::Dw_size,phi_k+0.5*kp2,phi_t(stor::dEx, phi_k+0.5*kp2, stor::V));
 
 		calculate::update_energy_antinotches(x_k+k3);
-                calculate::calculate_DW(phi_k+kp3);
+        calculate::calculate_DW(phi_k+kp3);
 		calculate::Zeeman(time+integrate::Dt);
 
 		kp4=integrate::Dt*phi_t(stor::dEx, phi_k+kp3, stor::V);

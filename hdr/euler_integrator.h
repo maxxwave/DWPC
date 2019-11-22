@@ -11,7 +11,7 @@ namespace integrate {
 	extern double totaltime;
 	extern double out_time;
 	extern double Dt;
-	extern const double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
+	extern double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
 	extern double k1, k2, k3, k4;
 	extern double kp1, kp2, kp3, kp4;
 	extern double phi_k, x_k;

@@ -20,7 +20,7 @@
 
 #define Pi  3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace stor{
-	double initialize(){
+	void initialize(){
 		std::ifstream input ("input");
   		std::string line;
 		std::string test1, test2, test3, test4, test5, test6, test7, test8, test9;
@@ -98,6 +98,6 @@ namespace stor{
 			std::cout<<"The program couldn't open the input file! Check the spelling of the name. This must be named 'input'"<<std::endl;
 		}
 		input.close();
-	return 1;
+	//return 1;
 	}
 }//end of namespace

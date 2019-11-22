@@ -30,6 +30,6 @@ namespace stor{
 	extern double Ex, dEx;
 	extern double vx, phi_dt;
 	extern double Dw_size;
-	extern double initialize();
+	extern void initialize();
 } //end of namespace
 #endif

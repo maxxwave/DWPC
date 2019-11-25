@@ -129,8 +129,8 @@ namespace reservoir{
     void generate_signal( array_t<2,double> &Signal, std::vector<double> &input_x, const char* file)
     {
 
-        std::ofstream outstream;
-        outstream.open(file);
+        //std::ofstream outstream;
+        //outstream.open(file);
 
         // we calculate the no of steps needed to be performed per node
         no_steps_per_node=std::round(theta / integrate::Dt);
@@ -139,7 +139,7 @@ namespace reservoir{
         double time = 0.0;
         for (int t=0; t<input_x.size(); t++)
         {
-            outstream << t << "\t" << input_x[t] << "\t";
+            //outstream << t << "\t" << input_x[t] << "\t";
 
             for (int i=0; i<no_nodes;i++)
             {
@@ -152,19 +152,19 @@ namespace reservoir{
                 // In this loop we average over a time=theta
                 for (int j=0; j<no_steps_per_node; j++){
                     integrate::runge_kutta(time);
-                    average_position+= stor::x_dw*stor::x_dw*1e18;
+                    //average_position+= stor::x_dw*stor::x_dw*1e18;
                     //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
                 }
 
                 // store the position of the domain wall into array of outputs
-                 Signal(t,i) = (sqrt(average_position/no_steps_per_node));
-                // Signal(t,i) = (stor::x_dw/1e-7);
-                if ( outstream.is_open() )
-                    outstream << Signal(t,i) << "\t";
+                 //Signal(t,i) = (sqrt(average_position/no_steps_per_node));
+                 Signal(t,i) = (stor::x_dw/1e-7);
+                //if ( outstream.is_open() )
+                //    outstream << Signal(t,i) << "\t";
             }
-            outstream << std::endl;
+            //outstream << std::endl;
         }
-        outstream.close();
+       // outstream.close();
     }
 
     extern "C" {
@@ -459,7 +459,7 @@ namespace reservoir{
         double rate_succ=0.0;
         for (int i=0; i<=50; i++)
         {
-            Hc=i*50+100;
+            Hc=i*50+200;
             for (int j=1; j<=i;j++)
             {
                 dH=50*j;

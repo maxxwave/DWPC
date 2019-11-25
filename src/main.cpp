@@ -22,21 +22,28 @@
 #include "../hdr/rc.h"
 
 int main(){
+
+    std::cout<<"Developers: Razvan Ababei, Matt Ellis and Tom Hayward"<<std::endl;
+    std::cout<<"University of Sheffield"<<std::endl;
 	// In this step we initialize the variables from the input file set by the user
 	stor::initialize();
 	std::cout<<stor::H_demag<<"\t"<<stor::Nz<<"\t"<<stor::Ny<<std::endl;
 
 	if(stor::program.compare("Potential")==0){
+        std::cout<<"Running Potential program"<<std::endl;
 		programs::show_potential();
 	}
 
 	if(stor::program.compare("Benchmark1")==0){
+        std::cout<<"Running Benchmark-1 program"<<std::endl;
 		programs::benchmark1();
 	}
 	if(stor::program.compare("Benchmark2")==0){
+        std::cout<<"Running 'Benchmark-2 (Time-series) program"<<std::endl;
 		programs::benchmark2();
 	}
 	if (stor::program.compare("Bifurcation")==0){
+        std::cout<<"Running Bifurcation program"<<std::endl;
 		programs::bifurcation();
 	}
 

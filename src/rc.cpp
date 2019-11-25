@@ -29,10 +29,10 @@ namespace reservoir{
 	std::ofstream outputfile;
 
 	// Define a vector to store the amplitudes of the field
-    	// Hc defines the centre field amplitude
-    	double Hc = 1000;
-    	// dH defines the width of the field amplitude
-    	double dH = 100;
+    // Hc defines the centre field amplitude
+    double Hc = 1000;
+    // dH defines the width of the field amplitude
+    double dH = 100;
 
 	// Define the number of neurons alias nodes
 	int no_nodes=24;
@@ -86,7 +86,7 @@ namespace reservoir{
 		//we loop over the nodes
 		for (int i=0; i<no_nodes;i++){
 			//store the average position of the DW
-                	double average_position=0.0;
+            double average_position=0.0;
 
 			// recalculate the field
 			stor::V0 = Hc + dH*(0.001 +Hi)*mask_array[i];
@@ -94,12 +94,12 @@ namespace reservoir{
 			// In this loop we average over a time=theta
 			for (int j=0; j<no_steps_per_node; j++){
 				integrate::runge_kutta(time);
-				average_position+=stor::x_dw*1e9*stor::x_dw*1e9;
+				average_position+=stor::x_dw*stor::x_dw*1e18;
 
 
 			// stor the position of the domain wall into array of outputs
-			s_x.push_back(sqrt(average_position/no_steps_per_node));
-            //s_x.push_back(stor::x_dw/1e-7);
+			//s_x.push_back(sqrt(average_position/no_steps_per_node));
+            s_x.push_back(stor::x_dw/1e-7);
 			}
 			outputfile << std::fixed
                        << std::setprecision(6)
@@ -137,10 +137,12 @@ namespace reservoir{
         std::cout << "Steps per node = " << no_steps_per_node << std::endl;
 
         double time = 0.0;
-        for (int t=0; t<input_x.size(); t++){
+        for (int t=0; t<input_x.size(); t++)
+        {
             outstream << t << "\t" << input_x[t] << "\t";
 
-            for (int i=0; i<no_nodes;i++){
+            for (int i=0; i<no_nodes;i++)
+            {
                 //store the average position of the DW
                 double average_position=0.0;
 
@@ -150,13 +152,13 @@ namespace reservoir{
                 // In this loop we average over a time=theta
                 for (int j=0; j<no_steps_per_node; j++){
                     integrate::runge_kutta(time);
-                    average_position+= (stor::x_dw*1e9)*(stor::x_dw*1e9);
+                    average_position+= stor::x_dw*stor::x_dw*1e18;
                     //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
                 }
 
                 // store the position of the domain wall into array of outputs
-                //Signal(t,i) = (sqrt(average_position/no_steps_per_node));
-                Signal(t,i) = (stor::x_dw/1e-7);
+                 Signal(t,i) = (sqrt(average_position/no_steps_per_node));
+                // Signal(t,i) = (stor::x_dw/1e-7);
                 if ( outstream.is_open() )
                     outstream << Signal(t,i) << "\t";
             }
@@ -243,7 +245,7 @@ namespace reservoir{
         }
     }
 
-    void batch_training( std::vector<double> &input_x, std::vector<double> &input_y, std::vector<double> &valid_x, std::vector<double> &valid_y)
+    double batch_training( std::vector<double> &input_x, std::vector<double> &input_y, std::vector<double> &valid_x, std::vector<double> &valid_y)
     {
 		//initialize the mask
 		mask_values();
@@ -280,6 +282,7 @@ namespace reservoir{
 
         std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
 
+        return Ncorrect;
     }
 
 
@@ -375,18 +378,19 @@ namespace reservoir{
 
             // if predict sine
             if( y_p <0.5 && input_y[t]==0.0){
-	    	Rate_success_sine++;
+	    	    Rate_success_sine++;
 	        }
 
-	    if(y_p>=0.5 && input_y[t]==1.0){
-	    	Rate_success_square++;
+	        if(y_p>=0.5 && input_y[t]==1.0){
+	    	    Rate_success_square++;
 	        }
 
         count ++;
 
         std::cout<<"Validation Error:" << "\t"<<fabs(y_p - input_x[t])<<"\t"<<input_y[t]<<"\t"<<y_p <<"\t"<<bias <<std::endl;
         }
-        std::cout<<"Rate of success" << "\t"<<(Rate_success_sine+Rate_success_square)/(input_x.size()*0.5)<<"\t"<<"No of sines & sqaures detected"<<  "\t"<<Rate_success_sine<<"\t"<<Rate_success_square<<std::endl;
+        std::cout<<"Rate of success" << "\t"<<(Rate_success_sine+Rate_success_square)/(input_x.size()*0.5)<<"\t"
+            <<"No of sines & sqaures detected"<<  "\t"<<Rate_success_sine<<"\t"<<Rate_success_square<<std::endl;
 
         return 1;
     	}//end of classification function
@@ -405,6 +409,8 @@ namespace reservoir{
 	}
 
 
+
+
     int run()
     {
         std::vector<double> input_x;
@@ -418,8 +424,8 @@ namespace reservoir{
         std::cout << "Stored values: " << std::endl;
         rc_inputs.print();
 
-        Hc = rc_inputs.get<double>("H0");
-        dH = rc_inputs.get<double>("dH");
+        //Hc = rc_inputs.get<double>("H0");
+        //dH = rc_inputs.get<double>("dH");
         no_nodes = rc_inputs.get<int>("Nv");
         tau = rc_inputs.get<double>("T");
         theta = tau/no_nodes;
@@ -446,7 +452,24 @@ namespace reservoir{
         double la = rc_inputs.get<double>("la"); // input learning momentum
         int Nepoch = rc_inputs.get<double>("Ne"); // input number of epochs
 
-        batch_training( x_train, y_train, x_valid, y_valid);
+        // In this section we calculate the success rate for a range of Hc and dH
+        std::ofstream field_map_data;
+        field_map_data.open("field_map.data");
+        field_map_data<<"#"<<"HC"<<"\t"<<"dH"<<"\t" <<"N correct"<<std::endl;
+        double rate_succ=0.0;
+        for (int i=0; i<=50; i++)
+        {
+            Hc=i*50+100;
+            for (int j=1; j<=i;j++)
+            {
+                dH=50*j;
+                rate_succ=batch_training(x_train, y_train, x_valid, y_valid);
+                field_map_data<< Hc<<"\t"<<dH<<"\t"<<rate_succ<<"\t"<<std::endl;
+            }
+        }
+        field_map_data.close();
+
+        //batch_training( x_train, y_train, x_valid, y_valid);
 
         //reservoir::training(lr, la, Nepoch, x_train, y_train);
         //reservoir::classification(x_valid, y_valid);

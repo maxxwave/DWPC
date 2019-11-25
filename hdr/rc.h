@@ -27,8 +27,7 @@ namespace reservoir{
 	extern double time;
 	extern double mask();
 	extern double oscillation_response(double Hi);
-
-
+    extern double field_map();
 	void get_input_data(std::string&, std::vector<double> &, std::vector<double> &);
     int run();
 }

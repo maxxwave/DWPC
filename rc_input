@@ -17,5 +17,7 @@ lr=0.01
 la=0.5
 
 #field parameters
-H0=2000
-dH=800
+H0=1500
+dH=950
+
+seed=6790

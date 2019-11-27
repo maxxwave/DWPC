@@ -19,4 +19,4 @@ integrator=RK4
 #Pinning field:
 pin=0
 
-program=Benchmark2
+program=RC

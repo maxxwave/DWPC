@@ -280,6 +280,9 @@ namespace reservoir{
 
         std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
 
+        for ( int i = 0; i < valid_y.size(); i++)
+            std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
+
     }
 
 
@@ -417,6 +420,10 @@ namespace reservoir{
         // Print out the input values that have been recognised
         std::cout << "Stored values: " << std::endl;
         rc_inputs.print();
+
+        int seed = rc_inputs.get<int>("seed");
+        rng.seed(seed);
+
 
         Hc = rc_inputs.get<double>("H0");
         dH = rc_inputs.get<double>("dH");

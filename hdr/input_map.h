@@ -28,7 +28,7 @@ class input_map_t {
 
         ~input_map_t () {};
 
-        int read_file(const char* fname)
+        void read_file(const char* fname)
         {
             std::ifstream input(fname);
             if ( input.is_open() ) {

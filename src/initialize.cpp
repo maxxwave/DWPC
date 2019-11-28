@@ -18,87 +18,49 @@
 #include <string.h>
 #include "../hdr/storage.h"
 #include "../hdr/euler_integrator.h"
+#include "../hdr/input_map.h"
 
 namespace stor{
 	void initialize(){
-		std::ifstream input ("input");
-  		std::string line;
-		std::string test1, test2, test3, test4, test5, test6, test7, test8, test9;
-		if (input.is_open()){
-			while ( getline (input,line) ){
-				test1="Ms=";
-     				if( (strstr(line.c_str(),test1.c_str()))){
-					stor::Ms=std::stod(line.substr(3));
-				}
-				test2="L=";
-     				if( (strstr(line.c_str(),test2.c_str()))){
-					stor::L=std::stod(line.substr(2));
-				}
-				test3="Ly=";
-     				if((strstr(line.c_str(),test3.c_str()))){
-					stor::Ly=std::stod(line.substr(3));
-				}
-				test4="Lz=";
-     				if((strstr(line.c_str(),test4.c_str()))){
-					stor::Lz=std::stod(line.substr(3));
-				}
-				test5="Aex=";
-     				if((strstr(line.c_str(),test5.c_str()))){
-					stor::A=std::stod(line.substr(4));
-				}
-				test6="alpha=";
-     				if((strstr(line.c_str(),test6.c_str()))){
-					stor::alpha=std::stod(line.substr(6));
-				}
-				test7="H=";
-     				if((strstr(line.c_str(),test7.c_str()))){
-					stor::V0=std::stod(line.substr(2));
-				}
-				test8="f=";
-     				if((strstr(line.c_str(),test8.c_str()))){
-					stor::freq=std::stod(line.substr(2));
-					stor::omega=2*Pi*stor::freq;
-				}
-				test9="Dt=";
-     				if((strstr(line.c_str(),test9.c_str()))){
-					integrate::Dt=std::stod(line.substr(3));
-				}
-				if( strstr(line.c_str(), "totaltime=")){
-					integrate::totaltime = std::stod(line.substr(10));
-				}
-				if( strstr(line.c_str(), "out_time=")){
-					integrate::out_time = std::stod(line.substr(9));
-				}
-				if( strstr(line.c_str(), "integrator=")){
-					integrate::scheme = line.substr(11);
-				}
-				if( strstr(line.c_str(), "program=")){
-					stor::program = line.substr(8);
-				}
+        // Input is read and stored in a map class
+        input_map_t inputs;
+        if( inputs.read_file("input") != 0 ) {
+            std::cerr << "Error reading input file, exiting." << std::endl;
+            exit(-1);
+        }
 
-				// and few more others
+        //std::cout << "Stored values: " << std::endl;
+        //inputs.print();
 
-    			}//end of while loop
+        stor::Ms = inputs.get<double>("Ms");
+        stor::L = inputs.get<double>("L");
+        stor::Ly = inputs.get<double>("Ly");
+        stor::Lz = inputs.get<double>("Lz");
+        stor::A = inputs.get<double>("Aex");
+        stor::alpha = inputs.get<double>("alpha");
+		stor::V0 = inputs.get<double>("H");
+        stor::freq = inputs.get<double>("f");
+        stor::omega=2*Pi*stor::freq;
+        integrate::Dt = inputs.get<double>("Dt");
+        integrate::totaltime = inputs.get<double>("totaltime");
+        integrate::out_time = inputs.get<double>("out_time");
+        integrate::scheme = inputs.get<std::string>("integrator");
+        stor::program = inputs.get<std::string>("program");
 
-			std::cout<<"The program has been initialized with following parameters:"<<std::endl;
-			std::cout<<"Saturation, Ms = "<<stor::Ms<<"A/m"<<std::endl;
-			std::cout<<"Length of the strip = "<<stor::L<<"m"<<std::endl;
-			std::cout<<"Width = "<<stor::Ly<<"m"<<std::endl;
-			std::cout<<"Thickness = "<<stor::Lz<<"m"<<std::endl;
-			std::cout<<"Exchange stiffness, A = "<<stor::A<<"J/m"<<std::endl;
-			std::cout<<"Gilbert damping, alpha = "<<stor::alpha<<""<<std::endl;
-			std::cout<<"Amplitude of oscillating field, H0 = "<<stor::V0<<"A/m"<<std::endl;
-			std::cout<<"Frequency of the field, omega = " <<stor::omega<<"Hz"<<std::endl;
-			std::cout<<"Integration time step, Dt = "<<integrate::Dt <<"s"<<std::endl;
-			std::cout<<"Initialization completed!"<<std::endl;
-			std::cout<<"=====================================================================<"<<std::endl;
+        std::cout<<"The program has been initialized with following parameters:"<<std::endl;
+        std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;
+        std::cout<<"Length of the strip = "<<stor::L<<" m"<<std::endl;
+        std::cout<<"Width = "<<stor::Ly<<" m"<<std::endl;
+        std::cout<<"Thickness = "<<stor::Lz<<" m"<<std::endl;
+        std::cout<<"Exchange stiffness, A = "<<stor::A<<" J/m"<<std::endl;
+        std::cout<<"Gilbert damping, alpha = "<<stor::alpha<<""<<std::endl;
+        std::cout<<"Amplitude of oscillating field, H0 = "<<stor::V0<<" A/m"<<std::endl;
+        std::cout<<"Frequency of the field, omega = " <<stor::omega<<" Hz"<<std::endl;
+        std::cout<<"Integration time step, Dt = "<<integrate::Dt <<" s"<<std::endl;
+        std::cout<<"Initialization completed!"<<std::endl;
+        std::cout<<"=====================================================================<"<<std::endl;
 
-		}
-		else{
-			std::cout<<"The program couldn't open the input file! Check the spelling of the name. This must be named 'input'"<<std::endl;
-		}
-		input.close();
-	//return 1;
+        // Initialise the parameters for the integration
         integrate::prefac1 =(-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
         integrate::prefac2 =stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);
         integrate::prefac3 =-stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);

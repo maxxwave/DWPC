@@ -28,7 +28,7 @@ class input_map_t {
 
         ~input_map_t () {};
 
-        void read_file(const char* fname)
+        int read_file(const char* fname)
         {
             std::ifstream input(fname);
             if ( input.is_open() ) {
@@ -39,8 +39,12 @@ class input_map_t {
                     insert(line);
 
                 }
+                input.close();
+            } else {
+                std::cerr << "Failed to open file: " << fname << std::endl;
+                return 1;
             }
-            input.close();
+            return 0;
         }
 
         int print()
@@ -76,10 +80,16 @@ class input_map_t {
         template <typename T>
         T get(const char* char_key)
         {
-            std::string key(char_key);
-            std::stringstream ss(inp_map[key]);
             T val;
-            ss >> val;
+            std::string key(char_key);
+            auto it = inp_map.find(key);
+            if ( it != inp_map.end() ) {
+                std::stringstream ss(it->second);
+                ss >> val;
+            } else {
+                std::cerr << "Warning: Input key not found. Key = " << char_key << std::endl;
+            }
+
             return val;
         }
 };

@@ -8,6 +8,7 @@
 //
 //
 
+#include <cmath>
 #include <iostream>
 #include <fstream>
 #include <stdlib.h>
@@ -18,7 +19,6 @@
 #include "../hdr/storage.h"
 #include "../hdr/euler_integrator.h"
 
-//#define Pi  3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace stor{
 	void initialize(){
 		std::ifstream input ("input");
@@ -99,5 +99,11 @@ namespace stor{
 		}
 		input.close();
 	//return 1;
+        integrate::prefac1 =(-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
+        integrate::prefac2 =stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);
+        integrate::prefac3 =-stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
+        integrate::prefac4 =-(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
+        integrate::zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
+        integrate::zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
 	}
 }//end of namespace

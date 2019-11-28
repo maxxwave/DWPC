@@ -23,8 +23,12 @@
 
 int main(){
 	// In this step we initialize the variables from the input file set by the user
+    //
+    std::cout << integrate::prefac1 << std::endl;
+
 	stor::initialize();
 	std::cout<<stor::H_demag<<"\t"<<stor::Nz<<"\t"<<stor::Ny<<std::endl;
+    std::cout << integrate::prefac1 << std::endl;
 
 	if(stor::program.compare("Potential")==0){
 		programs::show_potential();

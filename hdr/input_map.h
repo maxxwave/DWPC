@@ -14,7 +14,9 @@ class input_map_t {
     public:
         typedef std::string key_t;
         typedef std::string val_t;
+
         std::map<key_t, val_t> inp_map;
+
         std::string delim;
         std::string comment;
 

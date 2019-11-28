@@ -12,7 +12,7 @@
 #include <cmath>
 #include "../hdr/storage.h"
 //#include "../hdr/calculate.h"
-#define Pi 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+// define Pi 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace calculate{
 	const double one_rad=Pi/180.0;
 	// Calculating the number of cells for a given L and cell_size
@@ -78,8 +78,8 @@ namespace calculate{
 	double Zeeman(double time){
 
 		stor::V = stor::V0*sin(stor::omega*time);
-		
-		//this equation can be used for benchmark1 program 
+
+		//this equation can be used for benchmark1 program
 		//stor::V=stor::V0*cos(stor::omega*time);
 		return 0 ;
 	}

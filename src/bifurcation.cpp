@@ -10,7 +10,7 @@
 #include "../hdr/storage.h"
 #include "../hdr/euler_integrator.h"
 #include "../hdr/program.h"
-#define Pi 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+//#define Pi 3.1415926535897932384626433832795028841971693993751058209749445923078164062
 namespace programs{
 	// in this function we plot the bifurcation diagram of domain wall propagation
 	double bifurcation(){

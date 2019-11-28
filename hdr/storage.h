@@ -5,6 +5,9 @@
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
 
+
+const double Pi =  3.1415926535897932384626;
+
 namespace stor{
 
     extern std::string program;

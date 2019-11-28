@@ -150,7 +150,7 @@ namespace reservoir{
                 // In this loop we average over a time=theta
                 for (int j=0; j<no_steps_per_node; j++){
                     integrate::runge_kutta(time);
-                    average_position+= (stor::x_dw*1e9)*(stor::x_dw*1e9);
+                    average_position += (stor::x_dw*1e9)*(stor::x_dw*1e9);
                     //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
                 }
 
@@ -221,9 +221,11 @@ namespace reservoir{
             std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
         }
 
+        delete [] IPIV;
+
     }
 
-    int accuracy( std::vector<double> &pred, std::vector<double> &corr)
+    int accuracy( std::vector<double> pred, std::vector<double> &corr)
     {
         int Ncorrect = 0;
         for( int i = 0; i < corr.size(); i++)
@@ -278,7 +280,10 @@ namespace reservoir{
 
         Ncorrect = accuracy(pred, valid_y);
 
+
         std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
+        for ( int i = 0; i < valid_x.size(); i++)
+            std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
 
     }
 

@@ -223,9 +223,11 @@ namespace reservoir{
             std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
         }
 
+        delete [] IPIV;
+
     }
 
-    int accuracy( std::vector<double> &pred, std::vector<double> &corr)
+    int accuracy( std::vector<double> pred, std::vector<double> &corr)
     {
         int Ncorrect = 0;
         for( int i = 0; i < corr.size(); i++)
@@ -280,8 +282,14 @@ namespace reservoir{
 
         Ncorrect = accuracy(pred, valid_y);
 
-        std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
 
+        std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
+        /*for ( int i = 0; i < valid_x.size(); i++)
+            std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
+
+        for ( int i = 0; i < valid_y.size(); i++)
+            std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
+          */
         return Ncorrect;
     }
 
@@ -353,7 +361,7 @@ namespace reservoir{
 
 	double classification(std::vector<double> &input_x, std::vector<double> &input_y){
 	// Define a variable to store the average error
-        double average_e=0.0;
+    double average_e=0.0;
 	int Rate_success_sine=0, Rate_success_square=0;
 	int count=0;
         // print the weights values
@@ -426,6 +434,12 @@ namespace reservoir{
 
         //Hc = rc_inputs.get<double>("H0");
         //dH = rc_inputs.get<double>("dH");
+        int seed = rc_inputs.get<int>("seed");
+        rng.seed(seed);
+
+
+        Hc = rc_inputs.get<double>("H0");
+        dH = rc_inputs.get<double>("dH");
         no_nodes = rc_inputs.get<int>("Nv");
         tau = rc_inputs.get<double>("T");
         theta = tau/no_nodes;

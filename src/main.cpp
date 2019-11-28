@@ -26,8 +26,9 @@ int main(){
     std::cout<<"Developers: Razvan Ababei, Matt Ellis and Tom Hayward"<<std::endl;
     std::cout<<"University of Sheffield"<<std::endl;
 	// In this step we initialize the variables from the input file set by the user
+    //
+
 	stor::initialize();
-	std::cout<<stor::H_demag<<"\t"<<stor::Nz<<"\t"<<stor::Ny<<std::endl;
 
 	if(stor::program.compare("Potential")==0){
         std::cout<<"Running Potential program"<<std::endl;

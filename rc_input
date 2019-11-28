@@ -2,10 +2,10 @@
 file=sine_square_init
 
 #time duration
-T=20e-9
+T=16e-9
 
 #number of virtual nodes
-Nv=10
+Nv=8
 
 #number of epochs
 Ne=3
@@ -17,5 +17,7 @@ lr=0.01
 la=0.5
 
 #field parameters
-H0=2000
-dH=800
+H0=1500
+dH=950
+
+seed=1

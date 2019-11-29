@@ -30,14 +30,23 @@ namespace integrate{
 
 
 	double runge_kutta(double &time){
-		phi_k=stor::phi_dw;
-		x_k=stor::x_dw;
 
-		// calculate the domain width
-        calculate::update_energy_antinotches(x_k);
-        calculate::calculate_DW(phi_k);
-		calculate::Zeeman(time);
+		// Store the initial positions
+        phi_k = stor::phi_dw;
+		x_k   = stor::x_dw;
 
+        calculate::gradient( k1, kp1, x_k, phi_k, time);
+        calculate::gradient( k2, kp2, x_k + 0.5*Dt*k1, phi_k + 0.5*Dt*kp1, time + 0.5*Dt);
+        calculate::gradient( k3, kp3, x_k + 0.5*Dt*k2, phi_k + 0.5*Dt*kp2, time + 0.5*Dt);
+        calculate::gradient( k4, kp4, x_k + Dt*k3, phi_k + Dt*kp3, time + Dt);
+
+        stor::phi_dw = phi_k + (kp1 + 2*(kp2 + kp3) + kp4)*Dt/6.0;
+		stor::x_dw = x_k + (k1 + 2*(k2 + k3) + k4)*Dt/6.0;
+		time += integrate::Dt;
+
+        calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);
+
+          /*
 		kp1 = integrate::Dt * calculate::phi_t(stor::dEx, phi_k, stor::V);
 		k1 = integrate::Dt * calculate::x_t(stor::Dw_size, phi_k, calculate::phi_t(stor::dEx, phi_k, stor::V));
 
@@ -67,6 +76,7 @@ namespace integrate{
 		stor::phi_dw = phi_k + (1.0/6.0)*(kp1 +2*kp2+2*kp3+kp4);
 		stor::x_dw = x_k + (1.0/6.0)*(k1 +2*k2+2*k3+k4);
 		time += integrate::Dt;
+        */
 
 	return 1;
 	}// end of function runge_kutta

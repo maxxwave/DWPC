@@ -7,17 +7,17 @@ Aex=1.05e-11
 alpha=0.02
 
 # Field's parameters:
-H=2000 #A/m
+H=200 #A/m
 f=500e6
 
 # Simulation's parameters:
 Dt=1e-13
-totaltime=50e-9
+totaltime=100e-9
 out_time=1e-11
 integrator=RK4
 
 #Pinning field:
 pin=0
 
-program=RC
+program=Benchmark1
 

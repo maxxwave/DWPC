@@ -12,9 +12,17 @@
 #include <cmath>
 #include "../hdr/storage.h"
 //#include "../hdr/calculate.h"
-// define Pi 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+
 namespace calculate{
-	const double one_rad=Pi/180.0;
+	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
+	double prefac1 = (-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
+	double prefac2 = stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);
+	double prefac3 = -stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
+	double prefac4 = -(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
+	double zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
+    double zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
+
+    const double one_rad=Pi/180.0;
 	// Calculating the number of cells for a given L and cell_size
 	int a = int(stor::L/stor::cell_size);
 	int N=2*a+1;
@@ -82,6 +90,14 @@ namespace calculate{
 		//this equation can be used for benchmark1 program
 		//stor::V=stor::V0*cos(stor::omega*time);
 		return 0 ;
+	}
+
+	// we define two function for speed and angular speed
+	double phi_t(double dEx, double phi_rk, double H){
+		return prefac3*dEx+prefac4*sin(2*phi_rk)+ zeeman_prefac2*H;
+	}
+	double x_t(double DWs, double phi, double phi_t){
+		return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
 	}
 }//end of namespace
 

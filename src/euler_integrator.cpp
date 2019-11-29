@@ -17,10 +17,9 @@
 #include "../hdr/euler_integrator.h"
 //#include "../hdr/update.hdr"
 
-
+using namespace calculate;
 namespace integrate{
 
-	const double one_rad=0.0175;
 	// defining local variables
 	double x_euler=0.0;
 	double phi_euler=0.0;
@@ -33,13 +32,6 @@ namespace integrate{
 	double out_time = 1e-10;
 	std::string scheme;
 
-	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
-	double prefac1=(-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
-	double prefac2=stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);
-	double prefac3=-stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
-	double prefac4=-(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
-	double zeeman_prefac1= stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
-    double zeeman_prefac2= stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
 
 	double euler( double &time){
 

@@ -12,6 +12,7 @@
 #include "../hdr/storage.h"
 #include "../hdr/euler_integrator.h"
 #include "../hdr/calculate.h"
+
 namespace integrate{
 
 
@@ -28,13 +29,6 @@ namespace integrate{
 	double phi_k=0.0, x_k=0.0;
 
 
-	// we define two function for speed and angular speed
-	double phi_t(double dEx, double phi_rk, double H){
-		return prefac3*dEx+prefac4*sin(2*phi_rk)+ zeeman_prefac2*H;
-	}
-	double x_t(double DWs, double phi, double phi_t){
-		return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
-	}
 	double runge_kutta(double &time){
 		phi_k=stor::phi_dw;
 		x_k=stor::x_dw;
@@ -44,31 +38,31 @@ namespace integrate{
         calculate::calculate_DW(phi_k);
 		calculate::Zeeman(time);
 
-		kp1 = integrate::Dt*phi_t(stor::dEx, phi_k, stor::V);
-		k1 = integrate::Dt*x_t(stor::Dw_size, phi_k, phi_t(stor::dEx, phi_k, stor::V));
+		kp1 = integrate::Dt * calculate::phi_t(stor::dEx, phi_k, stor::V);
+		k1 = integrate::Dt * calculate::x_t(stor::Dw_size, phi_k, calculate::phi_t(stor::dEx, phi_k, stor::V));
 
 		calculate::update_energy_antinotches(x_k+0.5*k1);
         calculate::calculate_DW(phi_k+0.5*kp1);
 		calculate::Zeeman(time+integrate::Dt*0.5);
 
-		kp2=integrate::Dt*phi_t(stor::dEx, phi_k+0.5*kp1, stor::V);
-		k2=integrate::Dt*x_t(stor::Dw_size, phi_k+0.5*kp1, phi_t(stor::dEx, phi_k+0.5*kp1, stor::V));
+		kp2=integrate::Dt*calculate::phi_t(stor::dEx, phi_k+0.5*kp1, stor::V);
+		k2=integrate::Dt*calculate::x_t(stor::Dw_size, phi_k+0.5*kp1, calculate::phi_t(stor::dEx, phi_k+0.5*kp1, stor::V));
 
 		calculate::update_energy_antinotches(x_k+0.5*k2);
         calculate::calculate_DW(phi_k+0.5*kp2);
 		calculate::Zeeman(time+integrate::Dt*0.5);
 
-		kp3=integrate::Dt*phi_t(stor::dEx, phi_k+0.5*kp2, stor::V);
-		k3=integrate::Dt*x_t(stor::Dw_size,phi_k+0.5*kp2,phi_t(stor::dEx, phi_k+0.5*kp2, stor::V));
+		kp3=integrate::Dt*calculate::phi_t(stor::dEx, phi_k+0.5*kp2, stor::V);
+		k3=integrate::Dt*calculate::x_t(stor::Dw_size,phi_k+0.5*kp2,calculate::phi_t(stor::dEx, phi_k+0.5*kp2, stor::V));
 
 		calculate::update_energy_antinotches(x_k+k3);
         calculate::calculate_DW(phi_k+kp3);
 		calculate::Zeeman(time+integrate::Dt);
 
-		kp4=integrate::Dt*phi_t(stor::dEx, phi_k+kp3, stor::V);
-		k4=integrate::Dt*x_t(stor::Dw_size,phi_k+kp3,phi_t(stor::dEx, phi_k+kp3, stor::V));
+		kp4=integrate::Dt*calculate::phi_t(stor::dEx, phi_k+kp3, stor::V);
+		k4=integrate::Dt*calculate::x_t(stor::Dw_size,phi_k+kp3,calculate::phi_t(stor::dEx, phi_k+kp3, stor::V));
 
-		stor::vx=x_t(stor::Dw_size, phi_k, phi_t(stor::dEx, phi_k, stor::V));
+		stor::vx=calculate::x_t(stor::Dw_size, phi_k, calculate::phi_t(stor::dEx, phi_k, stor::V));
 		stor::phi_dt=kp4;
 		stor::phi_dw = phi_k + (1.0/6.0)*(kp1 +2*kp2+2*kp3+kp4);
 		stor::x_dw = x_k + (1.0/6.0)*(k1 +2*k2+2*k3+k4);

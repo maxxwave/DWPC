@@ -47,7 +47,7 @@ class input_map_t {
             return 0;
         }
 
-        int print()
+        void print()
         {
             for ( auto it = inp_map.begin(); it != inp_map.end(); it++)
                 std::cout << it->first << " : " << it->second <<std::endl;

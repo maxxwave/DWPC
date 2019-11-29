@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS=-O3 #-Wall
+CFLAGS= -std=c++11 -O3 #-Wall
 
 SRCFILES= src/main.cpp \
 	  src/initialize.cpp \

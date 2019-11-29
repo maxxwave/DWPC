@@ -17,5 +17,8 @@ namespace calculate{
 	extern double update_energy_antinotches(double x);
 	extern double Zeeman(double Dt);
 
+	extern double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
+	extern double x_t(double DWs, double phi, double phi_t);
+	extern double phi_t(double dEx, double phi_rk, double H);
 }
 #endif

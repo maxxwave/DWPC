@@ -46,37 +46,7 @@ namespace integrate{
 
         calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);
 
-          /*
-		kp1 = integrate::Dt * calculate::phi_t(stor::dEx, phi_k, stor::V);
-		k1 = integrate::Dt * calculate::x_t(stor::Dw_size, phi_k, calculate::phi_t(stor::dEx, phi_k, stor::V));
 
-		calculate::update_energy_antinotches(x_k+0.5*k1);
-        calculate::calculate_DW(phi_k+0.5*kp1);
-		calculate::Zeeman(time+integrate::Dt*0.5);
-
-		kp2=integrate::Dt*calculate::phi_t(stor::dEx, phi_k+0.5*kp1, stor::V);
-		k2=integrate::Dt*calculate::x_t(stor::Dw_size, phi_k+0.5*kp1, calculate::phi_t(stor::dEx, phi_k+0.5*kp1, stor::V));
-
-		calculate::update_energy_antinotches(x_k+0.5*k2);
-        calculate::calculate_DW(phi_k+0.5*kp2);
-		calculate::Zeeman(time+integrate::Dt*0.5);
-
-		kp3=integrate::Dt*calculate::phi_t(stor::dEx, phi_k+0.5*kp2, stor::V);
-		k3=integrate::Dt*calculate::x_t(stor::Dw_size,phi_k+0.5*kp2,calculate::phi_t(stor::dEx, phi_k+0.5*kp2, stor::V));
-
-		calculate::update_energy_antinotches(x_k+k3);
-        calculate::calculate_DW(phi_k+kp3);
-		calculate::Zeeman(time+integrate::Dt);
-
-		kp4=integrate::Dt*calculate::phi_t(stor::dEx, phi_k+kp3, stor::V);
-		k4=integrate::Dt*calculate::x_t(stor::Dw_size,phi_k+kp3,calculate::phi_t(stor::dEx, phi_k+kp3, stor::V));
-
-		stor::vx=calculate::x_t(stor::Dw_size, phi_k, calculate::phi_t(stor::dEx, phi_k, stor::V));
-		stor::phi_dt=kp4;
-		stor::phi_dw = phi_k + (1.0/6.0)*(kp1 +2*kp2+2*kp3+kp4);
-		stor::x_dw = x_k + (1.0/6.0)*(k1 +2*k2+2*k3+k4);
-		time += integrate::Dt;
-        */
 
 	return 1;
 	}// end of function runge_kutta

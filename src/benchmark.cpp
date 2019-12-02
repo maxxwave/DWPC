@@ -104,7 +104,7 @@ namespace programs{
 
         	outputfile << std::setprecision(4)
                    << time*1e9 << "\t\t"
-                   << std::setprecision(8)
+                   << std::setprecision(12)
                    << stor::x_dw*1e9 << "\t"
                    << stor::phi_dw << "\t"
                    << stor::vx << "\t"

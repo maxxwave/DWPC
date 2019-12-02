@@ -105,10 +105,20 @@ namespace calculate{
         double dEx = update_energy_antinotches(x);
         double H = Zeeman(time);
         double DWs = calculate_DW(phi);
-        dphi = prefac3*dEx+prefac4*sin(2*phi)+ zeeman_prefac2*H;
+        dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi;
     }
 
+    void gradient ( std::vector<double> &dx, std::vector<double> &dphi, std::vector<double> &x, std::vector<double> &phi, const double time)
+    {
+        for ( int i = 0; i < x.size(); i++) {
+            double dEx = update_energy_antinotches(x[i]);
+            double H = Zeeman(time);
+            double DWs = calculate_DW(phi[i]);
+            dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H;
+            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i];
+        }
+    }
 
 }//end of namespace
 

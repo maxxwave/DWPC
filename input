@@ -7,7 +7,7 @@ Aex=1.05e-11
 alpha=0.02
 
 # Field's parameters:
-H=200 #A/m
+H=800 #A/m
 f=500e6
 
 # Simulation's parameters:
@@ -19,5 +19,5 @@ integrator=RK4
 #Pinning field:
 pin=0
 
-program=Benchmark1
+program=Benchmark2
 

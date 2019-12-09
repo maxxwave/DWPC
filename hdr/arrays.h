@@ -95,11 +95,30 @@ class array_t<1, _T>
             _data.assign( n, value);
         }
 
+        size_t size()
+        {
+            return _size;
+        }
+
+        size_t size( const int dim)
+        {
+            assert(dim < 1);
+            return _size;
+        }
+
         void clear ()
         {
             _Nelements = 0;
             _size = 0;
             _data.clear();
+        }
+
+        void assign( const int n0, const _T value )
+        {
+            clear();
+            _size = n0;
+            _Nelements = n0;
+            _data.assign( _Nelements, value);
         }
 
         inline _T& RESTRICT operator () ( const int n)

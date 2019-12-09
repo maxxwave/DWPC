@@ -1,8 +1,7 @@
-#include <iostream>
-#include "storage.h"
-
 #ifndef __CALCULATE_H__
 #define __CALCULATE_H__
+
+#include <vector>
 
 namespace calculate{
 	extern int N;
@@ -21,5 +20,10 @@ namespace calculate{
 	double x_t(double DWs, double phi, double phi_t);
 	double phi_t(double dEx, double phi_rk, double H);
     void gradient( double &, double &, double, double, const double);
+    void gradient( std::vector<double> &, std::vector<double> &, std::vector<double> &, std::vector<double> &, const double);
+    void BDF( double &, double);
+    void BDF1( double &, double);
+    void BDF2( double &, double);
+    void BDF3( double &, double);
 }
 #endif

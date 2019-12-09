@@ -18,8 +18,19 @@ namespace integrate {
 	extern double phi_euler;
 	extern double vx_euler;
 	extern double phi_dt_euler;
-	extern double euler_init();
-	extern double euler(double &time);
-	extern double runge_kutta(double &time);
+	double euler_init();
+	double euler(double &time);
+	double runge_kutta(double &time);
+
+    namespace multi_dw {
+        void setup (int);
+        double runge_kutta( std::vector<double> &,
+                std::vector<double>&,
+                double &,
+                const double);
+    }
+    namespace RK45 {
+        double runge_kutta_45 (double &time, const double dt);
+    }
 }
 #endif

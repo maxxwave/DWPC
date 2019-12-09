@@ -11,7 +11,9 @@
 #include <vector>
 #include <cmath>
 #include "../hdr/storage.h"
-//#include "../hdr/calculate.h"
+#include "../hdr/calculate.h"
+#include "../hdr/arrays.h"
+#include "../hdr/euler_integrator.h"
 
 namespace calculate{
 	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
@@ -64,6 +66,10 @@ namespace calculate{
 		return stor::dEx;
 	}// end of function
 
+    double Vp_2deriv( const double x) {
+        return 2*a2 + 6*a3*x + 12*a4*x*x;
+    }
+
 	// in this function we will calculate the pinning energy for anti-notches
 	/*double update_energy_notches(double x){
 		stor::Ex=U0-U1*(exp(-(double x + stor::xl)*(double x + stor::xl)/(stor::L*stor::L) )
@@ -75,12 +81,29 @@ namespace calculate{
 	*/
 	double update_energy();
 
+    double K_eff( double phi) {
+        return stor::muMs*stor::Ms* sin(phi)*sin(phi) + stor::muMs*stor::H_demag;
+    }
+
+    double dK_eff(double phi) {
+        return 2.0*stor::muMs * stor::Ms *sin(phi)*cos(phi);
+    }
+
+    double DW(double phi) {
+        return Pi * sqrt( 2.0 * stor::A / K_eff(phi));
+    }
+
 	// function which calculate the Domain wall width
 	double calculate_DW(double phi){
-		stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi)*sin(phi) + stor::muMs*stor::H_demag))); // Pivano form of DW
+		stor::Dw_size = Pi * sqrt(2*stor::A / K_eff(phi));
+                        // Pivano form of DW
 		//stor::Dw_size=sqrt(2*stor::A/(stor::mu0*stor::Ms*stor::Ms*(stor::Ny*sin(phi)*sin(phi) + stor::Nz*cos(phi)*cos(phi)))); // Matt form
 		return stor::Dw_size;
 	}// end of function calculate_DW
+
+    double DW_gradient( double phi, double Delta) {
+        return - Pi_sqr * (stor::A / ( DW(phi) * K_eff(phi)*K_eff(phi))) * dK_eff(phi);
+    }
 
 	// In this routine we calculate the Zeeman field taking into account the frequency of the field
 	double Zeeman(double time){
@@ -90,6 +113,11 @@ namespace calculate{
 		//this equation can be used for benchmark1 program
 		//stor::V=stor::V0*cos(stor::omega*time);
 		return stor::V ;
+	}
+
+    double Zeeman(double time, const int i){
+
+		return stor::V0_mdw[i]*sin(stor::omega*time);
 	}
 
 	// we define two function for speed and angular speed
@@ -107,18 +135,53 @@ namespace calculate{
         double DWs = calculate_DW(phi);
         dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi;
+
+        //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
+        //dx = phi;
+        //dphi = -d*phi - b*x -a*x*x*x + g*cos(w*time);
+
     }
 
     void gradient ( std::vector<double> &dx, std::vector<double> &dphi, std::vector<double> &x, std::vector<double> &phi, const double time)
     {
         for ( int i = 0; i < x.size(); i++) {
             double dEx = update_energy_antinotches(x[i]);
-            double H = Zeeman(time);
+            double H = Zeeman(time, i);
             double DWs = calculate_DW(phi[i]);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i];
         }
     }
+
+
+    // Routine to compute the gradient of the differential equation (Jacobian)
+    // J =  ( dfx/dx   ,   dfx/dphi )
+    //      ( dfphi/dx ,   dfphi/dphi)
+    void Jacobian( array_t<2,double> &J, double x, double phi, const double time)
+    {
+        double dEx = update_energy_antinotches(x);
+        double H = Zeeman(time);
+        double DWs = calculate_DW(phi);
+        double dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H;
+
+        double dDelta = DW_gradient(phi, DWs);
+
+        J(1,1) = 2.0*prefac4*cos(2.0*phi);  // dfphi/dphi
+        J(0,0) = stor::alpha*DWs*prefac3*Vp_2deriv(x); //dfx/dx
+
+        J(0,1) = prefac2*(2*DWs*cos(2*phi) + sin(2*phi)*dDelta) + stor::alpha*dDelta*dphi + stor::alpha*DWs*J(1,1);
+        J(1,0) = prefac3*Vp_2deriv(x);
+
+
+        //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
+        //J(0,0) = 0.0;
+        //J(0,1) = 1.0;
+        //J(1,0) = -b - 3*a*x*x;
+        //J(1,1) = -d;
+
+    }
+
+
 
 }//end of namespace
 

@@ -111,6 +111,52 @@ namespace reservoir{
     }
 
 
+    void generate_signal_multi_dw( array_t<2, double> &mask, array_t<2,double> &Signal, std::vector<double> &input_x, const char* file)
+    {
+
+        std::ofstream outstream;
+        outstream.open(file);
+
+        // we calculate the no of steps needed to be performed per node
+        no_steps_per_node=std::round(theta / integrate::Dt);
+        std::cout << "Steps per node = " << no_steps_per_node << std::endl;
+
+        double time = 0.0;
+        for (int t=0; t<input_x.size(); t++)
+        {
+            outstream << t << "\t" << input_x[t] << "\t";
+
+            for (int i=0; i<no_nodes;i++)
+            {
+                //store the average position of the DW
+                double average_position=0.0;
+
+                // recalculate the field
+                for( int j = 0; j < stor::Nwires; j++)
+                    stor::V0_mdw[j] = Hc + dH*(0.001 + input_x[t])*mask(j,i);
+
+
+                // In this loop we average over a time=theta
+                for (int j=0; j<no_steps_per_node; j++){
+                    integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
+                    //average_position+= stor::x_dw*stor::x_dw*1e18;
+                    //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
+                }
+
+                // store the position of the domain wall into array of outputs
+                //Signal(t,i) = (sqrt(average_position/no_steps_per_node));
+                for( int j = 0; j < stor::Nwires; j++)
+                    Signal(t,i+j*no_nodes) = (stor::x_coord[j]/1e-7);
+
+                if ( outstream.is_open() )
+                    for( int j = 0; j < stor::Nwires; j++)
+                        outstream << Signal(t,i + j*no_nodes) << "\t";
+            }
+            outstream << std::endl;
+        }
+        outstream.close();
+    }
+
     void generate_signal( array_t<2,double> &Signal, std::vector<double> &input_x, const char* file)
     {
 
@@ -261,6 +307,60 @@ namespace reservoir{
         Signal.assign( valid_x.size(), no_nodes, 0.0);
 
         generate_signal( Signal, valid_x, "Valid_Signal.out");
+
+        pred.clear();
+        linear_model( pred, Signal, Weights);
+
+        Ncorrect = accuracy(pred, valid_y);
+
+
+        std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
+        /*for ( int i = 0; i < valid_x.size(); i++)
+          std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
+
+          for ( int i = 0; i < valid_y.size(); i++)
+          std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
+          */
+        return Ncorrect;
+    }
+
+    double multi_dw_batch_training( std::vector<double> &input_x, std::vector<double> &input_y, std::vector<double> &valid_x, std::vector<double> &valid_y)
+    {
+        //initialize the mask
+        array_t<2, double> mdw_mask;
+        mdw_mask.assign( stor::Nwires, no_nodes, 0.0);
+        for( int i = 0; i < stor::Nwires; i++) {
+            for (int j=0; j<no_nodes; j++){
+                mdw_mask(i,j) =  rng_int_dist(rng)*2.0 - 1.0  ;
+                std::cout << mdw_mask(i,j) << "\t";
+            }
+            std::cout << std::endl;
+        }
+
+        const int Nout = 1;
+        array_t<2,double> Signal;
+        array_t<2,double> Weights;
+
+        Signal.assign( input_x.size(), 2*no_nodes, 0.0);
+
+        generate_signal_multi_dw( mdw_mask, Signal, input_x, "Signal_multi_dw.out");
+
+        linear_regression( Nout, Weights, Signal, input_y);
+
+        std::cout << "Weights = " << std::endl;
+        for( int i = 0; i < no_nodes; i++)
+            std::cout << Weights(0,i) << std::endl;
+
+        std::vector<double> pred;
+        linear_model(pred, Signal, Weights);
+
+        int Ncorrect = accuracy(pred, input_y);
+
+        std::cout << "Number correct = " << Ncorrect << " out of " << input_y.size() << std::endl;
+
+        Signal.assign( valid_x.size(), no_nodes, 0.0);
+
+        generate_signal_multi_dw( mdw_mask, Signal, valid_x, "Valid_Signal_multi_dw.out");
 
         pred.clear();
         linear_model( pred, Signal, Weights);
@@ -469,7 +569,7 @@ namespace reservoir{
         }
         field_map_data.close();
         */
-        batch_training( x_train, y_train, x_valid, y_valid);
+        multi_dw_batch_training( x_train, y_train, x_valid, y_valid);
 
         //reservoir::training(lr, la, Nepoch, x_train, y_train);
         //reservoir::classification(x_valid, y_valid);

@@ -43,6 +43,10 @@ int main(){
         std::cout<<"Running 'Benchmark-2 (Time-series) program"<<std::endl;
 		programs::benchmark2();
 	}
+	if(stor::program.compare("Benchmark3")==0){
+        std::cout<<"Running 'Benchmark-3 (Time-series) program"<<std::endl;
+		programs::benchmark3();
+	}
 	if (stor::program.compare("Bifurcation")==0){
         std::cout<<"Running Bifurcation program"<<std::endl;
 		programs::bifurcation();

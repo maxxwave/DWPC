@@ -10,6 +10,7 @@ namespace programs{
 	extern double bifurcation();
 	extern double benchmark1();
 	extern double benchmark2();
+	extern double benchmark3();
 	extern double show_potential();
 }
 #endif

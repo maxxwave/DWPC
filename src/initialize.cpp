@@ -48,6 +48,16 @@ namespace stor{
         integrate::scheme = inputs.get<std::string>("integrator");
         stor::program = inputs.get<std::string>("program");
 
+        stor::Nwires = inputs.get<int>("Nwires");
+        stor::x_coord.assign(stor::Nwires, 0.0);
+        stor::phi_coord.assign(stor::Nwires, 0.0);
+        stor::V0_mdw.assign(stor::Nwires, 0.0);
+        stor::x_coord[0] = 0.0e-7;
+
+        if( stor::Nwires > 1 )
+            integrate::multi_dw::setup(Nwires);
+
+
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;
         std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;
         std::cout<<"Length of the strip = "<<stor::L<<" m"<<std::endl;

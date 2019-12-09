@@ -6,18 +6,21 @@ Lz=5e-9
 Aex=1.05e-11
 alpha=0.02
 
+Nwires=2
+
+
 # Field's parameters:
 H=800 #A/m
 f=500e6
 
 # Simulation's parameters:
 Dt=1e-13
-totaltime=100e-9
-out_time=1e-11
+totaltime=20e-9
+out_time=0.1e-9
 integrator=RK4
 
 #Pinning field:
 pin=0
 
-program=Benchmark2
+program=RC
 

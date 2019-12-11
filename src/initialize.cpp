@@ -54,7 +54,7 @@ namespace stor{
         stor::V0_mdw.assign(stor::Nwires, 0.0);
         stor::x_coord[0] = 0.0e-7;
 
-        if( stor::Nwires > 1 )
+        if( stor::Nwires > 0 )
             integrate::multi_dw::setup(Nwires);
 
 

@@ -205,19 +205,21 @@ namespace reservoir{
 
     void linear_regression( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, std::vector<double> &input_y)
     {
-        Weights.assign(Nout, no_nodes, 0.0);
+
+        int N = S.size(1);
+        Weights.assign(Nout, N, 0.0);
 
         array_t<2,double> STS;
-        STS.assign( no_nodes, no_nodes, 0.0);
+        STS.assign( N, N, 0.0);
 
         array_t<2,double> STY;
-        STY.assign( no_nodes, Nout, 0.0);
+        STY.assign( N, Nout, 0.0);
 
         // Regularisation param
         double alpha = 0.1;
 
-        for (int i = 0; i < no_nodes; i++) {
-            for (int j = 0; j < no_nodes; j++) {
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
                 for( int k = 0; k < S.size(0); k++) {
                     // Store the transpose
                     STS(i,j) = STS(i,j) + S(k,j) * S(k,i);
@@ -227,7 +229,7 @@ namespace reservoir{
             STS(i,i) = STS(i,i) + alpha*alpha;
         }
 
-        for (int i = 0; i < no_nodes; i++) {
+        for (int i = 0; i < N; i++) {
             for (int j = 0; j < Nout; j++) {
                 for( int k = 0; k < S.size(0); k++) {
                     STY(i,j) = STY(i,j) + input_y[k] * S(k,i);
@@ -235,11 +237,10 @@ namespace reservoir{
             }
         }
 
-        int N = no_nodes;
         int NRHS = Nout;
-        int LDA = no_nodes;
+        int LDA = N;
         int *IPIV = new int[N];
-        int LDB = no_nodes;
+        int LDB = N;
         int INFO;
 
         dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
@@ -248,7 +249,7 @@ namespace reservoir{
         if( INFO == 0) {
             // Store the result as the transposed weights
             for( int i = 0; i < Nout; i++)
-                for (int j = 0; j < no_nodes; j++)
+                for (int j = 0; j < N; j++)
                     Weights(i,j) = STY(j,i);
         } else {
             std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
@@ -272,7 +273,7 @@ namespace reservoir{
     {
         pred.assign(Signal.size(0), 0.0);
         for( int i = 0; i < Signal.size(0); i++) {
-            for( int j = 0; j < no_nodes; j++) {
+            for( int j = 0; j < Weights.size(1); j++) {
                 pred[i] += Weights(0,j) * Signal(i,j);
             }
         }
@@ -304,7 +305,7 @@ namespace reservoir{
 
         std::cout << "Number correct = " << Ncorrect << " out of " << input_y.size() << std::endl;
 
-        Signal.assign( valid_x.size(), no_nodes, 0.0);
+        Signal.assign( valid_x.size(), stor::Nwires*no_nodes, 0.0);
 
         generate_signal( Signal, valid_x, "Valid_Signal.out");
 
@@ -341,15 +342,18 @@ namespace reservoir{
         array_t<2,double> Signal;
         array_t<2,double> Weights;
 
-        Signal.assign( input_x.size(), 2*no_nodes, 0.0);
+        Signal.assign( input_x.size(), stor::Nwires*no_nodes, 0.0);
 
         generate_signal_multi_dw( mdw_mask, Signal, input_x, "Signal_multi_dw.out");
 
         linear_regression( Nout, Weights, Signal, input_y);
 
         std::cout << "Weights = " << std::endl;
-        for( int i = 0; i < no_nodes; i++)
-            std::cout << Weights(0,i) << std::endl;
+        for( int i = 0; i < no_nodes; i++){
+            for( int j = 0; j < stor::Nwires; j++)
+                std::cout << Weights(0,i+j*no_nodes) << "\t";
+            std::cout << std::endl;
+        }
 
         std::vector<double> pred;
         linear_model(pred, Signal, Weights);
@@ -358,7 +362,7 @@ namespace reservoir{
 
         std::cout << "Number correct = " << Ncorrect << " out of " << input_y.size() << std::endl;
 
-        Signal.assign( valid_x.size(), no_nodes, 0.0);
+        Signal.set_all(0.0); //assign( valid_x.size(), no_nodes, 0.0);
 
         generate_signal_multi_dw( mdw_mask, Signal, valid_x, "Valid_Signal_multi_dw.out");
 

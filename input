@@ -6,7 +6,7 @@ Lz=5e-9
 Aex=1.05e-11
 alpha=0.02
 
-Nwires=2
+Nwires=5
 
 
 # Field's parameters:

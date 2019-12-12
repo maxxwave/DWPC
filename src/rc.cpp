@@ -125,6 +125,7 @@ namespace reservoir{
         for (int t=0; t<input_x.size(); t++)
         {
             outstream << t << "\t" << input_x[t] << "\t";
+            Signal(t,0) = 1.0;
 
             for (int i=0; i<no_nodes;i++)
             {
@@ -146,11 +147,11 @@ namespace reservoir{
                 // store the position of the domain wall into array of outputs
                 //Signal(t,i) = (sqrt(average_position/no_steps_per_node));
                 for( int j = 0; j < stor::Nwires; j++)
-                    Signal(t,i+j*no_nodes) = (stor::x_coord[j]/1e-7);
+                    Signal(t,(i+1)+j*no_nodes) = (stor::x_coord[j]/1e-7);
 
                 if ( outstream.is_open() )
                     for( int j = 0; j < stor::Nwires; j++)
-                        outstream << Signal(t,i + j*no_nodes) << "\t";
+                        outstream << Signal(t, i+1 + j*no_nodes) << "\t";
             }
             outstream << std::endl;
         }
@@ -216,7 +217,7 @@ namespace reservoir{
         STY.assign( N, Nout, 0.0);
 
         // Regularisation param
-        double alpha = 0.1;
+        double alpha = 0.01;
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -316,12 +317,11 @@ namespace reservoir{
 
 
         std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
-        /*for ( int i = 0; i < valid_x.size(); i++)
-          std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
+        for ( int i = 0; i < valid_x.size(); i++)
+            std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
 
-          for ( int i = 0; i < valid_y.size(); i++)
-          std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
-          */
+        //for ( int i = 0; i < valid_y.size(); i++)
+        //    std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
         return Ncorrect;
     }
 
@@ -330,9 +330,11 @@ namespace reservoir{
         //initialize the mask
         array_t<2, double> mdw_mask;
         mdw_mask.assign( stor::Nwires, no_nodes, 0.0);
+        std::cout << "Mask : " << std::endl;
         for( int i = 0; i < stor::Nwires; i++) {
+            std::cout << "Wire " << i << " | " << std::fixed << std::setprecision(6);
             for (int j=0; j<no_nodes; j++){
-                mdw_mask(i,j) =  rng_int_dist(rng)*2.0 - 1.0  ;
+                mdw_mask(i,j) =  rng_dist(rng)*2.0 - 1.0  ;
                 std::cout << mdw_mask(i,j) << "\t";
             }
             std::cout << std::endl;
@@ -342,17 +344,21 @@ namespace reservoir{
         array_t<2,double> Signal;
         array_t<2,double> Weights;
 
-        Signal.assign( input_x.size(), stor::Nwires*no_nodes, 0.0);
+        Signal.assign( input_x.size(), 1 + stor::Nwires*no_nodes, 0.0);
 
         generate_signal_multi_dw( mdw_mask, Signal, input_x, "Signal_multi_dw.out");
 
         linear_regression( Nout, Weights, Signal, input_y);
 
+        std::cout << "Bias = " << Weights(0,0) << std::endl;
         std::cout << "Weights = " << std::endl;
-        for( int i = 0; i < no_nodes; i++){
-            for( int j = 0; j < stor::Nwires; j++)
-                std::cout << Weights(0,i+j*no_nodes) << "\t";
+        for( int j = 0; j < stor::Nwires; j++){
+            std::cout << "Wire " << j << " | " << std::fixed << std::setprecision(6);
+            for( int i = 0; i < no_nodes; i++){
+                std::cout << Weights(0,i+1+j*no_nodes) << "\t";
+            }
             std::cout << std::endl;
+
         }
 
         std::vector<double> pred;
@@ -373,12 +379,16 @@ namespace reservoir{
 
 
         std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
-        /*for ( int i = 0; i < valid_x.size(); i++)
-          std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
-
+        std::ofstream outstream;
+        outstream.open("accuracy_valid.data");
+        for ( int i = 0; i < valid_x.size(); i++)
+          outstream << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (pred[i] > 0.5 ? 1 : 0) << std::endl;
+        //(( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
+        /*
           for ( int i = 0; i < valid_y.size(); i++)
           std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
           */
+        outstream.close();
         return Ncorrect;
     }
 

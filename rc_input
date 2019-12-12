@@ -1,11 +1,11 @@
 #input filename
-file=sine_square_init
+file=train_valid_signal
 
 #time duration
-T=10e-9
+T=4e-9
 
 #number of virtual nodes
-Nv=10
+Nv=2
 
 #number of epochs
 Ne=3

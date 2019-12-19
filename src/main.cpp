@@ -56,7 +56,7 @@ int main(){
         	std::cout << "Running Reservoir Computing (RC) program." << std::endl;
         	reservoir::run();
         	return 0;
-    	}
+    }
 
 
 	std::cout<<"Simulation ended successfully!"<<std::endl;

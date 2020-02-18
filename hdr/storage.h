@@ -5,6 +5,10 @@
 #ifndef __STORAGE_H__
 #define __STORAGE_H__
 
+
+const double Pi =  3.1415926535897932384626;
+const double Pi_sqr =  Pi*Pi;
+
 namespace stor{
 
     extern std::string program;
@@ -18,6 +22,8 @@ namespace stor{
 	extern double xl,xr;
 	extern double V, V0, freq, omega;
 	extern double cell_size;
+    extern int Nwires;
+	extern std::vector<double> V0_mdw;
 	extern std::vector<double> x_coord;
 	extern std::vector<double> phi_coord;
 	extern double T_sim;

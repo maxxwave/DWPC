@@ -14,7 +14,9 @@ class input_map_t {
     public:
         typedef std::string key_t;
         typedef std::string val_t;
+
         std::map<key_t, val_t> inp_map;
+
         std::string delim;
         std::string comment;
 
@@ -37,11 +39,15 @@ class input_map_t {
                     insert(line);
 
                 }
+                input.close();
+            } else {
+                std::cerr << "Failed to open file: " << fname << std::endl;
+                return 1;
             }
-            input.close();
+            return 0;
         }
 
-        int print()
+        void print()
         {
             for ( auto it = inp_map.begin(); it != inp_map.end(); it++)
                 std::cout << it->first << " : " << it->second <<std::endl;
@@ -74,10 +80,16 @@ class input_map_t {
         template <typename T>
         T get(const char* char_key)
         {
-            std::string key(char_key);
-            std::stringstream ss(inp_map[key]);
             T val;
-            ss >> val;
+            std::string key(char_key);
+            auto it = inp_map.find(key);
+            if ( it != inp_map.end() ) {
+                std::stringstream ss(it->second);
+                ss >> val;
+            } else {
+                std::cerr << "Warning: Input key not found. Key = " << char_key << std::endl;
+            }
+
             return val;
         }
 };

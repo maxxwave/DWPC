@@ -14,7 +14,8 @@
 #include <cmath>
 #include <string>
 #include "../hdr/storage.h"
-#define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+
+
 namespace stor{
 
     std::string program("RC");
@@ -28,13 +29,13 @@ namespace stor{
 	//Lz -thickness,t
 
 	//declare the magnetisation
-	double Ms=477e3; // A/m
-	double mu0=PI*4e-7; //T^2 J^-1 m^3
+	double Ms = 477e3; // A/m
+	double mu0 = Pi*4e-7; //T^2 J^-1 m^3
 
 	// defining the Demag factors
 	//double Nx=0.021829576;
-	double Ny = 1 - (2/PI)*atan(Ly/Lz) + (1/(2*PI))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*PI))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly));
-	double Nz = 1 - (2/PI)*atan(Lz/Ly) + (1/(2*PI))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*PI))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz));
+	double Ny = 1 - (2/Pi)*atan(Ly/Lz) + (1/(2*Pi))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*Pi))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly));
+	double Nz = 1 - (2/Pi)*atan(Lz/Ly) + (1/(2*Pi))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*Pi))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz));
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
@@ -56,6 +57,12 @@ namespace stor{
 	//defining the length of the cell
 	//needs to be around half of the exchange length
 	double cell_size=3e-10; // in m
+
+
+    //Number of wires
+    int Nwires = 1;
+
+    std::vector<double> V0_mdw;
 
 	// Defining the coordinates arrays
 	// Within 1D model we assume two colective coordinates defined by the x and azimuthal angle

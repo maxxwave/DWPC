@@ -26,8 +26,9 @@ int main(){
     std::cout<<"Developers: Razvan Ababei, Matt Ellis and Tom Hayward"<<std::endl;
     std::cout<<"University of Sheffield"<<std::endl;
 	// In this step we initialize the variables from the input file set by the user
+    //
+
 	stor::initialize();
-	std::cout<<stor::H_demag<<"\t"<<stor::Nz<<"\t"<<stor::Ny<<std::endl;
 
 	if(stor::program.compare("Potential")==0){
         std::cout<<"Running Potential program"<<std::endl;
@@ -42,6 +43,10 @@ int main(){
         std::cout<<"Running 'Benchmark-2 (Time-series) program"<<std::endl;
 		programs::benchmark2();
 	}
+	if(stor::program.compare("Benchmark3")==0){
+        std::cout<<"Running 'Benchmark-3 (Time-series) program"<<std::endl;
+		programs::benchmark3();
+	}
 	if (stor::program.compare("Bifurcation")==0){
         std::cout<<"Running Bifurcation program"<<std::endl;
 		programs::bifurcation();
@@ -51,7 +56,7 @@ int main(){
         	std::cout << "Running Reservoir Computing (RC) program." << std::endl;
         	reservoir::run();
         	return 0;
-    	}
+    }
 
 
 	std::cout<<"Simulation ended successfully!"<<std::endl;

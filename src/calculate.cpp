@@ -11,10 +11,20 @@
 #include <vector>
 #include <cmath>
 #include "../hdr/storage.h"
-//#include "../hdr/calculate.h"
-#define Pi 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+#include "../hdr/calculate.h"
+#include "../hdr/arrays.h"
+#include "../hdr/euler_integrator.h"
+
 namespace calculate{
-	const double one_rad=Pi/180.0;
+	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
+	double prefac1 = (-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
+	double prefac2 = stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);
+	double prefac3 = -stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
+	double prefac4 = -(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
+	double zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
+    double zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
+
+    const double one_rad=Pi/180.0;
 	// Calculating the number of cells for a given L and cell_size
 	int a = int(stor::L/stor::cell_size);
 	int N=2*a+1;
@@ -53,8 +63,12 @@ namespace calculate{
 		// this is the analytical derivative of the potential dE/dx
 		stor::dEx=a1+ 2*a2*x + 3*a3*x*x + 4*a4*pow(x,3) + 5*a5*pow(x,4) + 6*a6*pow(x,5) + 7*a7*pow(x,6) + 8*a8*pow(x,7);
 
-		return 0;
+		return stor::dEx;
 	}// end of function
+
+    double Vp_2deriv( const double x) {
+        return 2*a2 + 6*a3*x + 12*a4*x*x;
+    }
 
 	// in this function we will calculate the pinning energy for anti-notches
 	/*double update_energy_notches(double x){
@@ -67,22 +81,108 @@ namespace calculate{
 	*/
 	double update_energy();
 
+    double K_eff( double phi) {
+        return stor::muMs*stor::Ms* sin(phi)*sin(phi) + stor::muMs*stor::H_demag;
+    }
+
+    double dK_eff(double phi) {
+        return 2.0*stor::muMs * stor::Ms *sin(phi)*cos(phi);
+    }
+
+    double DW(double phi) {
+        return Pi * sqrt( 2.0 * stor::A / K_eff(phi));
+    }
+
 	// function which calculate the Domain wall width
 	double calculate_DW(double phi){
-		stor::Dw_size=Pi*(sqrt(2*stor::A/(stor::muMs*stor::Ms* sin(phi)*sin(phi) + stor::muMs*stor::H_demag))); // Pivano form of DW
+		stor::Dw_size = Pi * sqrt(2*stor::A / K_eff(phi));
+                        // Pivano form of DW
 		//stor::Dw_size=sqrt(2*stor::A/(stor::mu0*stor::Ms*stor::Ms*(stor::Ny*sin(phi)*sin(phi) + stor::Nz*cos(phi)*cos(phi)))); // Matt form
-		return 0;
+		return stor::Dw_size;
 	}// end of function calculate_DW
+
+    double DW_gradient( double phi, double Delta) {
+        return - Pi_sqr * (stor::A / ( DW(phi) * K_eff(phi)*K_eff(phi))) * dK_eff(phi);
+    }
 
 	// In this routine we calculate the Zeeman field taking into account the frequency of the field
 	double Zeeman(double time){
 
 		stor::V = stor::V0*sin(stor::omega*time);
-		
-		//this equation can be used for benchmark1 program 
+
+		//this equation can be used for benchmark1 program
 		//stor::V=stor::V0*cos(stor::omega*time);
-		return 0 ;
+		return stor::V ;
 	}
+
+    double Zeeman(double time, const int i){
+
+		return stor::V0_mdw[i]*sin(stor::omega*time);
+	}
+
+	// we define two function for speed and angular speed
+	double phi_t(double dEx, double phi_rk, double H){
+		return prefac3*dEx+prefac4*sin(2*phi_rk)+ zeeman_prefac2*H;
+	}
+	double x_t(double DWs, double phi, double phi_t){
+		return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
+	}
+
+    void gradient ( double &dx, double &dphi, double x, double phi, const double time)
+    {
+        double dEx = update_energy_antinotches(x);
+        double H = Zeeman(time);
+        double DWs = calculate_DW(phi);
+        dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H;
+        dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi;
+
+        //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
+        //dx = phi;
+        //dphi = -d*phi - b*x -a*x*x*x + g*cos(w*time);
+
+    }
+
+    void gradient ( std::vector<double> &dx, std::vector<double> &dphi, std::vector<double> &x, std::vector<double> &phi, const double time)
+    {
+        for ( int i = 0; i < x.size(); i++) {
+            double dEx = update_energy_antinotches(x[i]);
+            double H = Zeeman(time, i);
+            double DWs = calculate_DW(phi[i]);
+            dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H;
+            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i];
+        }
+    }
+
+
+    // Routine to compute the gradient of the differential equation (Jacobian)
+    // J =  ( dfx/dx   ,   dfx/dphi )
+    //      ( dfphi/dx ,   dfphi/dphi)
+    void Jacobian( array_t<2,double> &J, double x, double phi, const double time)
+    {
+        double dEx = update_energy_antinotches(x);
+        double H = Zeeman(time);
+        double DWs = calculate_DW(phi);
+        double dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H;
+
+        double dDelta = DW_gradient(phi, DWs);
+
+        J(1,1) = 2.0*prefac4*cos(2.0*phi);  // dfphi/dphi
+        J(0,0) = stor::alpha*DWs*prefac3*Vp_2deriv(x); //dfx/dx
+
+        J(0,1) = prefac2*(2*DWs*cos(2*phi) + sin(2*phi)*dDelta) + stor::alpha*dDelta*dphi + stor::alpha*DWs*J(1,1);
+        J(1,0) = prefac3*Vp_2deriv(x);
+
+
+        //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
+        //J(0,0) = 0.0;
+        //J(0,1) = 1.0;
+        //J(1,0) = -b - 3*a*x*x;
+        //J(1,1) = -d;
+
+    }
+
+
+
 }//end of namespace
 
 

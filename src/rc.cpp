@@ -48,21 +48,29 @@ namespace reservoir{
 
     // we define a variable to store the no of steps needed to be performed on each node
     int long no_steps_per_node=0;
-
+    array_t <2,double> MASK;
+    
     // in this function we generate random number for the mask which can be either -1 or +1
     void mask_values(){
+    	MASK.assign( 500, 1024*no_nodes, 0.0);  
         mask_array.assign( no_nodes, 0);
-        for (int j=0; j<no_nodes; j++){
-            mask_array[j] =  rng_int_dist(rng)*2.0 - 1.0  ;
-            std::cout<<mask_array[j]<<std::endl;
+        for (int n=0; n<no_nodes; n++){
+            mask_array[n] =  rng_int_dist(rng)*2.0 - 1.0;
+            std::cout<<mask_array[n]<<std::endl;
+	    for (int i=0; i<500;i++){
+	    	for (int j=0; j<1024;j++){
+			MASK(i,1024*n+j)= (rng_int_dist(rng)*2.0 - 1.0)*0.1; 
+		
+		}
+	    }
         }
+	
     }
 
     // In this routine we get the oscillator response x_i(t), where i is the sequential node
     // i=0..24
-    double time=0.0;
     void oscillation_response(double Hi){
-
+	double time=0.0;
         // we calculate the no of steps needed to be performed per node
         no_steps_per_node=std::round(theta / integrate::Dt);
 
@@ -514,9 +522,83 @@ namespace reservoir{
             }
         }
     }
+	
+    	// in this array we store the input signal from spectogram
+	array_t<2, double> sp_sig;
+	//in this array we store the spoken digit processed signal
+	array_t<2, double> Xij;
+
+	void read_spectogram(){
+
+       		sp_sig.assign( 500, 1024, 0.0 );
+		Xij.assign( 500, 1024*no_nodes, 0.0);
+		std::ifstream file("../spoken_digit_files/Jack.txt");
+		if(!file) {
+			std::cerr<<"Failed to open the spectogram file!"<<std::endl; 
+		}
+		//loop over the rows and columns
+		for (int i=0; i<500; i++){
+			for (int j=0; j<1024; j++){
+				file>>sp_sig(i,j);
+
+			}
+		}	
+	}
+	void get_signal_digit(array_t <2,double> &MASK, array_t <2,double> &Xij){
+	int no_steps_per_node=std::round(theta / integrate::Dt);                                                                                                                                                                            
+	Xij.assign( 500, 1024*no_nodes, 0.0);
+		double time=0.0;
+		for (int i=0; i<500; i++){
+			for (int k =0; k<1024; k++){
+				//loop over the nodes
+				for (int n=0; n<no_nodes; n++){
+				stor::V0 = Hc + dH*sp_sig(i,k)*MASK(i, 1024*n+k);
+				double avr_pos=0.0;
+					for (int t=0; t<no_steps_per_node; t++){
+						integrate::runge_kutta(time);
+						avr_pos += stor::x_dw*stor::x_dw*1e18;
+					}
+					Xij(i, 1024*n+k)=sqrt(avr_pos/no_steps_per_node);
+				}
+
+			}
+		}
+		
+	}
+
+	double spoken_training(array_t <2,double> &MASK, array_t<2,double> &Xij){
+		array_t<3,double> Weights_digit_x;
+		array_t<2,double> Xij_digiti;
+		arrat_t<1,double> Y_digit;
+		Xij_digit.assign(50, 10240, 0.0);
+		Y_digit.assign(50, 0.0);
+
+		Weights_digit_x.assign(9,40,10240,0);
+		// call the processing signal function
+		spoken_training();
+		
 
 
+		// training part
+		for (int digit=0; digit<=9; digit ++){
+			
+			get_signal_digit(MASK, Xij_digit);
+			
+			for(int i,j=0; i<50, j<10240; i,j++){
+				Xij_digit(i,j)=Xij(digit*50, j);
+				Y_digit(i)=Xij(digit*50, 1025);
+			}
+			
+			linear_regression(50, Weights_digit_x,Xij_digit, Y_digit);
+			
 
+			
+			
+		} 
+		
+
+	
+	}	
 
     int run()
     {

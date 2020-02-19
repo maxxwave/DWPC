@@ -169,8 +169,8 @@ namespace reservoir{
     void generate_signal( array_t<2,double> &Signal, std::vector<double> &input_x, const char* file)
     {
 
-        //std::ofstream outstream;
-        //outstream.open(file);
+        std::ofstream outstream;
+        outstream.open(file);
 
         // we calculate the no of steps needed to be performed per node
         no_steps_per_node=std::round(theta / integrate::Dt);
@@ -204,7 +204,7 @@ namespace reservoir{
             }
             //outstream << std::endl;
         }
-       // outstream.close();
+        outstream.close();
     }
 
     extern "C" {
@@ -525,13 +525,11 @@ namespace reservoir{
 	
     	// in this array we store the input signal from spectogram
 	array_t<2, double> sp_sig;
-	//in this array we store the spoken digit processed signal
-	array_t<2, double> Xij;
 
-	void read_spectogram(){
+
+	void read_spectogram( array_t <2,double> &sp_sig){
 
        		sp_sig.assign( 500, 1024, 0.0 );
-		Xij.assign( 500, 1024*no_nodes, 0.0);
 		std::ifstream file("../spoken_digit_files/Jack.txt");
 		if(!file) {
 			std::cerr<<"Failed to open the spectogram file!"<<std::endl; 
@@ -542,9 +540,10 @@ namespace reservoir{
 				file>>sp_sig(i,j);
 
 			}
-		}	
+		}
+		file.close();	
 	}
-	void get_signal_digit(array_t <2,double> &MASK, array_t <2,double> &Xij){
+	void get_signal_digit(array_t<2,double> &sp_sig, array_t <2,double> &Xij){
 	int no_steps_per_node=std::round(theta / integrate::Dt);                                                                                                                                                                            
 	Xij.assign( 500, 1024*no_nodes, 0.0);
 		double time=0.0;
@@ -566,16 +565,20 @@ namespace reservoir{
 		
 	}
 
-	double spoken_training(array_t <2,double> &MASK, array_t<2,double> &Xij){
+	double spoken_training(array_t<2,double> &sp_sig){
+		mask_values();
+
+		array_t<2,double> Xij;
 		array_t<3,double> Weights_digit_x;
-		array_t<2,double> Xij_digiti;
-		arrat_t<1,double> Y_digit;
+		array_t<2,double> Xij_digit;
+		array_t<1,double> Y_digit;
 		Xij_digit.assign(50, 10240, 0.0);
 		Y_digit.assign(50, 0.0);
 
 		Weights_digit_x.assign(9,40,10240,0);
 		// call the processing signal function
-		spoken_training();
+		get_signal_digit( sp_sig, Xij);
+
 		
 
 
@@ -586,13 +589,10 @@ namespace reservoir{
 			
 			for(int i,j=0; i<50, j<10240; i,j++){
 				Xij_digit(i,j)=Xij(digit*50, j);
-				Y_digit(i)=Xij(digit*50, 1025);
+				Y_digit(i)=Xij(digit, 1025);
+				//linear_regression();
+				//linear_model()
 			}
-			
-			linear_regression(50, Weights_digit_x,Xij_digit, Y_digit);
-			
-
-			
 			
 		} 
 		

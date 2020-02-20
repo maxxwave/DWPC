@@ -49,19 +49,19 @@ namespace reservoir{
     // we define a variable to store the no of steps needed to be performed on each node
     int long no_steps_per_node=0;
     array_t <1,double> MASK;
-    
+
     // in this function we generate random number for the mask which can be either -1 or +1
     void mask_values(){
-    	MASK.assign( 1024*no_nodes, 0.0);  
+    	MASK.assign( 1024*no_nodes, 0.0);
         mask_array.assign( no_nodes, 0);
         for (int n=0; n<no_nodes; n++){
             mask_array[n] =  rng_int_dist(rng)*2.0 - 1.0;
             std::cout<<mask_array[n]<<std::endl;
 	    for (int j=0; j<1024;j++){
-		MASK(n*1024 +j )= (rng_int_dist(rng)*2.0 - 1.0)*0.1; 		
+		MASK(n*1024 +j )= (rng_int_dist(rng)*2.0 - 1.0)*0.1;
 	    }
         }
-	
+
     }
 
     // In this routine we get the oscillator response x_i(t), where i is the sequential node
@@ -206,6 +206,62 @@ namespace reservoir{
 
     extern "C" {
         extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
+    }
+
+    void linear_regression( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, array_t<2,double> &input_y)
+    {
+
+        int N = S.size(1);
+        Weights.assign(Nout, N, 0.0);
+
+        array_t<2,double> STS;
+        STS.assign( N, N, 0.0);
+
+        array_t<2,double> STY;
+        STY.assign( N, Nout, 0.0);
+
+        // Regularisation param
+        double alpha = 0.01;
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                for( int k = 0; k < S.size(0); k++) {
+                    // Store the transpose
+                    STS(i,j) = STS(i,j) + S(k,j) * S(k,i);
+                }
+            }
+            // STS += alpha*I
+            STS(i,i) = STS(i,i) + alpha*alpha;
+        }
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < Nout; j++) {
+                for( int k = 0; k < S.size(0); k++) {
+                    STY(i,j) = STY(i,j) +  S(k,i) * input_y(k,j);
+                }
+            }
+        }
+
+        int NRHS = Nout;
+        int LDA = N;
+        int *IPIV = new int[N];
+        int LDB = N;
+        int INFO;
+
+        dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
+
+        // Check if linear solver has completed correctly
+        if( INFO == 0) {
+            // Store the result as the transposed weights
+            for( int i = 0; i < Nout; i++)
+                for (int j = 0; j < N; j++)
+                    Weights(i,j) = STY(j,i);
+        } else {
+            std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
+        }
+
+        delete [] IPIV;
+
     }
 
 
@@ -519,17 +575,15 @@ namespace reservoir{
             }
         }
     }
-	
-    	// in this array we store the input signal from spectogram
-	array_t<2, double> sp_sig;
+
 
 
 	void read_spectogram( array_t <2,double> &sp_sig ){
 
        		sp_sig.assign( 500, 1025, 0.0 );
-		std::ifstream file("spoken_digit_recognition_files/Jack.txt");
+		std::ifstream file("spoken_digit_files/Yweweler.txt");
 		if(!file) {
-			std::cerr<<"Failed to open the spectogram file!"<<std::endl; 
+			std::cerr<<"Failed to open the spectogram file!"<<std::endl;
 		}
 		//loop over the rows and columns
 		for (int i=0; i<500; i++){
@@ -538,11 +592,11 @@ namespace reservoir{
 
 			}
 		}
-		file.close();	
+		file.close();
 	}
 
 	void get_signal_digit(array_t<2,double> &sp_sig, array_t <2,double> &Xij){
-		int no_steps_per_node=std::round(theta / integrate::Dt);                                                                                                                                                                            
+		int no_steps_per_node=std::round(theta / integrate::Dt);
 		Xij.assign( 500, 1024*no_nodes, 0.0);
 		double time=0.0;
 		for (int i=0; i<500; i++){
@@ -555,32 +609,57 @@ namespace reservoir{
 						integrate::runge_kutta(time);
 						avr_pos += stor::x_dw*stor::x_dw*1e18;
 					}
+                    std::cout << i << "  " << k << "  " << n << "  " << time << "  " << sqrt(avr_pos/no_steps_per_node) << std::endl;
 					Xij(i, 1024*n+k)=sqrt(avr_pos/no_steps_per_node);
 				}
 
 			}
 		}
-		
+
 	}
 
-	double spoken_training(array_t<2,double> &sp_sig){
+	double spoken_training(){
 		mask_values();
 
+    	// in this array we store the input signal from spectogram
+	    array_t<2, double> sp_sig;
+        read_spectogram( sp_sig );
+
 		array_t<2,double> Xij;
-		array_t<3,double> Weights_digit_x;
-		array_t<2,double> Xij_digit;
+		array_t<2,double> Weights;
 		array_t<1,double> Y_digit;
+        array_t<2,double> Y_vec;
 
-		Xij_digit.assign(50, 10240, 0.0);
-		Y_digit.assign(50, 0.0);
 
-		Weights_digit_x.assign(9,40,10240,0);
+        int Nsamples = sp_sig.size(0);
+
+		Y_digit.assign(Nsamples, 0.0);
+        Y_vec.assign(Nsamples, 10, 0.0);
+
+        for (int i = 0; i < Nsamples; i++){
+            Y_digit(i) = sp_sig(i,1024);
+            Y_vec(i, Y_digit(i)) = 1.0;
+        }
+
+        std::cout << "Calculating signal now......" << std::flush;
 		get_signal_digit(sp_sig, Xij);
-			
-	}	
-	
+
+        std::cout << " Done" << std::endl;
+        std::cout << "Starting training now ....." << std::flush;
+
+		Weights.assign(10, 1024*no_nodes, 0.0);
+        linear_regression( 10, Weights, Xij, Y_vec);
+
+        for (int i,j = 0; i < 10, j<1024*no_nodes; i++,j++)
+            std::cout << i << "  " << j << "  " << Weights(i,j) << std::endl;
+
+
+
+
+	}
+
 	int run_spoken_recognition(){
-		
+
         input_map_t rc_inputs;
         rc_inputs.read_file("rc_input");
         std::cout << "Stored values: " << std::endl;
@@ -592,14 +671,21 @@ namespace reservoir{
         no_nodes = rc_inputs.get<int>("Nv");
         tau = rc_inputs.get<double>("T");
         theta = tau/no_nodes;
-        
+
 	std::cout << "tau = " << tau << std::endl;
         std::cout << "theta = " << theta << std::endl;
         std::cout << "Number of nodes = " << no_nodes << std::endl;
-	
+
+        spoken_training();
+
 	}
     int run()
     {
+
+        run_spoken_recognition();
+        return 0;
+
+
         std::vector<double> input_x;
         std::vector<double> input_y;
 

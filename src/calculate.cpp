@@ -22,9 +22,9 @@ namespace calculate{
 	double prefac3 = -stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
 	double prefac4 = -(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
 	double zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
-    double zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
+	double zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
 
-    const double one_rad=Pi/180.0;
+	const double one_rad=Pi/180.0;
 	// Calculating the number of cells for a given L and cell_size
 	int a = int(stor::L/stor::cell_size);
 	int N=2*a+1;

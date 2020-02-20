@@ -48,20 +48,17 @@ namespace reservoir{
 
     // we define a variable to store the no of steps needed to be performed on each node
     int long no_steps_per_node=0;
-    array_t <2,double> MASK;
+    array_t <1,double> MASK;
     
     // in this function we generate random number for the mask which can be either -1 or +1
     void mask_values(){
-    	MASK.assign( 500, 1024*no_nodes, 0.0);  
+    	MASK.assign( 1024*no_nodes, 0.0);  
         mask_array.assign( no_nodes, 0);
         for (int n=0; n<no_nodes; n++){
             mask_array[n] =  rng_int_dist(rng)*2.0 - 1.0;
             std::cout<<mask_array[n]<<std::endl;
-	    for (int i=0; i<500;i++){
-	    	for (int j=0; j<1024;j++){
-			MASK(i,1024*n+j)= (rng_int_dist(rng)*2.0 - 1.0)*0.1; 
-		
-		}
+	    for (int j=0; j<1024;j++){
+		MASK(n*1024 +j )= (rng_int_dist(rng)*2.0 - 1.0)*0.1; 		
 	    }
         }
 	
@@ -527,31 +524,32 @@ namespace reservoir{
 	array_t<2, double> sp_sig;
 
 
-	void read_spectogram( array_t <2,double> &sp_sig){
+	void read_spectogram( array_t <2,double> &sp_sig ){
 
-       		sp_sig.assign( 500, 1024, 0.0 );
-		std::ifstream file("../spoken_digit_files/Jack.txt");
+       		sp_sig.assign( 500, 1025, 0.0 );
+		std::ifstream file("spoken_digit_recognition_files/Jack.txt");
 		if(!file) {
 			std::cerr<<"Failed to open the spectogram file!"<<std::endl; 
 		}
 		//loop over the rows and columns
 		for (int i=0; i<500; i++){
-			for (int j=0; j<1024; j++){
+			for (int j=0; j<1025; j++){
 				file>>sp_sig(i,j);
 
 			}
 		}
 		file.close();	
 	}
+
 	void get_signal_digit(array_t<2,double> &sp_sig, array_t <2,double> &Xij){
-	int no_steps_per_node=std::round(theta / integrate::Dt);                                                                                                                                                                            
-	Xij.assign( 500, 1024*no_nodes, 0.0);
+		int no_steps_per_node=std::round(theta / integrate::Dt);                                                                                                                                                                            
+		Xij.assign( 500, 1024*no_nodes, 0.0);
 		double time=0.0;
 		for (int i=0; i<500; i++){
 			for (int k =0; k<1024; k++){
 				//loop over the nodes
 				for (int n=0; n<no_nodes; n++){
-				stor::V0 = Hc + dH*sp_sig(i,k)*MASK(i, 1024*n+k);
+				stor::V0 = Hc + dH*sp_sig(i,k)*MASK(1024*n+k);
 				double avr_pos=0.0;
 					for (int t=0; t<no_steps_per_node; t++){
 						integrate::runge_kutta(time);
@@ -572,34 +570,34 @@ namespace reservoir{
 		array_t<3,double> Weights_digit_x;
 		array_t<2,double> Xij_digit;
 		array_t<1,double> Y_digit;
+
 		Xij_digit.assign(50, 10240, 0.0);
 		Y_digit.assign(50, 0.0);
 
 		Weights_digit_x.assign(9,40,10240,0);
-		// call the processing signal function
-		get_signal_digit( sp_sig, Xij);
-
-		
-
-
-		// training part
-		for (int digit=0; digit<=9; digit ++){
+		get_signal_digit(sp_sig, Xij);
 			
-			get_signal_digit(MASK, Xij_digit);
-			
-			for(int i,j=0; i<50, j<10240; i,j++){
-				Xij_digit(i,j)=Xij(digit*50, j);
-				Y_digit(i)=Xij(digit, 1025);
-				//linear_regression();
-				//linear_model()
-			}
-			
-		} 
-		
-
-	
 	}	
-
+	
+	int run_spoken_recognition(){
+		
+        input_map_t rc_inputs;
+        rc_inputs.read_file("rc_input");
+        std::cout << "Stored values: " << std::endl;
+        rc_inputs.print();
+        int seed = rc_inputs.get<int>("seed");
+        rng.seed(seed);
+        Hc = rc_inputs.get<double>("H0");
+        dH = rc_inputs.get<double>("dH");
+        no_nodes = rc_inputs.get<int>("Nv");
+        tau = rc_inputs.get<double>("T");
+        theta = tau/no_nodes;
+        
+	std::cout << "tau = " << tau << std::endl;
+        std::cout << "theta = " << theta << std::endl;
+        std::cout << "Number of nodes = " << no_nodes << std::endl;
+	
+	}
     int run()
     {
         std::vector<double> input_x;

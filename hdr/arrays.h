@@ -180,6 +180,20 @@ class array_t<2, _T>
             _size[1] = 0;
             _data.clear();
         }
+	void max( array_t<1,_T> &maxs, array_t<1,_T> &inds){
+		maxs.assign(_size[0], 0.0);
+		inds.assign(_size[0], 0.0);
+		for (int i =0; i<maxs.size(0); i++){
+			maxs[i] = _data[ _size[1] * i];
+			inds[i] = 0;
+			for(int j=1; j<_size[1];j++){
+				maxs[i] = ( maxs[i] < _data[ j + _size[1] * i] ) ? _data[j+_size[1]*i] : maxs[i];
+				inds[i] = ( maxs[i] < _data[ j + _size[1] * i] ) ? j : inds[i];
+				
+			}
+		}
+
+	}
 
         void assign( const int n0, const int n1, const _T value )
         {

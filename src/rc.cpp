@@ -330,6 +330,18 @@ namespace reservoir{
         return Ncorrect;
     }
 
+    void linear_model_spoken( array_t<2,double> &pred, array_t<2,double> &Signal, array_t<2,double> &Weights)
+    {
+        pred.assign(Signal.size(0), Weights.size(0), 0.0);
+        for( int i = 0; i < pred.size(0); i++) {
+	    for ( int j = 0; j < pred.size(1); j++) { 
+		pred(i,j) = 0.0;
+		for( int k = 0; k < Weights.size(1); k++) {
+		    pred(i,j) += Weights(j,k) * Signal(i,k);
+		}
+            }
+        }
+    }
 
     void linear_model( std::vector<double> &pred, array_t<2,double> &Signal, array_t<2,double> &Weights)
     {
@@ -647,14 +659,14 @@ namespace reservoir{
         std::cout << " Done" << std::endl;
         std::cout << "Starting training now ....." << std::flush;
 
-		Weights.assign(10, 1024*no_nodes, 0.0);
+	Weights.assign(10, (sp_sig.size(1)-1)*no_nodes, 0.0);
         linear_regression( 10, Weights, Xij, Y_vec);
 
-        for (int i,j = 0; i < 10, j<1024*no_nodes; i++,j++)
-            std::cout << i << "  " << j << "  " << Weights(i,j) << std::endl;
-
-
-
+      	//for (int i= 0; i < Weights.size(0); i++){
+	//       for(int j = 0; j<Weights.size(1); j++){
+        //   std::cout << i << "  " << j << "  " << Weights(i,j) << std::endl;
+	//}}
+	
 
 	}
 

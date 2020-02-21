@@ -22,5 +22,5 @@ integrator=RK4
 #Pinning field:
 pin=0
 
-program=RC
+program=spoken_digit_recognition
 

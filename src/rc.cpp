@@ -609,7 +609,7 @@ namespace reservoir{
 						integrate::runge_kutta(time);
 						avr_pos += stor::x_dw*stor::x_dw*1e18;
 					}
-                    std::cout << i << "  " << k << "  " << n << "  " << time << "  " << sqrt(avr_pos/no_steps_per_node) << std::endl;
+                   // std::cout << i << "  " << k << "  " << n << "  " << time << "  " << sqrt(avr_pos/no_steps_per_node) << std::endl;
 					Xij(i, 1024*n+k)=sqrt(avr_pos/no_steps_per_node);
 				}
 
@@ -625,15 +625,15 @@ namespace reservoir{
 	    array_t<2, double> sp_sig;
         read_spectogram( sp_sig );
 
-		array_t<2,double> Xij;
-		array_t<2,double> Weights;
-		array_t<1,double> Y_digit;
+	array_t<2,double> Xij;
+	array_t<2,double> Weights;
+	array_t<1,double> Y_digit;
         array_t<2,double> Y_vec;
 
 
         int Nsamples = sp_sig.size(0);
 
-		Y_digit.assign(Nsamples, 0.0);
+	Y_digit.assign(Nsamples, 0.0);
         Y_vec.assign(Nsamples, 10, 0.0);
 
         for (int i = 0; i < Nsamples; i++){
@@ -677,15 +677,11 @@ namespace reservoir{
         std::cout << "Number of nodes = " << no_nodes << std::endl;
 
         spoken_training();
-
+	return 0;
 	}
+
     int run()
     {
-
-        run_spoken_recognition();
-        return 0;
-
-
         std::vector<double> input_x;
         std::vector<double> input_y;
 

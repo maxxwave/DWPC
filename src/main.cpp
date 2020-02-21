@@ -57,6 +57,10 @@ int main(){
         	reservoir::run();
         	return 0;
     }
+	if (stor::program.compare("spoken_digit_recognition") == 0) { 
+		std::cout<<"Running spoken digits recognition program" <<std::endl;
+		reservoir::run_spoken_recognition(); 
+	}
 
 
 	std::cout<<"Simulation ended successfully!"<<std::endl;

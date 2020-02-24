@@ -278,7 +278,7 @@ namespace reservoir{
         STY.assign( N, Nout, 0.0);
 
         // Regularisation param
-        double alpha = 0.01;
+        double alpha = 0.001;
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -320,6 +320,27 @@ namespace reservoir{
         delete [] IPIV;
 
     }
+    int accuracy_spoken(array_t<2,double> &pred, array_t<2,double> &y_vec){
+    	int Ncorrect=0;
+	int Nfail=0;
+
+	// check dimensionality if the arrays
+	if (( pred.size(0)!=y_vec.size(0 ))&& ( pred.size(0)!=y_vec.size(0) ) )  
+	{
+		std::cerr<<"Conflict matrix sizes"<<std::endl;
+
+	}
+
+	for (int i=0,j=0; i<pred.size(0), j<pred.size(1); i++,j++){
+		Ncorrect += ((pred(i,j) < 0.5) && (y_vec(i,j)< 0.5) ) ? 1:0;
+		Ncorrect += ((pred(i,j) > 0.5) && (y_vec(i,j)> 0.5) ) ? 1:0;
+
+	
+	}
+
+	return Ncorrect;
+    
+    } 
 
     int accuracy( std::vector<double> pred, std::vector<double> &corr)
     {
@@ -369,9 +390,9 @@ namespace reservoir{
         linear_regression( Nout, Weights, Signal, input_y);
 
         std::cout << "Weights = " << std::endl;
-        for( int i = 0; i < no_nodes; i++)
+        for( int i = 0; i < no_nodes; i++){
             std::cout << Weights(0,i) << std::endl;
-
+	}
         std::vector<double> pred;
         linear_model(pred, Signal, Weights);
 
@@ -421,7 +442,7 @@ namespace reservoir{
 
         generate_signal_multi_dw( mdw_mask, Signal, input_x, "Signal_multi_dw.out");
 
-        linear_regression( Nout, Weights, Signal, input_y);
+        linear_regression( Nout, Weights, Signal, input_y );
 
         std::cout << "Bias = " << Weights(0,0) << std::endl;
         std::cout << "Weights = " << std::endl;
@@ -631,10 +652,11 @@ namespace reservoir{
 	}
 
 	double spoken_training(){
-		mask_values();
+	
+	mask_values();
 
     	// in this array we store the input signal from spectogram
-	    array_t<2, double> sp_sig;
+	array_t<2, double> sp_sig;
         read_spectogram( sp_sig );
 
 	array_t<2,double> Xij;
@@ -653,8 +675,15 @@ namespace reservoir{
             Y_vec(i, Y_digit(i)) = 1.0;
         }
 
+        //for (int i = 0; i < Nsamples; i++){
+	//	for (int j=0; j<10; j++){
+	//		std::cout <<Y_vec(i,j)<<"\t";
+	//	}
+	//	std::cout<<std::endl;
+	//}
+
         std::cout << "Calculating signal now......" << std::flush;
-		get_signal_digit(sp_sig, Xij);
+	get_signal_digit(sp_sig, Xij);
 
         std::cout << " Done" << std::endl;
         std::cout << "Starting training now ....." << std::flush;
@@ -662,11 +691,23 @@ namespace reservoir{
 	Weights.assign(10, (sp_sig.size(1)-1)*no_nodes, 0.0);
         linear_regression( 10, Weights, Xij, Y_vec);
 
+	array_t <2,double> Pred_vec;
+
+	linear_model_spoken(Pred_vec, Xij, Weights);	
+	for (int i=0; i<Y_vec.size(0);i++){
+		for (int j=0; j<Y_vec.size(1);j++){
+			std::cout<<Y_vec(i,j)<<"\t";
+		}
+	
+	}	
+	
+
       	//for (int i= 0; i < Weights.size(0); i++){
 	//       for(int j = 0; j<Weights.size(1); j++){
         //   std::cout << i << "  " << j << "  " << Weights(i,j) << std::endl;
 	//}}
-	
+
+	std::cout<< "No of correct predictions:  "<<accuracy_spoken(Pred_vec, Y_vec)<<std::endl;
 
 	}
 

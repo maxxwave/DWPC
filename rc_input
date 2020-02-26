@@ -2,7 +2,7 @@
 file=train_valid_signal
 
 #time duration
-T=0.5e-11
+T=0.5e-12
 
 #number of virtual nodes
 Nv=2

@@ -221,7 +221,7 @@ namespace reservoir{
         STY.assign( N, Nout, 0.0);
 
         // Regularisation param
-        double alpha = 0.01;
+        double alpha = 10000.0;
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -233,7 +233,7 @@ namespace reservoir{
             // STS += alpha*I
             STS(i,i) = STS(i,i) + alpha*alpha;
         }
-
+	std::cout<<"StS sizes are .... mxn :"<<"\t"<<STS.size(0)<<"\t"<<STS.size(1)<<std::endl;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < Nout; j++) {
                 for( int k = 0; k < S.size(0); k++) {
@@ -353,6 +353,7 @@ namespace reservoir{
 
     void linear_model_spoken( array_t<2,double> &pred, array_t<2,double> &Signal, array_t<2,double> &Weights)
     {
+	std::cout<<"W sizes are  ... m x n:"<<"\t"<<Weights.size(0)<<"\t"<<Weights.size(1)<<std::endl;
         pred.assign(Signal.size(0), Weights.size(0), 0.0);
         for( int i = 0; i < pred.size(0); i++) {
 	    for ( int j = 0; j < pred.size(1); j++) { 
@@ -362,6 +363,28 @@ namespace reservoir{
 		}
             }
         }
+
+	// transpose the matrix
+	array_t <2,double> Weights_t;
+	Weights_t.assign(Weights.size(1), Weights.size(0), 0.0);
+	for(int i,j=0; i<Weights.size(1), j<Weights.size(0); i,j++){
+		Weights_t(i,j)=Weights(j,i);
+	}
+	std::cout<<"Sizes of Weights_t :"<<"\t"<<Weights_t.size(0)<<std::endl;
+	
+	//calculate the prediction matrix
+	/*if(Weights_t.size(0)!=Signal.size(1)) std::cerr<<"Conflict matrix sizes!"<<std::endl;
+	for (int i=0; i<Signal.size(0);i++){ 
+		for(int j=0; j<Weights_t.size(1); j++){
+			double sum=0.0;
+		       	for( int k=0; k<Signal.size(1); k++){
+				sum+=Signal(i,k)*Weights_t(k,j);}
+			pred(i,j)=sum;
+		}
+	}*/
+				
+
+	//std::cout<<"Pred size mxn.................. : "<<"\t"<<pred.size(0)<<"\t"<<pred.size(1)<<std::endl;
     }
 
     void linear_model( std::vector<double> &pred, array_t<2,double> &Signal, array_t<2,double> &Weights)
@@ -609,8 +632,6 @@ namespace reservoir{
         }
     }
 
-
-
 	void read_spectogram( array_t <2,double> &sp_sig ){
 
        		sp_sig.assign( 500, 1025, 0.0 );
@@ -642,7 +663,7 @@ namespace reservoir{
 						integrate::runge_kutta(time);
 						avr_pos += stor::x_dw*stor::x_dw*1e18;
 					}
-                   // std::cout << i << "  " << k << "  " << n << "  " << time << "  " << sqrt(avr_pos/no_steps_per_node) << std::endl;
+                   		// std::cout << i << "  " << k << "  " << n << "  " << time << "  " << sqrt(avr_pos/no_steps_per_node) << std::endl;
 					Xij(i, 1024*n+k)=sqrt(avr_pos/no_steps_per_node);
 				}
 
@@ -657,7 +678,7 @@ namespace reservoir{
 
     	// in this array we store the input signal from spectogram
 	array_t<2, double> sp_sig;
-        read_spectogram( sp_sig );
+        read_spectogram(sp_sig);
 
 	array_t<2,double> Xij;
 	array_t<2,double> Weights;
@@ -694,10 +715,12 @@ namespace reservoir{
 	array_t <2,double> Pred_vec;
 
 	linear_model_spoken(Pred_vec, Xij, Weights);	
-	for (int i=0; i<Y_vec.size(0);i++){
-		for (int j=0; j<Y_vec.size(1);j++){
-			std::cout<<Y_vec(i,j)<<"\t";
+	for (int i=0; i<Pred_vec.size(0);i++){
+		for (int j=0; j<Pred_vec.size(1);j++){
+			std::cout<<Pred_vec(i,j)<<"\t";
 		}
+		std::cout<<"\n";
+	
 	
 	}	
 	

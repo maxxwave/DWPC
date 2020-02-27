@@ -208,7 +208,7 @@ namespace reservoir{
         extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
     }
 
-    void linear_regression( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, array_t<2,double> &input_y)
+    void linear_regression( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, array_t<2,double> &input_y, double regression_factor)
     {
 
         int N = S.size(1);
@@ -221,7 +221,7 @@ namespace reservoir{
         STY.assign( N, Nout, 0.0);
 
         // Regularisation param
-        double alpha = 10000.0;
+        double alpha = regression_factor;
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
@@ -672,7 +672,7 @@ namespace reservoir{
 
 	}
 
-	double spoken_training(){
+	double spoken_training(double &regression_factor){
 	
 	mask_values();
 
@@ -696,35 +696,31 @@ namespace reservoir{
             Y_vec(i, Y_digit(i)) = 1.0;
         }
 
-        //for (int i = 0; i < Nsamples; i++){
-	//	for (int j=0; j<10; j++){
-	//		std::cout <<Y_vec(i,j)<<"\t";
-	//	}
-	//	std::cout<<std::endl;
-	//}
-
-        std::cout << "Calculating signal now......" << std::flush;
-	get_signal_digit(sp_sig, Xij);
+        for (int i = 0; i < Nsamples; i++){
+		for (int j=0; j<10; j++){
+			std::cout <<Y_vec(i,j)<<"\t";
+		}
+		std::cout<<std::endl;
+	}
+        //std::cout << "Calculating signal now......" << std::flush;
+	//get_signal_digit(sp_sig, Xij);
 
         std::cout << " Done" << std::endl;
         std::cout << "Starting training now ....." << std::flush;
 
 	Weights.assign(10, (sp_sig.size(1)-1)*no_nodes, 0.0);
-        linear_regression( 10, Weights, Xij, Y_vec);
+        linear_regression( 10, Weights, sp_sig, Y_vec, regression_factor);
 
 	array_t <2,double> Pred_vec;
 
-	linear_model_spoken(Pred_vec, Xij, Weights);	
+	linear_model_spoken(Pred_vec, sp_sig, Weights);	
 	for (int i=0; i<Pred_vec.size(0);i++){
 		for (int j=0; j<Pred_vec.size(1);j++){
 			std::cout<<Pred_vec(i,j)<<"\t";
 		}
 		std::cout<<"\n";
-	
-	
 	}	
 	
-
       	//for (int i= 0; i < Weights.size(0); i++){
 	//       for(int j = 0; j<Weights.size(1); j++){
         //   std::cout << i << "  " << j << "  " << Weights(i,j) << std::endl;
@@ -747,12 +743,14 @@ namespace reservoir{
         no_nodes = rc_inputs.get<int>("Nv");
         tau = rc_inputs.get<double>("T");
         theta = tau/no_nodes;
+	double regression_factor = rc_inputs.get<double>("lambda");
 
 	std::cout << "tau = " << tau << std::endl;
         std::cout << "theta = " << theta << std::endl;
         std::cout << "Number of nodes = " << no_nodes << std::endl;
+	std::cout << "Regression factor, lambda = "<<regression_factor << std::endl;
 
-        spoken_training();
+        spoken_training(regression_factor);
 	return 0;
 	}
 

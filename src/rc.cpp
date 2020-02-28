@@ -206,6 +206,76 @@ namespace reservoir{
 
     extern "C" {
         extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
+        extern int dgelss_( int*, int*, int*, double*, int*, double*, int*, double*, double*, int*, double*, int*, int*);
+    }
+
+    void linear_regression2( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, array_t<2,double> &input_y, double regression_factor)
+    {
+
+        int N = S.size(1);
+        Weights.assign(Nout, N, 0.0);
+
+        array_t<2,double> STS;
+        STS.assign( N, N, 0.0);
+
+        array_t<2,double> STY;
+        STY.assign( N, Nout, 0.0);
+
+        // Regularisation param
+        double alpha = regression_factor;
+
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                STS(i,j) = 0.0;
+                for( int k = 0; k < S.size(0); k++) {
+                    // Store the transpose
+                    STS(i,j) = STS(i,j) + S(k,j) * S(k,i);
+                }
+            }
+            // STS += alpha*I
+            STS(i,i) = STS(i,i) + alpha*alpha;
+        }
+
+        std::cout<<"StS sizes are .... mxn :"<<"\t"<<STS.size(0)<<"\t"<<STS.size(1)<<std::endl;
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < Nout; j++) {
+                STY(i,j) = 0.0;
+                for( int k = 0; k < S.size(0); k++) {
+                    STY(i,j) = STY(i,j) +  S(k,i) * input_y(k,j);
+                }
+            }
+        }
+
+        int NRHS = Nout;
+        int LDA = N;
+        int *IPIV = new int[N];
+        int LDB = N;
+        int INFO;
+
+        double *SV = new double[N];
+        double RCOND = 1e-10;
+        int RANK;
+        double *WORK = new double[6*N];
+        int LWORK = 6*N;
+
+
+        //dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
+        dgelss_( &N, &N, &NRHS, &STS(0,0), &LDA, &STY(0,0), &LDB, SV, &RCOND, &RANK, WORK, &LWORK, &INFO);
+
+        // Check if linear solver has completed correctly
+        if( INFO == 0) {
+            // Store the result as the transposed weights
+            for( int i = 0; i < Nout; i++)
+                for (int j = 0; j < N; j++)
+                    Weights(i,j) = STY(j,i);
+        } else {
+            std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
+        }
+
+        delete [] IPIV;
+        delete [] SV;
+        delete [] WORK;
+
     }
 
     void linear_regression( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, array_t<2,double> &input_y, double regression_factor)
@@ -225,6 +295,7 @@ namespace reservoir{
 
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < N; j++) {
+                STS(i,j) = 0.0;
                 for( int k = 0; k < S.size(0); k++) {
                     // Store the transpose
                     STS(i,j) = STS(i,j) + S(k,j) * S(k,i);
@@ -233,9 +304,11 @@ namespace reservoir{
             // STS += alpha*I
             STS(i,i) = STS(i,i) + alpha*alpha;
         }
-	std::cout<<"StS sizes are .... mxn :"<<"\t"<<STS.size(0)<<"\t"<<STS.size(1)<<std::endl;
+
+        std::cout<<"StS sizes are .... mxn :"<<"\t"<<STS.size(0)<<"\t"<<STS.size(1)<<std::endl;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < Nout; j++) {
+                STY(i,j) = 0.0;
                 for( int k = 0; k < S.size(0); k++) {
                     STY(i,j) = STY(i,j) +  S(k,i) * input_y(k,j);
                 }
@@ -321,26 +394,33 @@ namespace reservoir{
 
     }
     int accuracy_spoken(array_t<2,double> &pred, array_t<2,double> &y_vec){
-    	int Ncorrect=0;
-	int Nfail=0;
+        int Ncorrect=0;
+        int Nfail=0;
 
-	// check dimensionality if the arrays
-	if (( pred.size(0)!=y_vec.size(0 ))&& ( pred.size(0)!=y_vec.size(0) ) )  
-	{
-		std::cerr<<"Conflict matrix sizes"<<std::endl;
+        // check dimensionality if the arrays
+        if (( pred.size(0)!=y_vec.size(0 ))&& ( pred.size(0)!=y_vec.size(0) ) )
+        {
+            std::cerr<<"Conflict matrix sizes"<<std::endl;
 
-	}
+        }
+        for ( int i = 0; i < pred.size(0); i++) {
+            int pind=0, yind=0;
+            double pmax = pred(i,0);
+            double ymax = y_vec(i,0);
+            for( int j = 1; j < pred.size(1); j++) {
+                pind = (pmax < pred(i,j)) ? j : pind;
+                pmax = (pmax < pred(i,j)) ? pred(i,j) : pmax;
+                yind = (ymax < y_vec(i,j)) ? j : yind;
+                ymax = (ymax < y_vec(i,j)) ? y_vec(i,j) : ymax;
+            }
+            std::cout << i << "  " << yind << "  " << pind << "  " << ymax << "  " << pmax << std::endl;
+            Ncorrect += (yind == pind) ? 1 : 0;
+        }
 
-	for (int i=0,j=0; i<pred.size(0), j<pred.size(1); i++,j++){
-		Ncorrect += ((pred(i,j) < 0.5) && (y_vec(i,j)< 0.5) ) ? 1:0;
-		Ncorrect += ((pred(i,j) > 0.5) && (y_vec(i,j)> 0.5) ) ? 1:0;
 
-	
-	}
+        return Ncorrect;
 
-	return Ncorrect;
-    
-    } 
+    }
 
     int accuracy( std::vector<double> pred, std::vector<double> &corr)
     {
@@ -353,38 +433,38 @@ namespace reservoir{
 
     void linear_model_spoken( array_t<2,double> &pred, array_t<2,double> &Signal, array_t<2,double> &Weights)
     {
-	std::cout<<"W sizes are  ... m x n:"<<"\t"<<Weights.size(0)<<"\t"<<Weights.size(1)<<std::endl;
-        pred.assign(Signal.size(0), Weights.size(0), 0.0);
+        //std::cout<<"W sizes are  ... m x n:"<<"\t"<<Weights.size(0)<<"\t"<<Weights.size(1)<<std::endl;
+        //pred.assign(Signal.size(0), Weights.size(0), 0.0);
         for( int i = 0; i < pred.size(0); i++) {
-	    for ( int j = 0; j < pred.size(1); j++) { 
-		pred(i,j) = 0.0;
-		for( int k = 0; k < Weights.size(1); k++) {
-		    pred(i,j) += Weights(j,k) * Signal(i,k);
-		}
+            for ( int j = 0; j < pred.size(1); j++) {
+                pred(i,j) = 0.0;
+                for( int k = 0; k < Weights.size(1); k++) {
+                    pred(i,j) += Weights(j,k) * Signal(i,k);
+                }
             }
         }
 
-	// transpose the matrix
-	array_t <2,double> Weights_t;
-	Weights_t.assign(Weights.size(1), Weights.size(0), 0.0);
-	for(int i,j=0; i<Weights.size(1), j<Weights.size(0); i,j++){
-		Weights_t(i,j)=Weights(j,i);
-	}
-	std::cout<<"Sizes of Weights_t :"<<"\t"<<Weights_t.size(0)<<std::endl;
-	
-	//calculate the prediction matrix
-	/*if(Weights_t.size(0)!=Signal.size(1)) std::cerr<<"Conflict matrix sizes!"<<std::endl;
-	for (int i=0; i<Signal.size(0);i++){ 
-		for(int j=0; j<Weights_t.size(1); j++){
-			double sum=0.0;
-		       	for( int k=0; k<Signal.size(1); k++){
-				sum+=Signal(i,k)*Weights_t(k,j);}
-			pred(i,j)=sum;
-		}
-	}*/
-				
+        // transpose the matrix
+        /*array_t <2,double> Weights_t;
+        Weights_t.assign(Weights.size(1), Weights.size(0), 0.0);
+        for(int i,j=0; i<Weights.size(1), j<Weights.size(0); i,j++){
+            Weights_t(i,j)=Weights(j,i);
+        }
+        std::cout<<"Sizes of Weights_t :"<<"\t"<<Weights_t.size(0)<<std::endl;
+        */
+        //calculate the prediction matrix
+        /*if(Weights_t.size(0)!=Signal.size(1)) std::cerr<<"Conflict matrix sizes!"<<std::endl;
+          for (int i=0; i<Signal.size(0);i++){
+          for(int j=0; j<Weights_t.size(1); j++){
+          double sum=0.0;
+          for( int k=0; k<Signal.size(1); k++){
+          sum+=Signal(i,k)*Weights_t(k,j);}
+          pred(i,j)=sum;
+          }
+          }*/
 
-	//std::cout<<"Pred size mxn.................. : "<<"\t"<<pred.size(0)<<"\t"<<pred.size(1)<<std::endl;
+
+        //std::cout<<"Pred size mxn.................. : "<<"\t"<<pred.size(0)<<"\t"<<pred.size(1)<<std::endl;
     }
 
     void linear_model( std::vector<double> &pred, array_t<2,double> &Signal, array_t<2,double> &Weights)
@@ -634,8 +714,8 @@ namespace reservoir{
 
 	void read_spectogram( array_t <2,double> &sp_sig ){
 
-       		sp_sig.assign( 500, 1025, 0.0 );
-		std::ifstream file("spoken_digit_files/Yweweler.txt");
+        sp_sig.assign( 500, 1025, 0.0 );
+		std::ifstream file("spoken_digit_files/Theo.dat");
 		if(!file) {
 			std::cerr<<"Failed to open the spectogram file!"<<std::endl;
 		}
@@ -672,23 +752,35 @@ namespace reservoir{
 
 	}
 
-	double spoken_training(double &regression_factor){
-	
-	mask_values();
+    double MSE( array_t<2,double> &pred, array_t<2,double> &desired)
+    {
+        double error = 0.0;
+        for( int i = 0; i < pred.size(0); i++){
+            for( int j = 0; j < pred.size(1); j++){
+                error += 0.5*( pred(i,j) - desired(i,j))*( pred(i,j) - desired(i,j));
+            }
+        }
+        return error/double(pred.size(0));
+    }
 
-    	// in this array we store the input signal from spectogram
-	array_t<2, double> sp_sig;
+
+    double spoken_training(double &regression_factor){
+
+        mask_values();
+
+        // in this array we store the input signal from spectogram
+        array_t<2, double> sp_sig;
         read_spectogram(sp_sig);
 
-	array_t<2,double> Xij;
-	array_t<2,double> Weights;
-	array_t<1,double> Y_digit;
+        array_t<2,double> Xij;
+        array_t<2,double> Weights;
+        array_t<1,double> Y_digit;
         array_t<2,double> Y_vec;
 
 
         int Nsamples = sp_sig.size(0);
 
-	Y_digit.assign(Nsamples, 0.0);
+        Y_digit.assign(Nsamples, 0.0);
         Y_vec.assign(Nsamples, 10, 0.0);
 
         for (int i = 0; i < Nsamples; i++){
@@ -697,40 +789,72 @@ namespace reservoir{
         }
 
         for (int i = 0; i < Nsamples; i++){
-		for (int j=0; j<10; j++){
-			std::cout <<Y_vec(i,j)<<"\t";
-		}
-		std::cout<<std::endl;
-	}
+            for (int j=0; j<10; j++){
+                std::cout <<Y_vec(i,j)<<"\t";
+            }
+            std::cout<<std::endl;
+        }
+
+        std::cout << "Nsamples = " << Nsamples << std::endl;
+        Xij.assign( 500, 1024*no_nodes + 1, 0.0);
+        for (int i = 0; i < Nsamples; i++){
+            Xij(i, 1024*no_nodes) = 1.0;
+            for ( int j = 0; j < 1024*no_nodes; j++){
+                Xij(i,j) = sp_sig(i,j);
+                //std::cerr << i << "  " << j << "  " << Xij(i,j) << std::endl;
+            }
+            //std::cerr << std::endl;
+            //std::cerr << std::endl;
+        }
         //std::cout << "Calculating signal now......" << std::flush;
-	//get_signal_digit(sp_sig, Xij);
+        //get_signal_digit(sp_sig, Xij);
 
         std::cout << " Done" << std::endl;
         std::cout << "Starting training now ....." << std::flush;
 
-	Weights.assign(10, (sp_sig.size(1)-1)*no_nodes, 0.0);
-        linear_regression( 10, Weights, sp_sig, Y_vec, regression_factor);
+        //Weights.assign(10, (sp_sig.size(1)-1)*no_nodes, 0.0);
+        linear_regression2( 10, Weights, Xij, Y_vec, regression_factor);
 
-	array_t <2,double> Pred_vec;
+        /*
+        Weights.assign( 10, Xij.size(1), 0.0);
+        for (int i=0; i<Weights.size(0);i++){
+            for (int j=0; j<Weights.size(1);j++){
+                Weights(i,j) = 0.1*(rng_dist(rng)*2.0 - 1.0);
+                //std::cout<<Weights(i,j)<<"\t";
+            }
+            //std::cout<<"\n";
+        } */
 
-	linear_model_spoken(Pred_vec, sp_sig, Weights);	
-	for (int i=0; i<Pred_vec.size(0);i++){
-		for (int j=0; j<Pred_vec.size(1);j++){
-			std::cout<<Pred_vec(i,j)<<"\t";
-		}
-		std::cout<<"\n";
-	}	
-	
-      	//for (int i= 0; i < Weights.size(0); i++){
-	//       for(int j = 0; j<Weights.size(1); j++){
+        array_t <2,double> Pred_vec;
+
+        Pred_vec.assign(Nsamples, 10, 0.0);
+
+
+        linear_model_spoken(Pred_vec, Xij, Weights);
+
+        double err = 0.0;
+        err = MSE( Pred_vec, Xij);
+
+        std::cout << "Mean Squared Error = " << err << std::endl;
+
+        for (int i=0; i<Pred_vec.size(0);i++){
+            for (int j=0; j<Pred_vec.size(1);j++){
+                std::cout << std::fixed << std::setprecision(4) << Pred_vec(i,j) << "  ";
+            }
+            std::cout<<"\n";
+        }
+
+        //for (int i= 0; i < Weights.size(0); i++){
+        //       for(int j = 0; j<Weights.size(1); j++){
         //   std::cout << i << "  " << j << "  " << Weights(i,j) << std::endl;
-	//}}
+        //}}
 
-	std::cout<< "No of correct predictions:  "<<accuracy_spoken(Pred_vec, Y_vec)<<std::endl;
+        int Ncorrect = accuracy_spoken(Pred_vec, Y_vec);
+        std::cout<< "No of correct predictions:  " << Ncorrect << " out of " << Pred_vec.size(0) << std::endl;
 
-	}
+    }
 
-	int run_spoken_recognition(){
+    int run_spoken_recognition(){
 
         input_map_t rc_inputs;
         rc_inputs.read_file("rc_input");
@@ -743,16 +867,16 @@ namespace reservoir{
         no_nodes = rc_inputs.get<int>("Nv");
         tau = rc_inputs.get<double>("T");
         theta = tau/no_nodes;
-	double regression_factor = rc_inputs.get<double>("lambda");
+        double regression_factor = rc_inputs.get<double>("lambda");
 
-	std::cout << "tau = " << tau << std::endl;
+        std::cout << "tau = " << tau << std::endl;
         std::cout << "theta = " << theta << std::endl;
         std::cout << "Number of nodes = " << no_nodes << std::endl;
-	std::cout << "Regression factor, lambda = "<<regression_factor << std::endl;
+        std::cout << "Regression factor, lambda = "<<regression_factor << std::endl;
 
         spoken_training(regression_factor);
-	return 0;
-	}
+        return 0;
+    }
 
     int run()
     {

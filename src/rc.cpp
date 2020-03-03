@@ -719,11 +719,11 @@ namespace reservoir{
 		if(!file) {
 			std::cerr<<"Failed to open the spectogram file!"<<std::endl;
 		}
+
 		//loop over the rows and columns
 		for (int i=0; i<500; i++){
 			for (int j=0; j<1025; j++){
 				file>>sp_sig(i,j);
-
 			}
 		}
 		file.close();
@@ -733,6 +733,10 @@ namespace reservoir{
 		int no_steps_per_node=std::round(theta / integrate::Dt);
 		Xij.assign( 500, 1024*no_nodes, 0.0);
 		double time=0.0;
+		std::ofstream file_proc;
+		file_proc.open("spoken_digit_files/Processed_spoken_signal.txt");
+		if(!file_proc) std::cerr<<"Failed to open output file"<<std::endl;
+		//////////////////// TODO: This part of the simulation can be paralelized ///////////////
 		for (int i=0; i<500; i++){
 			for (int k =0; k<1024; k++){
 				//loop over the nodes
@@ -743,12 +747,19 @@ namespace reservoir{
 						integrate::runge_kutta(time);
 						avr_pos += stor::x_dw*stor::x_dw*1e18;
 					}
-                   		// std::cout << i << "  " << k << "  " << n << "  " << time << "  " << sqrt(avr_pos/no_steps_per_node) << std::endl;
+                   			// std::cout << i << "  " << k << "  " << n << "  " << time << "  " << sqrt(avr_pos/no_steps_per_node) << std::endl;
 					Xij(i, 1024*n+k)=sqrt(avr_pos/no_steps_per_node);
 				}
 
 			}
 		}
+		for (int i=0; i<Xij.size(0); i++){
+			for(int j=0; j<Xij.size(1); j++){
+				file_proc<<Xij(i,j)<<"\t";
+			}
+			file_proc<<"\n";
+		}
+
 
 	}
 

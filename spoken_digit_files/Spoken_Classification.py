@@ -8,7 +8,7 @@ import csv
 from numpy.linalg import inv
 from numpy.linalg import det
 
-f = open('Processed_signal_spoken.txt', 'r') 
+f = open('Processed_spoken_signal.txt', 'r') 
 g = open('Y_vec.txt', 'r')
 
 

@@ -14,7 +14,7 @@ H=800 #A/m
 f=500e6
 
 # Simulation's parameters:
-Dt=1e-13
+Dt=1e-12
 totaltime=20e-9
 out_time=0.1e-9
 integrator=RK4

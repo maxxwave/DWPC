@@ -5,7 +5,7 @@ file=train_valid_signal
 T=0.5e-12
 
 #number of virtual nodes
-Nv=1
+Nv=10
 
 #number of epochs
 Ne=3
@@ -20,6 +20,6 @@ la=0.5
 H0=2000
 dH=950
 #regression factor
-lambda=1.5
+lambda=0.01
 
 seed=27256

@@ -788,15 +788,15 @@ namespace reservoir{
             Y_vec(i, Y_digit(i)) = 1.0;
         }
 
-        for (int i = 0; i < Nsamples; i++){
+        /*for (int i = 0; i < Nsamples; i++){
             for (int j=0; j<10; j++){
                 std::cout <<Y_vec(i,j)<<"\t";
             }
             std::cout<<std::endl;
-        }
+        }*/
 
         std::cout << "Nsamples = " << Nsamples << std::endl;
-        Xij.assign( 500, 1024*no_nodes + 1, 0.0);
+       /* Xij.assign( 500, 1024*no_nodes + 1, 0.0);
         for (int i = 0; i < Nsamples; i++){
             Xij(i, 1024*no_nodes) = 1.0;
             for ( int j = 0; j < 1024*no_nodes; j++){
@@ -805,9 +805,9 @@ namespace reservoir{
             }
             //std::cerr << std::endl;
             //std::cerr << std::endl;
-        }
+        }*/
         //std::cout << "Calculating signal now......" << std::flush;
-        //get_signal_digit(sp_sig, Xij);
+        get_signal_digit(sp_sig, Xij);
 
         std::cout << " Done" << std::endl;
         std::cout << "Starting training now ....." << std::flush;

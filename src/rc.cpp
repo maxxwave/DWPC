@@ -11,6 +11,7 @@
 #include <vector>
 #include <iomanip>
 #include <random>
+#include <string>
 
 #include "../hdr/storage.h"
 #include "../hdr/calculate.h"
@@ -712,16 +713,23 @@ namespace reservoir{
         }
     }
 
-	void read_spectogram( array_t <2,double> &sp_sig ){
+	void read_spectogram( array_t <2,double> &sp_sig){
 
-        sp_sig.assign( 500, 1025, 0.0 );
-		std::ifstream file("spoken_digit_files/Theo.dat");
+		std::ifstream file("spoken_digit_files/Yweweler.dat");
 		if(!file) {
 			std::cerr<<"Failed to open the spectogram file!"<<std::endl;
 		}
+		int num_lines=0;
+		std::string line;
+		while (std::getline(file, line))
+			++num_lines;
 
+		std::cout<<"No of lines is:" <<num_lines<<std::endl;
+		if(num_lines==0) std::cerr<<"The spectogram is empty or is not appropriate format! "<<std::endl;
+
+        	sp_sig.assign( num_lines, 1025, 0.0 );
 		//loop over the rows and columns
-		for (int i=0; i<500; i++){
+		for (int i=0; i<num_lines; i++){
 			for (int j=0; j<1025; j++){
 				file>>sp_sig(i,j);
 			}
@@ -731,13 +739,13 @@ namespace reservoir{
 
 	void get_signal_digit(array_t<2,double> &sp_sig, array_t <2,double> &Xij){
 		int no_steps_per_node=std::round(theta / integrate::Dt);
-		Xij.assign( 500, 1024*no_nodes, 0.0);
+		Xij.assign( sp_sig.size(0), 1024*no_nodes, 0.0);
 		double time=0.0;
 		std::ofstream file_proc;
 		file_proc.open("spoken_digit_files/Processed_spoken_signal.txt");
 		if(!file_proc) std::cerr<<"Failed to open output file"<<std::endl;
 		//////////////////// TODO: This part of the simulation can be paralelized ///////////////
-		for (int i=0; i<500; i++){
+		for (int i=0; i<sp_sig.size(0); i++){
 			for (int k =0; k<1024; k++){
 				//loop over the nodes
 				for (int n=0; n<no_nodes; n++){

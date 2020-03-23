@@ -59,7 +59,7 @@ namespace reservoir{
             mask_array[n] =  rng_int_dist(rng)*2.0 - 1.0;
             std::cout<<mask_array[n]<<std::endl;
 	    for (int j=0; j<1024;j++){
-		MASK(n*1024 +j )= (rng_int_dist(rng)*2.0 - 1.0)*0.1;
+		MASK(n*1024 +j )= (rng_int_dist(rng)*2.0 - 1.0);//*0.1;
 	    }
         }
 
@@ -715,51 +715,61 @@ namespace reservoir{
 
 	void read_spectogram( array_t <2,double> &sp_sig){
 
-		std::ifstream file("spoken_digit_files/Yweweler.dat");
+		std::ifstream file("spoken_digit_files/Nicolas.dat");
 		if(!file) {
 			std::cerr<<"Failed to open the spectogram file!"<<std::endl;
 		}
-		int num_lines=0;
+		/*int num_lines=0;
 		std::string line;
 		while (std::getline(file, line))
 			++num_lines;
-
 		std::cout<<"No of lines is:" <<num_lines<<std::endl;
+		
 		if(num_lines==0) std::cerr<<"The spectogram is empty or is not appropriate format! "<<std::endl;
-
-        	sp_sig.assign( num_lines, 1025, 0.0 );
+		*/
+		sp_sig.assign( 500, 1025, 1.0 );
 		//loop over the rows and columns
-		for (int i=0; i<num_lines; i++){
+		for (int i=0; i<500; i++){
 			for (int j=0; j<1025; j++){
 				file>>sp_sig(i,j);
+				//std::cout<<sp_sig(i,j)<<"\t"<<std::endl;
 			}
 		}
+		std::cout<<"Sizes of the matrix sp_sig ........."<<sp_sig.size(0)<<"\t"<<sp_sig.size(1)<<std::endl;
 		file.close();
 	}
 
 	void get_signal_digit(array_t<2,double> &sp_sig, array_t <2,double> &Xij){
 		int no_steps_per_node=std::round(theta / integrate::Dt);
-		Xij.assign( sp_sig.size(0), 1024*no_nodes, 0.0);
+		Xij.assign( 500, 64, 0.0);
+		int time_steps=16;
 		double time=0.0;
 		std::ofstream file_proc;
 		file_proc.open("spoken_digit_files/Processed_spoken_signal.txt");
 		if(!file_proc) std::cerr<<"Failed to open output file"<<std::endl;
 		//////////////////// TODO: This part of the simulation can be paralelized ///////////////
-		for (int i=0; i<sp_sig.size(0); i++){
-			for (int k =0; k<1024; k++){
-				//loop over the nodes
-				for (int n=0; n<no_nodes; n++){
-				stor::V0 = Hc + dH*sp_sig(i,k)*MASK(1024*n+k);
+		for (int i=0; i<500; i++){
+			stor::x_dw=0.0, time=0.0;
+	
+			for (int k =0; k<64; k++){
 				double avr_pos=0.0;
-					for (int t=0; t<no_steps_per_node; t++){
-						integrate::runge_kutta(time);
-						avr_pos += stor::x_dw*stor::x_dw*1e18;
-					}
-                   			// std::cout << i << "  " << k << "  " << n << "  " << time << "  " << sqrt(avr_pos/no_steps_per_node) << std::endl;
-					Xij(i, 1024*n+k)=sqrt(avr_pos/no_steps_per_node);
-				}
 
+				//loop over the time intervals
+				for (int n=1; n<=time_steps; n++){
+
+				stor::V0 = Hc + dH*sp_sig(i,k*16+n); //*MASK(1024*n+k);
+				//std::cout<<"V0 is ................="<<stor::V0<<"\t"<<"spoken signal"<<sp_sig(i,64*(n-1)+n-1)<<std::endl;
+
+					for (int t=0; t<no_steps_per_node; t++){
+						
+						integrate::runge_kutta(time);
+						avr_pos += (stor::x_dw*stor::x_dw)*1e18;
+					}
+				}
+			Xij(i,k) = sqrt(avr_pos / (time_steps*no_steps_per_node));
+				
 			}
+
 		}
 		for (int i=0; i<Xij.size(0); i++){
 			for(int j=0; j<Xij.size(1); j++){

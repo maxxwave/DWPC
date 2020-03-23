@@ -4,9 +4,9 @@ L=200e-9
 Ly=50e-9
 Lz=5e-9
 Aex=1.05e-11
-alpha=0.2
+alpha=0.02
 
-Nwires=10
+Nwires=1
 
 
 # Field's parameters:

@@ -41,44 +41,69 @@ validationy = [Nvalid]
 validationy = [line.split() for line in k] 
 validationy = np.array(validationy).astype('float')
 
-alpha=7.25
-print(ytarget)
 
-Wout = np.matmul(xij,xijT)
-Wout = np.add(Wout, alpha*alpha*np.identity(len(Wout)))
-Wout = np.linalg.pinv(Wout)
-Wout = np.matmul(xijT, Wout)
+alpha=1000
+#print(ytarget)
+
+def linear_regression(alpha):
+    Wout = np.matmul(xij,xijT)
+    Wout = np.add(Wout, alpha*alpha*np.identity(len(Wout)))
+    Wout = np.linalg.pinv(Wout)
+    Wout = np.matmul(xijT, Wout)
  
-Wout = np.matmul(ytarget.transpose(),Wout)
+    Wout = np.matmul(ytarget.transpose(),Wout)
 
 
-print("Wout sizes: ..", Wout.shape)
-#print (Wout)
+    #print("Wout sizes: ..", Wout.shape)
+    #print (Wout)
 
-Ypred=np.matmul(Wout, validationij)
+    Ypred=np.matmul(Wout, validationij)
 
-print (Ypred)
+    #print (Ypred)
 
-Ypred = Ypred.transpose()
-print("Ypred sizes: ..", Ypred.shape)
+    Ypred = Ypred.transpose()
+    #print("Ypred sizes: ..", Ypred.shape)
 
-print("Ypred sizes, Y_vec sizes: ", Ypred.shape, ytarget.shape)
+    #print("Ypred sizes, Y_vec sizes: ", Ypred.shape, ytarget.shape)
 
-def accuracy(Y_pred,Yvec):
-    count = 0
-    for i in range(0,250,1):
-        a=Y_pred[i,:]
-        b=Yvec[i,:]
+
+    count =0
+    for i in range(0,Nvalid,1):
+        a=Ypred[i,:]
+        b=validationy[i,:]
         ind_label = np.where(a==a.max())
         ind_pred  = np.where(b==b.max()) 
         if ind_label==ind_pred:
             count +=1
-        print (*ind_label,sep=" ",  *ind_pred)
+        #print (*ind_label,sep=" ",  *ind_pred)
     print("No of predictions", count)
+    return count 
 
-accuracy(Ypred,validationy)
+#accuracy(Ypred,validationy)
+linear_regression(0.001)
 
 f.close()
 g.close()
 h.close()
 k.close()
+
+
+def grid_search():
+    power =0
+    alpha=100
+    count=0
+    while True:
+        count_new=linear_regression(alpha)
+        epsilon = count_new-count
+        if (epsilon==0):
+            break
+        power -=1
+        alpha=alpha*pow(10,power)
+        print (alpha,"\t", epsilon)
+        count=count_new
+
+
+    print (alpha)
+        
+grid_search()
+

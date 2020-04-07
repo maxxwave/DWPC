@@ -2,7 +2,7 @@
 file=train_valid_signal
 
 #time duration
-T=0.5e-9
+T=0.25e-9
 
 #number of virtual nodes
 Nv=1
@@ -18,8 +18,8 @@ la=0.5
 
 #field parameters
 H0=1000
-dH=2000
+dH=5000
 #regression factor
-lambda=10
+lambda=2.1
 
 seed=27256

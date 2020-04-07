@@ -1,9 +1,9 @@
 import sys
 import numpy as np
-#f=open('Processed_spoken_signal.txt','r')
+f=open('Processed_spoken_signal.txt','r')
 #f=open('Theo.dat','r')
 
-f=open('histogram.dat','r')
+#f=open('histogram.dat','r')
 
 xij=[]
 xij=[line.split() for line in f]

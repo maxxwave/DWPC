@@ -30,5 +30,6 @@ namespace reservoir{
 	void get_input_data(std::string&, std::vector<double> &, std::vector<double> &);
 	int run();
 	int run_spoken_recognition();
+    int run_field_sequence();
 }
 #endif

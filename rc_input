@@ -1,11 +1,14 @@
 #input filename
-file=train_valid_signal
+file=TIdigits_test.txt
+outfile=TIsignal_test.txt
 
 #time duration
-T=0.25e-9
+T=6.5e-9
 
 #number of virtual nodes
-Nv=1
+Nv=13
+
+Ns=274660
 
 #number of epochs
 Ne=3
@@ -17,8 +20,8 @@ lr=0.01
 la=0.5
 
 #field parameters
-H0=1000
-dH=5000
+H0=1200
+dH=500
 #regression factor
 lambda=2.1
 

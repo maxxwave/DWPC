@@ -725,7 +725,7 @@ namespace reservoir{
 		while (std::getline(file, line))
 			++num_lines;
 		std::cout<<"No of lines is:" <<num_lines<<std::endl;
-		
+
 		if(num_lines==0) std::cerr<<"The spectogram is empty or is not appropriate format! "<<std::endl;
 		*/
 		sp_sig.assign( 2000, 1025, 1.0 );
@@ -751,22 +751,22 @@ namespace reservoir{
 		//////////////////// TODO: This part of the simulation can be paralelized ///////////////
 		for (int i=0; i<Xij.size(0); i++){
 			stor::x_dw=0.0, time=0.0;
-	
+
 			//for (int k =0; k<64; k++){
 			for (int k =0; k<1024; k++){
 				double avr_pos=0.0;
 
 				//loop over the time intervals
 				//for (int n=1; n<=time_steps; n++){
-				
+
 				//avr_pos+=sp_sig(i,k*16+n-1);
-				
+
 				//stor::V0 = Hc + dH*sp_sig(i,k*16+n-1); //*MASK(1024*n+k);
 				stor::V0 = Hc + dH*sp_sig(i,k); //*MASK(1024*n+k);
 				//std::cout<<"V0 is ................="<<stor::V0<<"\t"<<"spoken signal"<<sp_sig(i,64*(n-1)+n-1)<<std::endl;
-					
+
 					for (int t=0; t<no_steps_per_node; t++){
-						
+
 						integrate::runge_kutta(time);
 						avr_pos += stor::x_dw*stor::x_dw*1e18;
 					}
@@ -774,7 +774,7 @@ namespace reservoir{
 			//Xij(i,k) = sqrt(avr_pos / (time_steps*no_steps_per_node));
 			//Xij(i,k) = (stor::x_dw*stor::x_dw/time_steps)*1e18;
 			Xij(i,k) = sqrt(avr_pos)/time_steps;
-				
+
 			}
 
 		}
@@ -988,4 +988,99 @@ namespace reservoir{
     }
 
 
+
+
+    int run_field_sequence()
+    {
+
+        // Input is read and stored in a map class
+        input_map_t rc_inputs;
+        rc_inputs.read_file("rc_input");
+
+        // Print out the input values that have been recognised
+        std::cout << "Stored values: " << std::endl;
+        rc_inputs.print();
+
+        //Hc = rc_inputs.get<double>("H0");
+        //dH = rc_inputs.get<double>("dH");
+        int seed = rc_inputs.get<int>("seed");
+        rng.seed(seed);
+
+
+        Hc = rc_inputs.get<double>("H0");
+        dH = rc_inputs.get<double>("dH");
+        no_nodes = rc_inputs.get<int>("Nv");
+        tau = rc_inputs.get<double>("T");
+        theta = tau/no_nodes;
+
+        std::cout << "tau = " << tau << std::endl;
+        std::cout << "theta = " << theta << std::endl;
+        std::cout << "Number of nodes = " << no_nodes << std::endl;
+
+        // Access input values through get function with type template
+        std::string filename = rc_inputs.get<std::string>("file");
+
+        int Nv = rc_inputs.get<int>("Nv");
+        int Ns = rc_inputs.get<int>("Ns");
+
+        array_t<2,double> input_x;
+        array_t<2,double> Signal;
+
+        input_x.assign(Ns, Nv, 0.0);
+        Signal.assign(Ns, Nv, 0.0);
+
+        std::ifstream input (filename.c_str());
+        if(input.is_open() ){
+            for (int i = 0; i < Ns; i++) {
+                for ( int j = 0; j < Nv; j++) {
+                    double x =0;
+                    input >> x;
+                    input_x(i,j) = x;
+                }
+            }
+            input.close();
+        }
+
+
+
+        std::string outfilename = rc_inputs.get<std::string>("outfile");
+        std::ofstream outstream;
+        outstream.open(outfilename.c_str());
+
+        // we calculate the no of steps needed to be performed per node
+        no_steps_per_node=std::round(theta / integrate::Dt);
+        std::cout << "Steps per node = " << no_steps_per_node << std::endl;
+
+        double time = 0.0;
+        for (int t=0; t<Ns; t++)
+        {
+            //outstream << t << "\t" << input_x[t] << "\t";
+
+            for (int i=0; i<no_nodes;i++)
+            {
+                //store the average position of the DW
+                double average_position=0.0;
+
+                // recalculate the field
+                stor::V0 = Hc + dH*input_x(t,i);
+
+                // In this loop we average over a time=theta
+                for (int j=0; j<no_steps_per_node; j++){
+                    integrate::runge_kutta(time);
+                    average_position+= stor::x_dw*stor::x_dw*1e18;
+                    //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
+                }
+
+                // store the position of the domain wall into array of outputs
+                Signal(t,i) = stor::x_dw*1e9; //(sqrt(average_position/no_steps_per_node));
+                // Signal(t,i) = (stor::x_dw/1e-7);
+                if ( outstream.is_open() )
+                    outstream << Signal(t,i) << "\t";
+            }
+            outstream << std::endl;
+        }
+        outstream.close();
+
+        return 1;
+    }
 }

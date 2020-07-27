@@ -67,6 +67,11 @@ int main(){
         	return 0;
     }
 
+	if( stor::program.compare("RC_transient") == 0) {
+        	std::cout << "Running Transient Reservoir Computing (RC) program." << std::endl;
+        	reservoir::run_transient();
+        	return 0;
+    }
 
 	std::cout<<"Simulation ended successfully!"<<std::endl;
 	return 1;

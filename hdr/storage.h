@@ -22,7 +22,7 @@ namespace stor{
 	extern double xl,xr;
 	extern double V, V0, freq, omega;
 	extern double cell_size;
-    extern int Nwires;
+	extern int Nwires;
 	extern std::vector<double> V0_mdw;
 	extern std::vector<double> x_coord;
 	extern std::vector<double> phi_coord;
@@ -37,5 +37,6 @@ namespace stor{
 	extern double vx, phi_dt;
 	extern double Dw_size;
 	extern void initialize();
+	extern double A0, A1, A2, A3, A4, A5, A6, A7, A8;
 } //end of namespace
 #endif

@@ -15,7 +15,7 @@ namespace calculate{
 	extern double update_energy_notches(double x);
 	extern double update_energy_antinotches(double x);
 	extern double Zeeman(double Dt);
-
+	double noise( double T, double DW );
 	extern double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
 	double x_t(double DWs, double phi, double phi_t);
 	double phi_t(double dEx, double phi_rk, double H);

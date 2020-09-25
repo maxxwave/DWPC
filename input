@@ -10,17 +10,18 @@ Nwires=1
 
 
 # Field's parameters:
-H=800 #A/m
+H=1500 #A/m
 f=500e6
 
 # Simulation's parameters:
-Dt=1e-12
-totaltime=20e-9
+Dt=1e-13
+totaltime=150e-9
 out_time=0.1e-9
 integrator=RK4
 
 #Pinning field:
 pin=0
+Temperature=0
 
-program=spoken_digit_recognition
-
+program=Benchmark2
+#program=Bifurcation

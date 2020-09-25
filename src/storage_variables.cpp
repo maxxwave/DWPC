@@ -19,7 +19,8 @@
 namespace stor{
 
     std::string program("RC");
-
+	double kb=1.38064852e-23;// m2Kgs-2K-1 
+	
 	// The length of the chain on x-component
 	double L=200.0e-9;
 

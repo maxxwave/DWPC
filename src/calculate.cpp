@@ -10,6 +10,10 @@
 #include <iostream>
 #include <vector>
 #include <cmath>
+#include <random>
+#include <cstdlib>
+#include <string>
+
 #include "../hdr/storage.h"
 #include "../hdr/calculate.h"
 #include "../hdr/arrays.h"
@@ -28,7 +32,7 @@ namespace calculate{
 	// Calculating the number of cells for a given L and cell_size
 	int a = int(stor::L/stor::cell_size);
 	int N=2*a+1;
-
+	double kb=1.38064e-23;
 	// some parameters from origin fit
 	// The expression is F(X)= A0 + A1*X**2 + A2*X**2 + A3*X**3 + A4*X**4 + ... + A8*X**8
 	// These values correspond to Py antinotches
@@ -92,11 +96,21 @@ namespace calculate{
     double DW(double phi) {
         return Pi * sqrt( 2.0 * stor::A / K_eff(phi));
     }
+    //In this function we implement the stochastic term
+    std::default_random_engine generator;
+    std::normal_distribution<double> distribution(0.0,0.5);
+
+    double noise(double T, double DW){
+	double rand=distribution(generator);
+	//std::cout<<"temperatura setata=  "<<rand<<std::endl;
+    	double noise= sqrt((2*stor::alpha*kb*T/(stor::gamma*stor::muMs*stor::Lz*stor::Ly*DW*integrate::Dt))) * rand;
+	return noise;
+    }
 
 	// function which calculate the Domain wall width
 	double calculate_DW(double phi){
 		stor::Dw_size = Pi * sqrt(2*stor::A / K_eff(phi));
-                        // Pivano form of DW
+                // Pivano form of DW
 		//stor::Dw_size=sqrt(2*stor::A/(stor::mu0*stor::Ms*stor::Ms*(stor::Ny*sin(phi)*sin(phi) + stor::Nz*cos(phi)*cos(phi)))); // Matt form
 		return stor::Dw_size;
 	}// end of function calculate_DW
@@ -112,10 +126,10 @@ namespace calculate{
 
 		//this equation can be used for benchmark1 program
 		//stor::V=stor::V0*cos(stor::omega*time);
-		return stor::V ;
+		return stor::V;
 	}
 
-    double Zeeman(double time, const int i){
+        double Zeeman(double time, const int i){
 
 		return stor::V0_mdw[i]*sin(stor::omega*time);
 	}
@@ -133,9 +147,11 @@ namespace calculate{
         double dEx = update_energy_antinotches(x);
         double H = Zeeman(time);
         double DWs = calculate_DW(phi);
-        dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H;
-        dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi;
-
+	double n_x = noise(stor::T_sim, DWs);
+	double n_phi= noise(stor::T_sim, DWs);
+        dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H+n_x+stor::alpha*n_phi;
+        dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi + n_phi - stor::alpha*n_x;
+	//std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
         //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
         //dx = phi;
         //dphi = -d*phi - b*x -a*x*x*x + g*cos(w*time);
@@ -148,8 +164,10 @@ namespace calculate{
             double dEx = update_energy_antinotches(x[i]);
             double H = Zeeman(time, i);
             double DWs = calculate_DW(phi[i]);
-            dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H;
-            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i];
+	    double n_x = noise(stor::T_sim, DWs);
+	    double n_phi= noise(stor::T_sim, DWs);
+            dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H + n_x +stor::alpha*n_phi;
+            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i] +n_phi - stor::alpha*n_x;
         }
     }
 

@@ -35,7 +35,7 @@ namespace integrate{
 
 		// Store the initial positions
         phi_k = stor::phi_dw;
-		x_k   = stor::x_dw;
+	x_k   = stor::x_dw;
 
         calculate::gradient( k1, kp1, x_k, phi_k, time);
         calculate::gradient( k2, kp2, x_k + 0.5*Dt*k1, phi_k + 0.5*Dt*kp1, time + 0.5*Dt);

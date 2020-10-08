@@ -42,6 +42,9 @@ namespace stor{
 	stor::V0 = inputs.get<double>("H");
 	stor::T_sim = inputs.get<double>("Temperature");
         stor::freq = inputs.get<double>("f");
+	stor::P= inputs.get<double>("P");
+	stor::j_dens= inputs.get<double>("j");
+	stor::beta= inputs.get<double>("beta");
         stor::omega=2*Pi*stor::freq;
         integrate::Dt = inputs.get<double>("Dt");
         integrate::totaltime = inputs.get<double>("totaltime");

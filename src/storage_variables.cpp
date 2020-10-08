@@ -58,7 +58,14 @@ namespace stor{
 	//defining the length of the cell
 	//needs to be around half of the exchange length
 	double cell_size=3e-10; // in m
-
+	
+	//define the current parameters
+	double e_el=1.602176634e-19;
+	double beta=0.0;
+	double j_dens=0.0;
+	double P=0.0;
+	double mu_B=9.274e-24;
+	double u;
 
     //Number of wires
     int Nwires = 1;

@@ -27,7 +27,6 @@ namespace calculate{
 	double prefac4 = -(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
 	double zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
 	double zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
-
 	const double one_rad=Pi/180.0;
 	// Calculating the number of cells for a given L and cell_size
 	int a = int(stor::L/stor::cell_size);
@@ -142,6 +141,11 @@ namespace calculate{
 		return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
 	}
 
+	double current( double time ){
+		//std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
+		return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms); //need to add a time function
+	}
+
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
     {
         double dEx = update_energy_antinotches(x);
@@ -149,8 +153,14 @@ namespace calculate{
         double DWs = calculate_DW(phi);
 	double n_x = noise(stor::T_sim, DWs);
 	double n_phi= noise(stor::T_sim, DWs);
-        dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H+n_x+stor::alpha*n_phi;
-        dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi + n_phi - stor::alpha*n_x;
+	double u=current(time);
+        dphi = prefac3*dEx + prefac4*sin(2*phi) 
+		+ zeeman_prefac2*H+n_x+stor::alpha*n_phi 
+		+ (stor::beta-stor::alpha)*u/DWs;
+        dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi
+	       	+ n_phi - stor::alpha*n_x
+		+ u*(1-stor::alpha*stor::alpha);
+	//std::cout<<u<<std::endl;
 	//std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
         //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
         //dx = phi;
@@ -166,8 +176,10 @@ namespace calculate{
             double DWs = calculate_DW(phi[i]);
 	    double n_x = noise(stor::T_sim, DWs);
 	    double n_phi= noise(stor::T_sim, DWs);
-            dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H + n_x +stor::alpha*n_phi;
-            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i] +n_phi - stor::alpha*n_x;
+            dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
+		    + n_x +stor::alpha*n_phi;
+            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i] 
+		    +n_phi - stor::alpha*n_x;
         }
     }
 

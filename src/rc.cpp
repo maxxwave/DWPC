@@ -1159,9 +1159,9 @@ namespace reservoir{
             {
                 // recalculate the field
                 stor::V0 = Hc + dH*input_x(t,i);
+		stor::x_dw = 0.0;
+		stor::phi_dw = 0.0;
 
-                stor::x_dw = 0.0;
-                stor::phi_dw = 0.0;
                 for ( int n=0; n < Nv; n++){
 
                     // In this loop we average over a time=theta

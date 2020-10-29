@@ -61,7 +61,8 @@ namespace calculate{
 		//stor::Ex = a0 + a1*x + a2*x*x + a3*pow(x,3) + a4*pow(x,4) + a5*pow(x,5) + a6*pow(x,6) + a7*pow(x,7)+ a8*pow(x,8);
 
 		// this is the analytical derivative of the potential dE/dx
-		stor::dEx=a1+ 2*a2*x + 3*a3*x*x + 4*a4*pow(x,3) + 5*a5*pow(x,4) + 6*a6*pow(x,5) + 7*a7*pow(x,6) + 8*a8*pow(x,7);
+		// stor::dEx=a1+ 2*a2*x + 3*a3*x*x + 4*a4*pow(x,3) + 5*a5*pow(x,4) + 6*a6*pow(x,5) + 7*a7*pow(x,6) + 8*a8*pow(x,7);
+		stor::dEx= 2*x*(a2 + 2*a4*x*x);
 
 		return stor::dEx;
 	}// end of function
@@ -130,9 +131,9 @@ namespace calculate{
 
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
     {
-        double dEx = update_energy_antinotches(x);
-        double H = Zeeman(time);
-        double DWs = calculate_DW(phi);
+        const double dEx = update_energy_antinotches(x);
+        const double H = Zeeman(time);
+        const double DWs = calculate_DW(phi);
         dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi;
 

@@ -19,11 +19,11 @@ namespace calculate{
 	extern double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
 	double x_t(double DWs, double phi, double phi_t);
 	double phi_t(double dEx, double phi_rk, double H);
-    void gradient( double &, double &, double, double, const double);
-    void gradient( std::vector<double> &, std::vector<double> &, std::vector<double> &, std::vector<double> &, const double);
-    void BDF( double &, double);
-    void BDF1( double &, double);
-    void BDF2( double &, double);
-    void BDF3( double &, double);
+	void gradient( double &, double &, double, double, const double);
+	void gradient( std::vector<double> &, std::vector<double> &, std::vector<double> &, std::vector<double> &, const double);
+	void BDF( double &, double);
+	void BDF1( double &, double);
+	void BDF2( double &, double);
+	void BDF3( double &, double);
 }
 #endif

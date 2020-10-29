@@ -29,8 +29,6 @@ namespace integrate{
 	double phi_k=0.0, x_k=0.0;
 
 
-
-
 	double runge_kutta(double &time){
 
 		// Store the initial positions

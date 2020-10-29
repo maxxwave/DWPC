@@ -2,6 +2,7 @@
 #define __CALCULATE_H__
 
 #include <vector>
+#include "../hdr/storage.h"
 
 namespace calculate{
 	extern int N;
@@ -14,6 +15,9 @@ namespace calculate{
 	extern double update_energy(double x);
 	extern double update_energy_notches(double x);
 	extern double update_energy_antinotches(double x);
+
+    double compute_Hpin(double &x);
+
 	extern double Zeeman(double Dt);
 
 	extern double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;

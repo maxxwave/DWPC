@@ -22,7 +22,7 @@
 #include "../hdr/input_map.h"
 
 namespace stor{
-	void initialize(){
+    void initialize(){
         // Input is read and stored in a map class
         input_map_t inputs;
         if( inputs.read_file("input") != 0 ) {
@@ -39,7 +39,7 @@ namespace stor{
         stor::Lz = inputs.get<double>("Lz");
         stor::A = inputs.get<double>("Aex");
         stor::alpha = inputs.get<double>("alpha");
-	stor::V0 = inputs.get<double>("H");
+        stor::V0 = inputs.get<double>("H");
         stor::freq = inputs.get<double>("f");
         stor::omega=2*Pi*stor::freq;
         integrate::Dt = inputs.get<double>("Dt");
@@ -54,16 +54,22 @@ namespace stor{
         stor::V0_mdw.assign(stor::Nwires, 0.0);
         stor::x_coord[0] = 0.0e-7;
 
-	// initialize with polynomial coefficients (a0,a1, ..., a8)
-	stor::A0=inputs.get<double>("a0");
-	stor::A1=inputs.get<double>("a1");
-	stor::A2=inputs.get<double>("a2");
-	stor::A3=inputs.get<double>("a3");
-	stor::A4=inputs.get<double>("a4");
-	stor::A5=inputs.get<double>("a5");
-	stor::A6=inputs.get<double>("a6");
-	stor::A7=inputs.get<double>("a7");
-	stor::A8=inputs.get<double>("a8");
+        // initialize with polynomial coefficients (a0,a1, ..., a8)
+        std::cerr << inputs.exists("a02") << std::endl;
+        if (inputs.exists("a0"))
+            std::cerr << "A0 exists" << std::endl;
+        else
+            std::cerr << "A0 not exists" << std::endl;
+
+        stor::A0=inputs.get<double>("a0", 0.0);
+        stor::A1=inputs.get<double>("a1", 0.0);
+        stor::A2=inputs.get<double>("a2", -1.29e-7);
+        stor::A3=inputs.get<double>("a3", 0.0);
+        stor::A4=inputs.get<double>("a4", 1.632e8);
+        stor::A5=inputs.get<double>("a5", 0.0);
+        stor::A6=inputs.get<double>("a6", 0.0);
+        stor::A7=inputs.get<double>("a7", 0.0);
+        stor::A8=inputs.get<double>("a8", 0.0);
 
         if( stor::Nwires > 0 )
             integrate::multi_dw::setup(Nwires);
@@ -80,7 +86,7 @@ namespace stor{
         std::cout<<"Frequency of the field, omega = " <<stor::omega<<" Hz"<<std::endl;
         std::cout<<"Integration time step, Dt = "<<integrate::Dt <<" s"<<std::endl;
         std::cout<<"Initialization completed!"<<std::endl;
-	std::cout<<"The coefficients of E(x) are:"<<"\t"<<stor::A0<<"\t"<<stor::A1<<"\t"<<stor::A2<<"\t"<<stor::A3<<"\t"<<stor::A4<<std::endl;
+        std::cout<<"The coefficients of E(x) are:"<<"\t"<<stor::A0<<"\t"<<stor::A1<<"\t"<<stor::A2<<"\t"<<stor::A3<<"\t"<<stor::A4<<std::endl;
         std::cout<<"=====================================================================<"<<std::endl;
 
         // Initialise the parameters for the integration
@@ -90,5 +96,5 @@ namespace stor{
         calculate::prefac4 =-(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
         calculate::zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
         calculate::zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
-	}
+    }
 }//end of namespace

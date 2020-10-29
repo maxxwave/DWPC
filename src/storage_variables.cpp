@@ -58,6 +58,8 @@ namespace stor{
 	//needs to be around half of the exchange length
 	double cell_size=3e-10; // in m
 
+	//declare the coefficients of the energy polynom 
+	double A0,A1,A2,A3,A4,A5,A6,A7,A8;
 
     //Number of wires
     int Nwires = 1;

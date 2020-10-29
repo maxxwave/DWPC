@@ -39,7 +39,7 @@ namespace stor{
         stor::Lz = inputs.get<double>("Lz");
         stor::A = inputs.get<double>("Aex");
         stor::alpha = inputs.get<double>("alpha");
-		stor::V0 = inputs.get<double>("H");
+	stor::V0 = inputs.get<double>("H");
         stor::freq = inputs.get<double>("f");
         stor::omega=2*Pi*stor::freq;
         integrate::Dt = inputs.get<double>("Dt");
@@ -53,6 +53,17 @@ namespace stor{
         stor::phi_coord.assign(stor::Nwires, 0.0);
         stor::V0_mdw.assign(stor::Nwires, 0.0);
         stor::x_coord[0] = 0.0e-7;
+
+	// initialize with polynomial coefficients (a0,a1, ..., a8)
+	stor::A0=inputs.get<double>("a0");
+	stor::A1=inputs.get<double>("a1");
+	stor::A2=inputs.get<double>("a2");
+	stor::A3=inputs.get<double>("a3");
+	stor::A4=inputs.get<double>("a4");
+	stor::A5=inputs.get<double>("a5");
+	stor::A6=inputs.get<double>("a6");
+	stor::A7=inputs.get<double>("a7");
+	stor::A8=inputs.get<double>("a8");
 
         if( stor::Nwires > 0 )
             integrate::multi_dw::setup(Nwires);
@@ -69,6 +80,7 @@ namespace stor{
         std::cout<<"Frequency of the field, omega = " <<stor::omega<<" Hz"<<std::endl;
         std::cout<<"Integration time step, Dt = "<<integrate::Dt <<" s"<<std::endl;
         std::cout<<"Initialization completed!"<<std::endl;
+	std::cout<<"The coefficients of E(x) are:"<<"\t"<<stor::A0<<"\t"<<stor::A1<<"\t"<<stor::A2<<"\t"<<stor::A3<<"\t"<<stor::A4<<std::endl;
         std::cout<<"=====================================================================<"<<std::endl;
 
         // Initialise the parameters for the integration

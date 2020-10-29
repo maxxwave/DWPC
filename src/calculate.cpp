@@ -41,34 +41,23 @@ namespace calculate{
 	double a6 = 6.77e21;
 	double a7 = -7.728e27;
 	double a8 = 2.6771e35;*/
-	//These values correspond to Ni antinotches
-	double a0 = 2.21117e-21;
-	double a1 = -3.8271e-15;
-	double a2 = -1.2866e-6;
-	double a3 =  0.61164;
-	double a4 =  1.632e8;
-	double a5 = 0.0;
-	double a6 = 0.0;
-	double a7 = 0.0;
-	double a8 = 0.0;
-
-
 	// function which calculate the potential energy depending on x
 	double update_energy_antinotches(double x){
 
 		// this is the potential for notches
 		// need to find out who is a and b ???
-		//stor::Ex = a0 + a1*x + a2*x*x + a3*pow(x,3) + a4*pow(x,4) + a5*pow(x,5) + a6*pow(x,6) + a7*pow(x,7)+ a8*pow(x,8);
+		stor::Ex = stor::A0 + stor::A1*x + stor::A2*x*x + stor::A3*pow(x,3) + stor::A4*pow(x,4) + stor::A5*pow(x,5) + stor::A6*pow(x,6) + stor::A7*pow(x,7)+ stor::A8*pow(x,8);
 
 		// this is the analytical derivative of the potential dE/dx
 		// stor::dEx=a1+ 2*a2*x + 3*a3*x*x + 4*a4*pow(x,3) + 5*a5*pow(x,4) + 6*a6*pow(x,5) + 7*a7*pow(x,6) + 8*a8*pow(x,7);
-		stor::dEx= 2*x*(a2 + 2*a4*x*x);
+		//stor::dEx= 2*x*(a2 + 2*a4*x*x);
+		stor::dEx=stor::A1+ 2*stor::A2*x + 3*stor::A3*x*x + 4*stor::A4*pow(x,3) + 5*stor::A5*pow(x,4) + 6*stor::A6*pow(x,5) + 7*stor::A7*pow(x,6) + 8*stor::A8*pow(x,7);
 
 		return stor::dEx;
 	}// end of function
 
     double Vp_2deriv( const double x) {
-        return 2*a2 + 6*a3*x + 12*a4*x*x;
+        //return 2*a2 + 6*a3*x + 12*a4*x*x;
     }
 
 	// in this function we will calculate the pinning energy for anti-notches

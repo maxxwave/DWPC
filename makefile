@@ -13,4 +13,4 @@ SRCFILES= src/main.cpp \
 EXE=EXEC
 
 ${EXE} : ${SRCFILES}
-	${CC} $^ ${CFLAGS}  -o ${EXE} -llapack
+	${CC} $^ ${CFLAGS}  -o ${EXE}

@@ -189,7 +189,7 @@ class array_t<2, _T>
 			for(int j=1; j<_size[1];j++){
 				maxs[i] = ( maxs[i] < _data[ j + _size[1] * i] ) ? _data[j+_size[1]*i] : maxs[i];
 				inds[i] = ( maxs[i] < _data[ j + _size[1] * i] ) ? j : inds[i];
-				
+
 			}
 		}
 

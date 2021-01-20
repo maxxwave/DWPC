@@ -205,10 +205,10 @@ namespace reservoir{
         outstream.close();
     }
 
-    extern "C" {
-        extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
-        extern int dgelss_( int*, int*, int*, double*, int*, double*, int*, double*, double*, int*, double*, int*, int*);
-    }
+//    extern "C" {
+//        extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
+//        extern int dgelss_( int*, int*, int*, double*, int*, double*, int*, double*, double*, int*, double*, int*, int*);
+//    }
 
     void linear_regression2( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, array_t<2,double> &input_y, double regression_factor)
     {
@@ -261,7 +261,8 @@ namespace reservoir{
 
 
         //dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
-        dgelss_( &N, &N, &NRHS, &STS(0,0), &LDA, &STY(0,0), &LDB, SV, &RCOND, &RANK, WORK, &LWORK, &INFO);
+        //dgelss_( &N, &N, &NRHS, &STS(0,0), &LDA, &STY(0,0), &LDB, SV, &RCOND, &RANK, WORK, &LWORK, &INFO);
+        exit(-1);
 
         // Check if linear solver has completed correctly
         if( INFO == 0) {
@@ -322,8 +323,8 @@ namespace reservoir{
         int LDB = N;
         int INFO;
 
-        dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
-
+        //dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
+        exit(-1);
         // Check if linear solver has completed correctly
         if( INFO == 0) {
             // Store the result as the transposed weights
@@ -379,7 +380,8 @@ namespace reservoir{
         int LDB = N;
         int INFO;
 
-        dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
+        //dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
+        exit(-1);
 
         // Check if linear solver has completed correctly
         if( INFO == 0) {

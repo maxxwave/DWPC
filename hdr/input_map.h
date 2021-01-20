@@ -102,7 +102,7 @@ class input_map_t {
                 std::stringstream ss(it->second);
                 ss >> val;
             } else {
-                std::cerr << "Warning: Input key not found. Key = " << char_key << std::endl;
+                std::cerr << "Warning: Input key not found. Key = " << char_key << " , using default = " << val << std::endl;
             }
 
             return val;

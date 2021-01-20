@@ -55,12 +55,6 @@ namespace stor{
         stor::x_coord[0] = 0.0e-7;
 
         // initialize with polynomial coefficients (a0,a1, ..., a8)
-        std::cerr << inputs.exists("a02") << std::endl;
-        if (inputs.exists("a0"))
-            std::cerr << "A0 exists" << std::endl;
-        else
-            std::cerr << "A0 not exists" << std::endl;
-
         stor::A0=inputs.get<double>("a0", 0.0);
         stor::A1=inputs.get<double>("a1", 0.0);
         stor::A2=inputs.get<double>("a2", -1.29e-7);

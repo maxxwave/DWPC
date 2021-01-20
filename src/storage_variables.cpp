@@ -19,6 +19,7 @@
 namespace stor{
 
     std::string program("RC");
+	double kb=1.38064852e-23;// m2Kgs-2K-1
 
 	// The length of the chain on x-component
 	double L=200.0e-9;
@@ -58,8 +59,16 @@ namespace stor{
 	//needs to be around half of the exchange length
 	double cell_size=3e-10; // in m
 
-	//declare the coefficients of the energy polynom 
+	//declare the coefficients of the energy polynom
 	double A0,A1,A2,A3,A4,A5,A6,A7,A8;
+
+	//define the current parameters
+	double e_el=1.602176634e-19;
+	double beta=0.0;
+	double j_dens=0.0;
+	double P=0.0;
+	double mu_B=9.274e-24;
+	double u;
 
     //Number of wires
     int Nwires = 1;

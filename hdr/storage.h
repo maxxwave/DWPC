@@ -36,6 +36,7 @@ namespace stor{
 	extern double Ex, dEx;
 	extern double vx, phi_dt;
 	extern double Dw_size;
+	extern double u, mu_B, e_el, beta, P, j_dens;
 	extern void initialize();
 	extern double A0, A1, A2, A3, A4, A5, A6, A7, A8;
 } //end of namespace

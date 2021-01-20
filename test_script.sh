@@ -1,3 +1,12 @@
+#!/bin/bash
+for i in $(seq 1 1 5)
+do
+	mkdir j$i
+	cd j$i
+cp ../EXEC .
+jdens=`echo $i | awk '{printf("%g", $1*1e12)}'`
+
+cat<<EOF >input
 # Material parameters:
 Ms=477e3
 L=200e-9
@@ -7,16 +16,7 @@ Aex=1.05e-11
 alpha=0.02
 
 Nwires=1
-#Energy profile
-a0=0 #2.21117e-21
-a1=0 #-3.8271e-15
-a2=-3.2866e-6
-a3=0 #0.61164
-a4=2.632e8
-a5=0
-a6=0
-a7=0
-a8=0
+
 
 # Field's parameters:
 H=0 #A/m
@@ -34,7 +34,11 @@ Temperature=0
 #spin torque paramters
 P=0.7
 beta=0.04
-j=2e12 #A/m^2
+j=$jdens #A/m^2
 
 program=Benchmark2
 #program=Bifurcation
+EOF
+./EXEC
+cd .. 
+done

@@ -28,6 +28,7 @@ namespace calculate{
 	double zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
 	double zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
 	const double one_rad=Pi/180.0;
+	double current_prefac=(1+2*stor::alpha*stor::beta-stor::alpha*stor::alpha);
 	// Calculating the number of cells for a given L and cell_size
 	int a = int(stor::L/stor::cell_size);
 	int N=2*a+1;
@@ -99,10 +100,11 @@ namespace calculate{
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(0.0,0.5);
 
+
     double noise(double T, double DW){
 	double rand=distribution(generator);
 	//std::cout<<"temperatura setata=  "<<rand<<std::endl;
-    	double noise= sqrt((2*stor::alpha*kb*T/(stor::gamma*stor::muMs*stor::Lz*stor::Ly*DW*integrate::Dt))) * rand;
+    	double noise= sqrt((2*stor::alpha*kb*T/(stor::gamma*stor::muMs*stor::Lz*stor::Ly*DW*integrate::Dt))) * rand; //1/integrate::dt
 	return noise;
     }
 
@@ -143,7 +145,31 @@ namespace calculate{
 
 	double current( double time ){
 		//std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
-		return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms); //need to add a time function
+		//return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms)*exp(-((time*time+25e-18-2*time*5e-9)/1e-18)); //need to add a time function
+		if(time>=5e-9){
+			return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);}
+		else return 0;
+	}
+	// in this routine we calculate the DWs coupling 
+	double DW_coupling( std::vector <double> &X_DW ){
+		stor::H_DW.resize(stor::Nwires);
+		double r3=stor::rij*stor::rij*stor::rij;
+		double S1=stor::Ly*stor::Lz;
+		double S2=S1*S1;
+		// loop over the wires
+		for (int i=0; i<=X_DW.size(); i++){
+			if (i==0){
+				stor::H_DW[0] = -stor::muMs*S2*(X_DW[0]-X_DW[1])/(2*Pi*r3);}
+			if (i==X_DW.size()){
+					stor::H_DW[0] = -stor::muMs*S2*(X_DW[X_DW.size()]-X_DW[X_DW.size()-1])/(2*Pi*r3);}
+					
+			else{ 
+				// We assume the NN interaction only 
+			stor::H_DW[i] = -stor::muMs*S2*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
+					-stor::muMs*S2*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
+							
+		} 
+	return 0;
 	}
 
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
@@ -159,8 +185,8 @@ namespace calculate{
 		+ (stor::beta-stor::alpha)*u/DWs;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi
 	       	+ n_phi - stor::alpha*n_x
-		+ u*(1-stor::alpha*stor::alpha);
-	//std::cout<<u<<std::endl;
+		+ u*current_prefac;
+	//std::cout<<u<<"\t"<<time<<std::endl;
 	//std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
         //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
         //dx = phi;
@@ -170,16 +196,23 @@ namespace calculate{
 
     void gradient ( std::vector<double> &dx, std::vector<double> &dphi, std::vector<double> &x, std::vector<double> &phi, const double time)
     {
+	// calculate the DW coupling
+	//DW_coupling(integrate::multi_dw::x_p);
+	DW_coupling(x);
+
         for ( int i = 0; i < x.size(); i++) {
-            double dEx = update_energy_antinotches(x[i]);
+            double dEx = update_energy_antinotches(x[i]) + stor::H_DW[i];
             double H = Zeeman(time, i);
             double DWs = calculate_DW(phi[i]);
 	    double n_x = noise(stor::T_sim, DWs);
 	    double n_phi= noise(stor::T_sim, DWs);
+	    double u=current(time);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
-		    + n_x +stor::alpha*n_phi;
+		    + n_x +stor::alpha*n_phi
+		    + (stor::beta-stor::alpha)*u/DWs;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i] 
-		    +n_phi - stor::alpha*n_x;
+		    + n_phi - stor::alpha*n_x
+		    + u*(1-stor::alpha*stor::alpha);
         }
     }
 

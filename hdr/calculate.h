@@ -16,10 +16,12 @@ namespace calculate{
 	extern double update_energy_antinotches(double x);
 	extern double Zeeman(double Dt);
 	extern double noise( double T, double DW );
+	extern double current_prefac;
 	extern double current(double time);
 	extern double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
 	double x_t(double DWs, double phi, double phi_t);
 	double phi_t(double dEx, double phi_rk, double H);
+	extern double DW_coupling(std::vector <double> &);
     void gradient( double &, double &, double, double, const double);
     void gradient( std::vector<double> &, std::vector<double> &, std::vector<double> &, std::vector<double> &, const double);
     void BDF( double &, double);

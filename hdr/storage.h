@@ -37,6 +37,8 @@ namespace stor{
 	extern double vx, phi_dt;
 	extern double Dw_size;
 	extern double u, mu_B, e_el, beta, P, j_dens;
+	extern double rij;
+	extern std::vector<double> H_DW;
 	extern void initialize();
 } //end of namespace
 #endif

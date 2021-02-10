@@ -169,13 +169,13 @@ namespace programs{
 
             outputfile << std::fixed << std::setprecision(4)
                 << time*1e9 << "\t\t"
-                << std::setprecision(12)
+                << std::setprecision(4)
                 << stor::x_coord[0]*1e9 << "\t"
                 << stor::phi_coord[0] << "\t"
                 << stor::x_coord[1]*1e9 << "\t"
+                << stor::phi_coord[1] << "\t"
+                << stor::x_coord[2]*1e9 << "\t"
                 << stor::phi_coord[2] << "\t"
-                << stor::vx << "\t"
-                << stor::V << "\t"
                 << std::scientific << error
                 <<std::endl;
 
@@ -184,6 +184,10 @@ namespace programs{
 
 
     }// end of benchmark2
+
+   // double multi_DW(){
+    
+    //}
 
 
 }// end of namespace

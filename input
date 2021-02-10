@@ -6,11 +6,11 @@ Lz=5e-9
 Aex=1.05e-11
 alpha=0.02
 
-Nwires=1
+Nwires=3
 
 
 # Field's parameters:
-H=1500 #A/m
+H=100 #A/m
 f=500e6
 
 # Simulation's parameters:
@@ -27,5 +27,5 @@ P=0.7
 beta=0.04
 j=0 #A/m^2
 
-program=Benchmark2
+program=Benchmark3
 #program=Bifurcation

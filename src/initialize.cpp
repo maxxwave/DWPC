@@ -58,9 +58,10 @@ namespace stor{
         stor::V0_mdw.assign(stor::Nwires, 0.0);
         stor::x_coord[0] = 0.0e-7;
 
-        if( stor::Nwires > 0 )
+        if( stor::Nwires > 1 ){
             integrate::multi_dw::setup(Nwires);
-
+	    stor::V0_mdw[1]=stor::V0;
+	    }
 
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;
         std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;

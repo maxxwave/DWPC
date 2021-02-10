@@ -46,11 +46,11 @@ namespace calculate{
 	double a7 = -7.728e27;
 	double a8 = 2.6771e35;*/
 	//These values correspond to Ni antinotches
-	double a0 = 2.21117e-21;
-	double a1 = -3.8271e-15;
-	double a2 = -1.2866e-6;
-	double a3 =  0.61164;
-	double a4 =  1.632e8;
+	double a0 =0;// 2.21117e-21;
+	double a1 =0;// -3.8271e-15;
+	double a2 =0;// -1.2866e-6;
+	double a3 =0;//  0.61164;
+	double a4 =0;//  1.632e8;
 	double a5 = 0.0;
 	double a6 = 0.0;
 	double a7 = 0.0;
@@ -131,7 +131,7 @@ namespace calculate{
 	}
 
         double Zeeman(double time, const int i){
-
+		//std::cout<<stor::V0_mdw[0]<<"\t"<<stor::V0_mdw[1]<<std::endl;
 		return stor::V0_mdw[i]*sin(stor::omega*time);
 	}
 
@@ -153,20 +153,26 @@ namespace calculate{
 	// in this routine we calculate the DWs coupling 
 	double DW_coupling( std::vector <double> &X_DW ){
 		stor::H_DW.resize(stor::Nwires);
-		double r3=stor::rij*stor::rij*stor::rij;
-		double S1=stor::Ly*stor::Lz;
-		double S2=S1*S1;
+		double S=stor::Ly*stor::Lz;
 		// loop over the wires
 		for (int i=0; i<=X_DW.size(); i++){
+			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + stor::rij*stor::rij );
+			double r3=r*r*r;	
 			if (i==0){
-				stor::H_DW[0] = -stor::muMs*S2*(X_DW[0]-X_DW[1])/(2*Pi*r3);}
+				double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + stor::rij*stor::rij);
+				double r_sec3=r_sec*r_sec*r_sec;
+				stor::H_DW[0] = -stor::muMs*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
+			}
 			if (i==X_DW.size()){
-					stor::H_DW[0] = -stor::muMs*S2*(X_DW[X_DW.size()]-X_DW[X_DW.size()-1])/(2*Pi*r3);}
+				double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + stor::rij*stor::rij);
+				double r_prim3=r_prim*r_prim*r_prim;
+				stor::H_DW[X_DW.size()-1] = -stor::muMs*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
+			}
 					
 			else{ 
 				// We assume the NN interaction only 
-			stor::H_DW[i] = -stor::muMs*S2*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
-					-stor::muMs*S2*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
+			stor::H_DW[i] = -stor::muMs*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
+					-stor::muMs*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
 							
 		} 
 	return 0;
@@ -199,10 +205,11 @@ namespace calculate{
 	// calculate the DW coupling
 	//DW_coupling(integrate::multi_dw::x_p);
 	DW_coupling(x);
-
+	//std::cout<<stor::x_coord[0]<<std::endl;
+	
         for ( int i = 0; i < x.size(); i++) {
-            double dEx = update_energy_antinotches(x[i]) + stor::H_DW[i];
-            double H = Zeeman(time, i);
+            double dEx = update_energy_antinotches(x[i]);
+            double H = Zeeman(time, i) + stor::H_DW[i];
             double DWs = calculate_DW(phi[i]);
 	    double n_x = noise(stor::T_sim, DWs);
 	    double n_phi= noise(stor::T_sim, DWs);

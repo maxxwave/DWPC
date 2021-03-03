@@ -154,25 +154,25 @@ namespace calculate{
 	double DW_coupling( std::vector <double> &X_DW ){
 		stor::H_DW.resize(stor::Nwires);
 		double S=stor::Ly*stor::Lz;
+		double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
 		// loop over the wires
-		for (int i=0; i<=X_DW.size(); i++){
-			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + stor::rij*stor::rij );
-			double r3=r*r*r;	
-			if (i==0){
-				double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + stor::rij*stor::rij);
-				double r_sec3=r_sec*r_sec*r_sec;
-				stor::H_DW[0] = -stor::muMs*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
-			}
-			if (i==X_DW.size()){
-				double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + stor::rij*stor::rij);
-				double r_prim3=r_prim*r_prim*r_prim;
-				stor::H_DW[X_DW.size()-1] = -stor::muMs*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
-			}
-					
-			else{ 
-				// We assume the NN interaction only 
-			stor::H_DW[i] = -stor::muMs*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
-					-stor::muMs*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
+		for (int i=0; i<X_DW.size(); i++){
+			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
+			double r3=r*r*r;
+
+			//boundary wires	
+			double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
+			double r_sec3=r_sec*r_sec*r_sec;
+			stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
+			
+			double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
+			double r_prim3=r_prim*r_prim*r_prim;
+			stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
+			
+			if((i!=0)&&(i!=(X_DW.size()-1))){			 
+			// We assume the NN interaction only 
+			stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
+					-stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
 							
 		} 
 	return 0;
@@ -209,7 +209,7 @@ namespace calculate{
 	
         for ( int i = 0; i < x.size(); i++) {
             double dEx = update_energy_antinotches(x[i]);
-            double H = Zeeman(time, i) + stor::H_DW[i];
+            double H = Zeeman(time, i) - stor::H_DW[i];
             double DWs = calculate_DW(phi[i]);
 	    double n_x = noise(stor::T_sim, DWs);
 	    double n_phi= noise(stor::T_sim, DWs);

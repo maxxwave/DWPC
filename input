@@ -10,7 +10,7 @@ Nwires=3
 
 
 # Field's parameters:
-H=100 #A/m
+H=0 #A/m
 f=500e6
 
 # Simulation's parameters:

@@ -56,11 +56,13 @@ namespace stor{
         stor::x_coord.assign(stor::Nwires, 0.0);
         stor::phi_coord.assign(stor::Nwires, 0.0);
         stor::V0_mdw.assign(stor::Nwires, 0.0);
-        stor::x_coord[0] = 0.0e-7;
+        stor::x_coord[0] = -2.5e-8;
+	stor::x_coord[1] = 0.0;
+	stor::x_coord[2] = -2.5e-8;
 
         if( stor::Nwires > 1 ){
             integrate::multi_dw::setup(Nwires);
-	    stor::V0_mdw[1]=stor::V0;
+	    //stor::V0_mdw[1]=stor::V0;
 	    }
 
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;

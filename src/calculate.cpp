@@ -69,7 +69,7 @@ namespace calculate{
     }
 
     double Vp_2deriv( const double x) {
-        //return 2*a2 + 6*a3*x + 12*a4*x*x;
+        return 2*a2 + 6*a3*x + 12*a4*x*x;
     }
 
     // in this function we will calculate the pinning energy for anti-notches
@@ -140,10 +140,10 @@ namespace calculate{
         return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
     }
 
-	double current( double time ){
-		//std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
-		return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms); //need to add a time function
-	}
+    double current( double time ){
+        //std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
+        return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms); //need to add a time function
+    }
 
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
     {
@@ -152,17 +152,17 @@ namespace calculate{
         double dEx = update_energy_antinotches(x);
         double H = Zeeman(time);
         double DWs = calculate_DW(phi);
-	double n_x = noise(stor::T_sim, DWs);
-	double n_phi= noise(stor::T_sim, DWs);
-	double u=current(time);
+        double n_x = noise(stor::T_sim, DWs);
+        double n_phi= noise(stor::T_sim, DWs);
+        double u=current(time);
         dphi = prefac3*dEx + prefac4*sin(2*phi)
-		+ zeeman_prefac2*H+n_x+stor::alpha*n_phi
-		+ (stor::beta-stor::alpha)*u/DWs;
+            + zeeman_prefac2*H+n_x+stor::alpha*n_phi
+            + (stor::beta-stor::alpha)*u/DWs;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi
-	       	+ n_phi - stor::alpha*n_x
-		+ u*(1-stor::alpha*stor::alpha);
-	//std::cout<<u<<std::endl;
-	//std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
+            + n_phi - stor::alpha*n_x
+            + u*(1-stor::alpha*stor::alpha);
+        //std::cout<<u<<std::endl;
+        //std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
         //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
         //dx = phi;
         //dphi = -d*phi - b*x -a*x*x*x + g*cos(w*time);
@@ -175,12 +175,12 @@ namespace calculate{
             double dEx = update_energy_antinotches(x[i]);
             double H = Zeeman(time, i);
             double DWs = calculate_DW(phi[i]);
-	    double n_x = noise(stor::T_sim, DWs);
-	    double n_phi= noise(stor::T_sim, DWs);
+            double n_x = noise(stor::T_sim, DWs);
+            double n_phi= noise(stor::T_sim, DWs);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
-		    + n_x +stor::alpha*n_phi;
+                + n_x +stor::alpha*n_phi;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
-		    +n_phi - stor::alpha*n_x;
+                +n_phi - stor::alpha*n_x;
         }
     }
 

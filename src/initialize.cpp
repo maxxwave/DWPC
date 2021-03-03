@@ -22,7 +22,9 @@
 #include "../hdr/input_map.h"
 
 namespace stor{
+
     void initialize(){
+
         // Input is read and stored in a map class
         input_map_t inputs;
         if( inputs.read_file("input") != 0 ) {
@@ -40,13 +42,13 @@ namespace stor{
         stor::A = inputs.get<double>("Aex");
         stor::alpha = inputs.get<double>("alpha");
 
-	stor::V0 = inputs.get<double>("H");
-	stor::T_sim = inputs.get<double>("Temperature");
+        stor::V0 = inputs.get<double>("H");
+        stor::T_sim = inputs.get<double>("Temperature");
 
         stor::freq = inputs.get<double>("f");
-	stor::P= inputs.get<double>("P");
-	stor::j_dens= inputs.get<double>("j");
-	stor::beta= inputs.get<double>("beta");
+        stor::P= inputs.get<double>("P");
+        stor::j_dens= inputs.get<double>("j");
+        stor::beta= inputs.get<double>("beta");
         stor::omega=2*Pi*stor::freq;
         integrate::Dt = inputs.get<double>("Dt");
         integrate::totaltime = inputs.get<double>("totaltime");

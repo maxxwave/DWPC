@@ -1161,8 +1161,8 @@ namespace reservoir{
             {
                 // recalculate the field
                 stor::V0 = Hc + dH*input_x(t,i);
-		stor::x_dw = 0.0;
-		stor::phi_dw = 0.0;
+                stor::x_dw = 0.0;
+                stor::phi_dw = 0.0;
 
                 for ( int n=0; n < Nv; n++){
 
@@ -1173,7 +1173,7 @@ namespace reservoir{
                     }
 
                     // store the position of the domain wall into array of outputs
-                     Signal(t,Nv*i + n) = (stor::x_dw/1e-7);
+                    Signal(t,Nv*i + n) = (stor::x_dw/1e-7);
                     if ( outstream.is_open() )
                         outstream << Signal(t,Nv*i + n) << "\t";
                 }
@@ -1185,4 +1185,4 @@ namespace reservoir{
 
         return 1;
     }
-}
+    }

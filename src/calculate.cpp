@@ -99,12 +99,16 @@ namespace calculate{
     //In this function we implement the stochastic term
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(0.0, 1.0);
+    unsigned random_seed = 1234;
+    void seed_rng(const unsigned seed) {
+        generator.seed(seed);
+    }
 
 
     double noise(double T, double DW){
 	double rand=distribution(generator);
 	//std::cout<<"temperatura setata=  "<<rand<<std::endl;
-    	double noise= sqrt((2*stor::alpha*kb*T/(stor::gamma*stor::muMs*stor::Lz*stor::Ly*DW*integrate::Dt))) * rand; //1/integrate::dt
+    	double noise= sqrt((2*stor::alpha*kb*T*stor::gamma/(stor::Ms*stor::Lz*stor::Ly*DW*integrate::Dt))) * rand; //1/integrate::dt
 	return noise;
     }
 
@@ -183,17 +187,17 @@ namespace calculate{
         double dEx = update_energy_antinotches(x);
         double H = Zeeman(time);
         double DWs = calculate_DW(phi);
-	double n_x = noise(stor::T_sim, DWs);
-	double n_phi= noise(stor::T_sim, DWs);
-	double u=current(time);
+        double n_x = noise(stor::T_sim, DWs);
+        double n_phi= noise(stor::T_sim, DWs);
+        double u=current(time);
         dphi = prefac3*dEx + prefac4*sin(2*phi)
-		+ zeeman_prefac2*H+n_x+stor::alpha*n_phi
-		+ (stor::beta-stor::alpha)*u/DWs;
+            + zeeman_prefac2*H + (n_x + stor::alpha*n_phi)/(1+stor::alpha*stor::alpha)
+            + (stor::beta-stor::alpha)*u/DWs;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi
-	       	+ n_phi - stor::alpha*n_x
-		+ u*current_prefac;
-	//std::cout<<u<<"\t"<<time<<std::endl;
-	//std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
+            + (n_phi - stor::alpha*n_x)*DWs/(1+stor::alpha*stor::alpha)
+            + u*current_prefac;
+        //std::cout<<u<<"\t"<<time<<std::endl;
+        //std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
         //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
         //dx = phi;
         //dphi = -d*phi - b*x -a*x*x*x + g*cos(w*time);
@@ -202,24 +206,24 @@ namespace calculate{
 
     void gradient ( std::vector<double> &dx, std::vector<double> &dphi, std::vector<double> &x, std::vector<double> &phi, const double time)
     {
-	// calculate the DW coupling
-	//DW_coupling(integrate::multi_dw::x_p);
-	DW_coupling(x);
-	//std::cout<<stor::x_coord[0]<<std::endl;
+        // calculate the DW coupling
+        //DW_coupling(integrate::multi_dw::x_p);
+        DW_coupling(x);
+        //std::cout<<stor::x_coord[0]<<std::endl;
 
         for ( int i = 0; i < x.size(); i++) {
             double dEx = update_energy_antinotches(x[i]);
             double H = Zeeman(time, i) - stor::H_DW[i];
             double DWs = calculate_DW(phi[i]);
-	    double n_x = noise(stor::T_sim, DWs);
-	    double n_phi= noise(stor::T_sim, DWs);
-	    double u=current(time);
+            double n_x = noise(stor::T_sim, DWs);
+            double n_phi= noise(stor::T_sim, DWs);
+            double u=current(time);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
-		    + n_x +stor::alpha*n_phi
-		    + (stor::beta-stor::alpha)*u/DWs;
+                + n_x +stor::alpha*n_phi
+                + (stor::beta-stor::alpha)*u/DWs;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
-		    + n_phi - stor::alpha*n_x
-		    + u*(1-stor::alpha*stor::alpha);
+                + n_phi - stor::alpha*n_x
+                + u*(1-stor::alpha*stor::alpha);
         }
     }
 

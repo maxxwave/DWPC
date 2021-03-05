@@ -4,6 +4,8 @@
 #include <vector>
 
 namespace calculate{
+    extern unsigned random_seed;
+    void seed_rng(const unsigned);
 	extern int N;
 	extern int a;
 	extern double rad;

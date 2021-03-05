@@ -116,6 +116,7 @@ namespace programs{
                 << stor::phi_dw << "\t"
                 << stor::vx << "\t"
                 << stor::V << "\t"
+                << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
                 << std::scientific << error
                 <<std::endl;
 
@@ -186,7 +187,7 @@ namespace programs{
     }// end of benchmark2
 
    // double multi_DW(){
-    
+
     //}
 
 

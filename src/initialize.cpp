@@ -8,6 +8,7 @@
 //
 //
 
+#include <chrono>
 #include <cmath>
 #include <iostream>
 #include <fstream>
@@ -39,12 +40,12 @@ namespace stor{
         stor::Lz = inputs.get<double>("Lz");
         stor::A = inputs.get<double>("Aex");
         stor::alpha = inputs.get<double>("alpha");
-	stor::V0 = inputs.get<double>("H");
-	stor::T_sim = inputs.get<double>("Temperature");
+        stor::V0 = inputs.get<double>("H");
+        stor::T_sim = inputs.get<double>("Temperature");
         stor::freq = inputs.get<double>("f");
-	stor::P= inputs.get<double>("P");
-	stor::j_dens= inputs.get<double>("j");
-	stor::beta= inputs.get<double>("beta");
+        stor::P= inputs.get<double>("P");
+        stor::j_dens= inputs.get<double>("j");
+        stor::beta= inputs.get<double>("beta");
         stor::omega=2*Pi*stor::freq;
         integrate::Dt = inputs.get<double>("Dt");
         integrate::totaltime = inputs.get<double>("totaltime");
@@ -57,8 +58,20 @@ namespace stor{
         stor::phi_coord.assign(stor::Nwires, 0.0);
         stor::V0_mdw.assign(stor::Nwires, 0.0);
         stor::x_coord[0] = -2.5e-8;
-	stor::x_coord[1] = 0.0;
-	stor::x_coord[2] = -2.5e-8;
+        stor::x_coord[1] = 0.0;
+        stor::x_coord[2] = -2.5e-8;
+
+
+        typedef std::chrono::high_resolution_clock myclock;
+        //myclock::time_point beginning = myclock::now();
+        myclock::time_point tp = myclock::now();
+        // obtain a seed from the timer
+        //myclock::duration d = myclock::now() - beginning;
+        myclock::duration d = tp.time_since_epoch();
+        calculate::random_seed = d.count();
+        std::cout << calculate::random_seed << std::endl;
+        calculate::seed_rng(calculate::random_seed);
+
 
         if( stor::Nwires > 1 ){
             integrate::multi_dw::setup(Nwires);
@@ -85,5 +98,8 @@ namespace stor{
         calculate::prefac4 =-(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
         calculate::zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
         calculate::zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
+
+
+
 	}
 }//end of namespace

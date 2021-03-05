@@ -98,7 +98,7 @@ namespace calculate{
     }
     //In this function we implement the stochastic term
     std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0,0.5);
+    std::normal_distribution<double> distribution(0.0, 1.0);
 
 
     double noise(double T, double DW){
@@ -150,7 +150,7 @@ namespace calculate{
 			return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);}
 		else return 0;
 	}
-	// in this routine we calculate the DWs coupling 
+	// in this routine we calculate the DWs coupling
 	double DW_coupling( std::vector <double> &X_DW ){
 		stor::H_DW.resize(stor::Nwires);
 		double S=stor::Ly*stor::Lz;
@@ -160,21 +160,21 @@ namespace calculate{
 			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
 			double r3=r*r*r;
 
-			//boundary wires	
+			//boundary wires
 			double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
 			double r_sec3=r_sec*r_sec*r_sec;
 			stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
-			
+
 			double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
 			double r_prim3=r_prim*r_prim*r_prim;
 			stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
-			
-			if((i!=0)&&(i!=(X_DW.size()-1))){			 
-			// We assume the NN interaction only 
+
+			if((i!=0)&&(i!=(X_DW.size()-1))){
+			// We assume the NN interaction only
 			stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
 					-stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
-							
-		} 
+
+		}
 	return 0;
 	}
 
@@ -186,8 +186,8 @@ namespace calculate{
 	double n_x = noise(stor::T_sim, DWs);
 	double n_phi= noise(stor::T_sim, DWs);
 	double u=current(time);
-        dphi = prefac3*dEx + prefac4*sin(2*phi) 
-		+ zeeman_prefac2*H+n_x+stor::alpha*n_phi 
+        dphi = prefac3*dEx + prefac4*sin(2*phi)
+		+ zeeman_prefac2*H+n_x+stor::alpha*n_phi
 		+ (stor::beta-stor::alpha)*u/DWs;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi
 	       	+ n_phi - stor::alpha*n_x
@@ -206,7 +206,7 @@ namespace calculate{
 	//DW_coupling(integrate::multi_dw::x_p);
 	DW_coupling(x);
 	//std::cout<<stor::x_coord[0]<<std::endl;
-	
+
         for ( int i = 0; i < x.size(); i++) {
             double dEx = update_energy_antinotches(x[i]);
             double H = Zeeman(time, i) - stor::H_DW[i];
@@ -217,7 +217,7 @@ namespace calculate{
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
 		    + n_x +stor::alpha*n_phi
 		    + (stor::beta-stor::alpha)*u/DWs;
-            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i] 
+            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
 		    + n_phi - stor::alpha*n_x
 		    + u*(1-stor::alpha*stor::alpha);
         }

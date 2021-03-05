@@ -219,10 +219,10 @@ namespace calculate{
             double n_phi= noise(stor::T_sim, DWs);
             double u=current(time);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
-                + n_x +stor::alpha*n_phi
+                + (n_x +stor::alpha*n_phi)/(1+stor::alpha*stor::alpha)
                 + (stor::beta-stor::alpha)*u/DWs;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
-                + n_phi - stor::alpha*n_x
+                + (n_phi - stor::alpha*n_x)*DWs/(1+stor::alpha*stor::alpha)
                 + u*(1-stor::alpha*stor::alpha);
         }
     }

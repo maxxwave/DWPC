@@ -61,7 +61,10 @@ int main(){
 		std::cout<<"Running spoken digits recognition program" <<std::endl;
 		reservoir::run_spoken_recognition(); 
 	}
-
+	if (stor::program.compare("spin_current") == 0) { 
+		std::cout<<"Running spin current program" <<std::endl;
+		programs::spin_current1();
+	}	
 
 	std::cout<<"Simulation ended successfully!"<<std::endl;
 	return 1;

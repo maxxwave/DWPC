@@ -6,7 +6,7 @@ Lz=5e-9
 Aex=1.05e-11
 alpha=0.02
 
-Nwires=3
+Nwires=1
 
 
 # Field's parameters:
@@ -15,17 +15,17 @@ f=500e6
 
 # Simulation's parameters:
 Dt=1e-13
-totaltime=150e-9
+totaltime=10e-9
 out_time=0.1e-9
 integrator=RK4
 
 #Pinning field:
 pin=0
-Temperature=100
+Temperature=0
 #spin torque paramters
 P=0.7
 beta=0.04
-j=0 #A/m^2
+j=1e11 #A/m^2
 
-program=Benchmark2
+program=spin_current
 #program=Bifurcation

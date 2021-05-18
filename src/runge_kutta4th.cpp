@@ -28,6 +28,38 @@ namespace integrate{
 	double kp1=0.0, kp2=0.0, kp3=0.0, kp4=0.0;
 	double phi_k=0.0, x_k=0.0;
 
+    double n_x = 0.0, n_phi = 0.0;
+    double g1 =0.0, gp1 = 0.0;
+    double g2 =0.0, gp2 = 0.0;
+    double g3 =0.0, gp3 = 0.0;
+    double g4 =0.0, gp4 = 0.0;
+
+
+    int heun(double &time){
+
+
+		// Store the initial positions
+        phi_k = stor::phi_dw;
+        x_k   = stor::x_dw;
+
+
+        n_x = calculate::Normal();
+        n_phi = calculate::Normal();
+
+
+        calculate::gradient( k1, kp1, x_k, phi_k, time);
+        calculate::noise_gradient( g1, gp1, x_k, phi_k, n_x, n_phi);
+
+        calculate::gradient( k2, kp2, x_k + Dt*(k1+g1), phi_k + Dt*(kp1+gp1), time + Dt);
+        calculate::noise_gradient( g2, gp2, x_k + Dt*(k1+g1), phi_k + Dt*(kp1+gp1), n_x, n_phi);
+
+        stor::phi_dw = phi_k + 0.5*(kp1 + kp2 + gp1 + gp2)*Dt;
+        stor::x_dw = x_k + 0.5*(k1 + k2 + g1 + g2)*Dt;
+        time += integrate::Dt;
+
+        calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);
+        return 1;
+    }
 
 
 
@@ -35,15 +67,33 @@ namespace integrate{
 
 		// Store the initial positions
         phi_k = stor::phi_dw;
-	x_k   = stor::x_dw;
+        x_k   = stor::x_dw;
+
+        // Pre-calculate random numbers
+        n_x = calculate::Normal();
+        n_phi = calculate::Normal();
 
         calculate::gradient( k1, kp1, x_k, phi_k, time);
-        calculate::gradient( k2, kp2, x_k + 0.5*Dt*k1, phi_k + 0.5*Dt*kp1, time + 0.5*Dt);
-        calculate::gradient( k3, kp3, x_k + 0.5*Dt*k2, phi_k + 0.5*Dt*kp2, time + 0.5*Dt);
-        calculate::gradient( k4, kp4, x_k + Dt*k3, phi_k + Dt*kp3, time + Dt);
+        calculate::noise_gradient( g1, gp1, x_k, phi_k, n_x, n_phi);
 
-        stor::phi_dw = phi_k + (kp1 + 2*(kp2 + kp3) + kp4)*Dt/6.0;
-		stor::x_dw = x_k + (k1 + 2*(k2 + k3) + k4)*Dt/6.0;
+        // Predict a step of Dt/2 forward and calculate gradient
+        calculate::gradient( k2, kp2, x_k + 0.5*Dt*(k1+g1*sqrt(2)), phi_k + 0.5*Dt*(kp1+gp1*sqrt(2)), time + 0.5*Dt);
+        calculate::noise_gradient( g2, gp2, x_k + 0.5*Dt*(k1+g1*sqrt(2)), phi_k + 0.5*Dt*(kp1+gp1*sqrt(2)), n_x, n_phi);
+
+        // Predict a step of Dt/2 forward and calculate gradient
+        calculate::gradient( k3, kp3, x_k + 0.5*Dt*(k2+g2*sqrt(2)), phi_k + 0.5*Dt*(kp2+gp2*sqrt(2)), time + 0.5*Dt);
+        calculate::noise_gradient( g3, gp3, x_k + 0.5*Dt*(k2+g2*sqrt(2)), phi_k + 0.5*Dt*(kp2+gp2*sqrt(2)), n_x, n_phi);
+
+        // Predict a step of Dt forward and calculate gradient
+        calculate::gradient( k4, kp4, x_k + Dt*(k3+g3*sqrt(2)), phi_k + Dt*(kp3+gp3), time + Dt);
+        calculate::noise_gradient( g4, gp4, x_k + Dt*(k3+g3), phi_k + Dt*(kp3+gp3), n_x, n_phi);
+
+        //calculate::gradient( k2, kp2, x_k + 0.5*Dt*k1, phi_k + 0.5*Dt*kp1, time + 0.5*Dt);
+        //calculate::gradient( k3, kp3, x_k + 0.5*Dt*k2, phi_k + 0.5*Dt*kp2, time + 0.5*Dt);
+        //calculate::gradient( k4, kp4, x_k + Dt*k3, phi_k + Dt*kp3, time + Dt);
+
+        stor::phi_dw = phi_k + (kp1 + gp1 + 2*(kp2 +gp2 + kp3 + gp3) + kp4 + gp4)*Dt/6.0;
+		stor::x_dw = x_k + (k1 + g1 + 2*(k2 + g2 + k3 + g3) + k4 + g4)*Dt/6.0;
 		time += integrate::Dt;
 
         calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);

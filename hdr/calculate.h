@@ -30,5 +30,7 @@ namespace calculate{
     void BDF1( double &, double);
     void BDF2( double &, double);
     void BDF3( double &, double);
+    void noise_gradient( double&, double&, double, double, double, double);
+    double Normal();
 }
 #endif

@@ -104,9 +104,12 @@ namespace calculate{
         generator.seed(seed);
     }
 
+    double Normal() {
+        return distribution(generator);
+    }
 
     double noise(double T, double DW){
-	double rand=distribution(generator);
+        double rand=distribution(generator);
 	//std::cout<<"temperatura setata=  "<<rand<<std::endl;
     	double noise= sqrt((2*stor::alpha*kb*T*stor::gamma/(stor::Ms*stor::Lz*stor::Ly*DW*integrate::Dt))) * rand; //1/integrate::dt
 	return noise;
@@ -191,10 +194,10 @@ namespace calculate{
         double n_phi= noise(stor::T_sim, DWs);
         double u=current(time);
         dphi = prefac3*dEx + prefac4*sin(2*phi)
-            + zeeman_prefac2*H + (n_x + stor::alpha*n_phi)/(1+stor::alpha*stor::alpha)
+            + zeeman_prefac2*H //+ (n_phi + stor::alpha*n_x)/(1+stor::alpha*stor::alpha)
             + (stor::beta-stor::alpha)*u/DWs;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi
-            + (n_phi - stor::alpha*n_x)*DWs/(1+stor::alpha*stor::alpha)
+            //+ (n_x)*DWs/(1+stor::alpha*stor::alpha)
             + u*current_prefac;
         //std::cout<<u<<"\t"<<time<<std::endl;
         //std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
@@ -203,6 +206,21 @@ namespace calculate{
         //dphi = -d*phi - b*x -a*x*x*x + g*cos(w*time);
 
     }
+
+
+
+    void noise_gradient(double &gx, double &gp, double x, double phi, double n_x, double n_phi)
+    {
+        double DWs = calculate_DW(phi);
+        double gamma_p = stor::gamma/(1+stor::alpha*stor::alpha);
+        double sigma = sqrt((stor::alpha*calculate::kb*stor::T_sim*gamma_p/(stor::Ms*stor::Lz*stor::Ly*DWs*integrate::Dt)));
+        //gp = sigma*(n_phi - stor::alpha*n_x)/(1+stor::alpha*stor::alpha);
+        //gx = sigma*(n_x + stor::alpha*n_phi)*DWs/(1+stor::alpha*stor::alpha);
+        gp = sigma*n_phi;
+        gx = sigma*n_x*DWs;
+    }
+
+
 
     void gradient ( std::vector<double> &dx, std::vector<double> &dphi, std::vector<double> &x, std::vector<double> &phi, const double time)
     {

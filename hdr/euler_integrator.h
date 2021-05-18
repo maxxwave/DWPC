@@ -21,6 +21,7 @@ namespace integrate {
 	double euler_init();
 	double euler(double &time);
 	double runge_kutta(double &time);
+    int heun(double &time);
 
     namespace multi_dw {
         void setup (int);

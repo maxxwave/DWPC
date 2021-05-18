@@ -77,7 +77,8 @@ namespace programs{
     // in this subroutine we appply a oscillatory field and we extract the dynamics
     double benchmark2()
 
-    {	// declare the output file
+    {
+        // declare the output file
         std::ofstream outputfile;
         outputfile.open("output");
         //perform some equilibration steps
@@ -93,14 +94,17 @@ namespace programs{
         outputfile << std::fixed;
 
         double error = 0.0;
+        int loop_steps = std::round(Nsteps / Nout);
 
         // perform some integrations
-        for (long int i=0; i<Nsteps/Nout; i++){
+        for (long int i=0; i<loop_steps; i++){
             for(long int j=0; j<Nout; j++){
                 if( integrate::scheme.compare("EULER") == 0)
                     integrate::euler(time);
                 else if( integrate::scheme.compare("RK4") == 0)
                     integrate::runge_kutta(time);
+                else if( integrate::scheme.compare("HEUN") == 0)
+                    integrate::heun(time);
                 else if( integrate::scheme.compare("RK45") == 0)
                     error = integrate::RK45::runge_kutta_45(time, integrate::Dt);
                 else {
@@ -122,7 +126,9 @@ namespace programs{
 
         }
 
-
+        std::cerr << "Finished benchmark 2" <<std::endl;
+        outputfile.close();
+        return 1;
 
     }// end of benchmark2
 
@@ -190,7 +196,7 @@ namespace programs{
 
     //}
     //
-    
+
     // In this routine the dynamics of DW will be calculated while applying a square current pulse
     // _____|----|_____
     //
@@ -205,16 +211,16 @@ namespace programs{
 
         outputfile << "#time(ns)       X(nm)           phi            J_dens           H		v(m/s)" << std::endl;
         outputfile << std::fixed;
-	
+
 	double const amp=stor::j_dens;
         double error;
-        
+
         for (int k=0; k<no_h_values;k++)
         {
             stor::j_dens = pow(-1,k)*amp;
 
 	    for (long int i=0; i<Nsteps/Nout; i++){
-                
+
 		for(long int j=0; j<Nout; j++)
                 {
                     if(integrate::scheme.compare("EULER") == 0)
@@ -242,7 +248,7 @@ namespace programs{
         }
         outputfile.close();
         return 1;
-	
+
     }
 
 

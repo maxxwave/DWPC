@@ -31,6 +31,8 @@ namespace calculate{
     void BDF2( double &, double);
     void BDF3( double &, double);
     void noise_gradient( double&, double&, double, double, double, double);
+    void noise_gradient( std::vector<double>&, std::vector<double>&, std::vector<double> &, std::vector<double> &, std::vector<double> &, std::vector<double> &);
     double Normal();
+    void Normal(std::vector<double> &);
 }
 #endif

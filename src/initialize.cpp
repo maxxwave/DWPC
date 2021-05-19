@@ -73,10 +73,10 @@ namespace stor{
         calculate::seed_rng(calculate::random_seed);
 
 
-        if( stor::Nwires > 1 ){
+        //if( stor::Nwires > 1 ){
             integrate::multi_dw::setup(Nwires);
 	    //stor::V0_mdw[1]=stor::V0;
-	    }
+	    //}
 
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;
         std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;

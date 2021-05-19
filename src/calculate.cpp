@@ -108,6 +108,11 @@ namespace calculate{
         return distribution(generator);
     }
 
+    void Normal(std::vector<double> &x) {
+        for ( int i=0; i < x.size(); i++)
+            x[i] = distribution(generator);
+    }
+
     double noise(double T, double DW){
         double rand=distribution(generator);
 	//std::cout<<"temperatura setata=  "<<rand<<std::endl;
@@ -237,11 +242,24 @@ namespace calculate{
             double n_phi= noise(stor::T_sim, DWs);
             double u=current(time);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
-                + (n_x +stor::alpha*n_phi)/(1+stor::alpha*stor::alpha)
+                //+ (n_x +stor::alpha*n_phi)/(1+stor::alpha*stor::alpha)
                 + (stor::beta-stor::alpha)*u/DWs;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
-                + (n_phi - stor::alpha*n_x)*DWs/(1+stor::alpha*stor::alpha)
+                //+ (n_phi - stor::alpha*n_x)*DWs/(1+stor::alpha*stor::alpha)
                 + u*(1-stor::alpha*stor::alpha);
+        }
+    }
+
+    void noise_gradient(std::vector<double> &gx, std::vector<double> &gp, std::vector<double> &x, std::vector<double> &phi, std::vector<double> &n_x, std::vector<double> &n_phi)
+    {
+        for ( int i = 0; i < gx.size(); i++){
+            double DWs = calculate_DW(phi[i]);
+            double gamma_p = stor::gamma/(1+stor::alpha*stor::alpha);
+            double sigma = sqrt((stor::alpha*calculate::kb*stor::T_sim*gamma_p/(stor::Ms*stor::Lz*stor::Ly*DWs*integrate::Dt)));
+            //gp = sigma*(n_phi - stor::alpha*n_x)/(1+stor::alpha*stor::alpha);
+            //gx = sigma*(n_x + stor::alpha*n_phi)*DWs/(1+stor::alpha*stor::alpha);
+            gp[i] = sigma*n_phi[i];
+            gx[i] = sigma*n_x[i]*DWs;
         }
     }
 

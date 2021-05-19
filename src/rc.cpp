@@ -725,7 +725,7 @@ namespace reservoir{
 		while (std::getline(file, line))
 			++num_lines;
 		std::cout<<"No of lines is:" <<num_lines<<std::endl;
-		
+
 		if(num_lines==0) std::cerr<<"The spectogram is empty or is not appropriate format! "<<std::endl;
 		*/
 		sp_sig.assign( 2000, 1025, 1.0 );
@@ -751,22 +751,22 @@ namespace reservoir{
 		//////////////////// TODO: This part of the simulation can be paralelized ///////////////
 		for (int i=0; i<Xij.size(0); i++){
 			stor::x_dw=0.0, time=0.0;
-	
+
 			//for (int k =0; k<64; k++){
 			for (int k =0; k<1024; k++){
 				double avr_pos=0.0;
 
 				//loop over the time intervals
 				//for (int n=1; n<=time_steps; n++){
-				
+
 				//avr_pos+=sp_sig(i,k*16+n-1);
-				
+
 				//stor::V0 = Hc + dH*sp_sig(i,k*16+n-1); //*MASK(1024*n+k);
 				stor::V0 = Hc + dH*sp_sig(i,k); //*MASK(1024*n+k);
 				//std::cout<<"V0 is ................="<<stor::V0<<"\t"<<"spoken signal"<<sp_sig(i,64*(n-1)+n-1)<<std::endl;
-					
+
 					for (int t=0; t<no_steps_per_node; t++){
-						
+
 						integrate::runge_kutta(time);
 						avr_pos += stor::x_dw*stor::x_dw*1e18;
 					}
@@ -774,7 +774,7 @@ namespace reservoir{
 			//Xij(i,k) = sqrt(avr_pos / (time_steps*no_steps_per_node));
 			//Xij(i,k) = (stor::x_dw*stor::x_dw/time_steps)*1e18;
 			Xij(i,k) = sqrt(avr_pos)/time_steps;
-				
+
 			}
 
 		}

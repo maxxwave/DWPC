@@ -115,6 +115,18 @@ namespace integrate{
         std::vector<double> Kp3;
         std::vector<double> Kp4;
 
+        std::vector<double> gx1;
+        std::vector<double> gx2;
+        std::vector<double> gx3;
+        std::vector<double> gx4;
+        std::vector<double> gp1;
+        std::vector<double> gp2;
+        std::vector<double> gp3;
+        std::vector<double> gp4;
+
+        std::vector<double> n_x;
+        std::vector<double> n_phi;
+
 
         void setup( int Nwires)
         {
@@ -128,11 +140,59 @@ namespace integrate{
             Kp3.assign(Nwires, 0.0);
             Kx4.assign(Nwires, 0.0);
             Kp4.assign(Nwires, 0.0);
+            gx1.assign(Nwires, 0.0);
+            gp1.assign(Nwires, 0.0);
+            gx2.assign(Nwires, 0.0);
+            gp2.assign(Nwires, 0.0);
+            gx3.assign(Nwires, 0.0);
+            gp3.assign(Nwires, 0.0);
+            gx4.assign(Nwires, 0.0);
+            gp4.assign(Nwires, 0.0);
+            n_x.assign(Nwires, 0.0);
+            n_phi.assign(Nwires, 0.0);
         }
 
         double runge_kutta(std::vector<double> &x_k, std::vector<double> &phi_k, double &time, const double dt)
         {
 
+        // Pre-calculate random numbers
+        calculate::Normal(n_x);
+        calculate::Normal(n_phi);
+
+        calculate::gradient( Kx1, Kp1, x_k, phi_k, time);
+        calculate::noise_gradient( gx1, gp1, x_k, phi_k, n_x, n_phi);
+
+        for( int i = 0; i < x_p.size(); i++) {
+            x_p[i] = x_k[i] + 0.5*dt*(Kx1[i] + gx1[i]*sqrt(2)) ;
+            phi_p[i] = phi_k[i] + 0.5*dt*(Kp1[i] + gp1[i]*sqrt(2));
+        }
+
+        calculate::gradient( Kx2, Kp2, x_p, phi_p, time);
+        calculate::noise_gradient( gx2, gp2, x_p, phi_p, n_x, n_phi);
+
+        for( int i = 0; i < x_p.size(); i++) {
+            x_p[i] = x_k[i] + 0.5*dt*(Kx2[i] + gx2[i]*sqrt(2)) ;
+            phi_p[i] = phi_k[i] + 0.5*dt*(Kp2[i] + gp2[i]*sqrt(2));
+        }
+
+        calculate::gradient( Kx3, Kp3, x_p, phi_p, time);
+        calculate::noise_gradient( gx3, gp3, x_p, phi_p, n_x, n_phi);
+
+        for( int i = 0; i < x_p.size(); i++) {
+            x_p[i] = x_k[i] + 0.5*dt*(Kx3[i] + gx3[i]) ;
+            phi_p[i] = phi_k[i] + 0.5*dt*(Kp3[i] + gp3[i]);
+        }
+
+        calculate::gradient( Kx4, Kp4, x_p, phi_p, time);
+        calculate::noise_gradient( gx4, gp4, x_p, phi_p, n_x, n_phi);
+
+        for( int i = 0; i < x_p.size(); i++) {
+            phi_k[i] = phi_k[i] + (Kp1[i] + 2*(Kp2[i] + Kp3[i]) + Kp4[i])*dt/6.0;
+            phi_k[i] += (gp1[i] + 2*(gp2[i] + gp3[i]) + gp4[i])*dt/6.0;
+            x_k[i] = x_k[i] + (Kx1[i] + 2*(Kx2[i] + Kx3[i]) + Kx4[i])*dt/6.0;
+            x_k[i] += (gx1[i] + 2*(gx2[i] + gx3[i]) + gx4[i])*dt/6.0;
+        }
+        /*
             calculate::gradient( Kx1, Kp1, x_k, phi_k, time);
 
             for( int i = 0; i < x_p.size(); i++) {
@@ -158,7 +218,9 @@ namespace integrate{
                 phi_k[i] = phi_k[i] + (Kp1[i] + 2*(Kp2[i] + Kp3[i]) + Kp4[i])*dt/6.0;
                 x_k[i] = x_k[i] + (Kx1[i] + 2*(Kx2[i] + Kx3[i]) + Kx4[i])*dt/6.0;
             }
+            */
             time += dt;
+
 
             //calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);
             return 1;

@@ -5,7 +5,7 @@ file=train_valid_signal
 T=0.25e-9
 
 #number of virtual nodes
-Nv=1
+Nv=10
 
 #number of epochs
 Ne=3

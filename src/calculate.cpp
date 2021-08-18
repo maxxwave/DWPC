@@ -69,7 +69,7 @@ namespace calculate{
     }
 
     double Vp_2deriv( const double x) {
-        return 2*a2 + 6*a3*x + 12*a4*x*x;
+        return 2*stor::A2 + 12*stor::A4*x*x;
     }
 
     // in this function we will calculate the pinning energy for anti-notches

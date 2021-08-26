@@ -58,10 +58,12 @@ namespace stor{
         stor::Nwires = inputs.get<int>("Nwires");
         stor::x_coord.assign(stor::Nwires, 0.0);
         stor::phi_coord.assign(stor::Nwires, 0.0);
-        stor::V0_mdw.assign(stor::Nwires, 0.0);
-        stor::x_coord[0] = -2.5e-8;
-        stor::x_coord[1] = 0.0;
-        stor::x_coord[2] = -2.5e-8;
+        stor::V0_mdw.assign(stor::Nwires, stor::V0);
+        stor::H_DW.assign(stor::Nwires, 0.0);
+
+        //stor::x_coord[0] = -2.5e-8;
+        //stor::x_coord[1] = 0.0;
+        //stor::x_coord[2] = -2.5e-8;
 
         // initialize with polynomial coefficients (a0,a1, ..., a8)
         stor::A0=inputs.get<double>("a0", 0.0);
@@ -74,8 +76,6 @@ namespace stor{
         stor::A7=inputs.get<double>("a7", 0.0);
         stor::A8=inputs.get<double>("a8", 0.0);
 
-        if( stor::Nwires > 0 )
-            integrate::multi_dw::setup(Nwires);
 
         typedef std::chrono::high_resolution_clock myclock;
         //myclock::time_point beginning = myclock::now();
@@ -89,7 +89,7 @@ namespace stor{
 
 
         //if( stor::Nwires > 1 ){
-            integrate::multi_dw::setup(Nwires);
+        integrate::multi_dw::setup(stor::Nwires);
 	    //stor::V0_mdw[1]=stor::V0;
 	    //}
 

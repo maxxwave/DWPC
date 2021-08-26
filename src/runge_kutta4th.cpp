@@ -34,6 +34,8 @@ namespace integrate{
     double g3 =0.0, gp3 = 0.0;
     double g4 =0.0, gp4 = 0.0;
 
+    const double root2 = sqrt(2);
+
 
     int heun(double &time){
 
@@ -83,7 +85,7 @@ namespace integrate{
         calculate::noise_gradient( g3, gp3, x_k + 0.5*Dt*(k2+g2*sqrt(2)), phi_k + 0.5*Dt*(kp2+gp2*sqrt(2)), n_x, n_phi);
 
         // Predict a step of Dt forward and calculate gradient
-        calculate::gradient( k4, kp4, x_k + Dt*(k3+g3*sqrt(2)), phi_k + Dt*(kp3+gp3), time + Dt);
+        calculate::gradient( k4, kp4, x_k + Dt*(k3+g3), phi_k + Dt*(kp3+gp3), time + Dt);
         calculate::noise_gradient( g4, gp4, x_k + Dt*(k3+g3), phi_k + Dt*(kp3+gp3), n_x, n_phi);
 
         //calculate::gradient( k2, kp2, x_k + 0.5*Dt*k1, phi_k + 0.5*Dt*kp1, time + 0.5*Dt);
@@ -128,6 +130,7 @@ namespace integrate{
 
         void setup( int Nwires)
         {
+            std::cerr << "Setting up with Nwires = " << Nwires << std::endl;
             x_p.assign(Nwires, 0.0);
             phi_p.assign(Nwires, 0.0);
             Kx1.assign(Nwires, 0.0);
@@ -150,73 +153,95 @@ namespace integrate{
             n_phi.assign(Nwires, 0.0);
         }
 
-        double runge_kutta(std::vector<double> &x_k, std::vector<double> &phi_k, double &time, const double dt)
+        double runge_kutta_noT(std::vector<double> &x_k, std::vector<double> &phi_k, double &time, const double dt)
         {
+            const double dt_o_2 = 0.5*dt;
+            const double dt_o_6 = dt/6.0;
 
-        // Pre-calculate random numbers
-        calculate::Normal(n_x);
-        calculate::Normal(n_phi);
-
-        calculate::gradient( Kx1, Kp1, x_k, phi_k, time);
-        calculate::noise_gradient( gx1, gp1, x_k, phi_k, n_x, n_phi);
-
-        for( int i = 0; i < x_p.size(); i++) {
-            x_p[i] = x_k[i] + 0.5*dt*(Kx1[i] + gx1[i]*sqrt(2)) ;
-            phi_p[i] = phi_k[i] + 0.5*dt*(Kp1[i] + gp1[i]*sqrt(2));
-        }
-
-        calculate::gradient( Kx2, Kp2, x_p, phi_p, time);
-        calculate::noise_gradient( gx2, gp2, x_p, phi_p, n_x, n_phi);
-
-        for( int i = 0; i < x_p.size(); i++) {
-            x_p[i] = x_k[i] + 0.5*dt*(Kx2[i] + gx2[i]*sqrt(2)) ;
-            phi_p[i] = phi_k[i] + 0.5*dt*(Kp2[i] + gp2[i]*sqrt(2));
-        }
-
-        calculate::gradient( Kx3, Kp3, x_p, phi_p, time);
-        calculate::noise_gradient( gx3, gp3, x_p, phi_p, n_x, n_phi);
-
-        for( int i = 0; i < x_p.size(); i++) {
-            x_p[i] = x_k[i] + 0.5*dt*(Kx3[i] + gx3[i]) ;
-            phi_p[i] = phi_k[i] + 0.5*dt*(Kp3[i] + gp3[i]);
-        }
-
-        calculate::gradient( Kx4, Kp4, x_p, phi_p, time);
-        calculate::noise_gradient( gx4, gp4, x_p, phi_p, n_x, n_phi);
-
-        for( int i = 0; i < x_p.size(); i++) {
-            phi_k[i] = phi_k[i] + (Kp1[i] + 2*(Kp2[i] + Kp3[i]) + Kp4[i])*dt/6.0;
-            phi_k[i] += (gp1[i] + 2*(gp2[i] + gp3[i]) + gp4[i])*dt/6.0;
-            x_k[i] = x_k[i] + (Kx1[i] + 2*(Kx2[i] + Kx3[i]) + Kx4[i])*dt/6.0;
-            x_k[i] += (gx1[i] + 2*(gx2[i] + gx3[i]) + gx4[i])*dt/6.0;
-        }
-        /*
             calculate::gradient( Kx1, Kp1, x_k, phi_k, time);
 
             for( int i = 0; i < x_p.size(); i++) {
-                x_p[i] = x_k[i] + 0.5*dt*Kx1[i];
+                x_p[i]   = x_k[i]   + 0.5*dt*Kx1[i];
                 phi_p[i] = phi_k[i] + 0.5*dt*Kp1[i];
             }
 
-            calculate::gradient( Kx2, Kp2, x_p, phi_p, time + 0.5*dt);
+            calculate::gradient( Kx2, Kp2, x_p, phi_p, time);
 
             for( int i = 0; i < x_p.size(); i++) {
-                x_p[i] = x_k[i] + 0.5*dt*Kx2[i];
+                x_p[i]   = x_k[i]   + 0.5*dt*Kx2[i];
                 phi_p[i] = phi_k[i] + 0.5*dt*Kp2[i];
             }
 
-            calculate::gradient( Kx3, Kp3, x_p, phi_p, time + 0.5*dt);
-            for( int i = 0; i < x_p.size(); i++) {
-                x_p[i] = x_k[i] + dt*Kx3[i];
-                phi_p[i] = phi_k[i] + dt*Kp3[i];
-            }
-            calculate::gradient( Kx4, Kp4, x_p, phi_p, time + dt);
+            calculate::gradient( Kx3, Kp3, x_p, phi_p, time);
 
             for( int i = 0; i < x_p.size(); i++) {
-                phi_k[i] = phi_k[i] + (Kp1[i] + 2*(Kp2[i] + Kp3[i]) + Kp4[i])*dt/6.0;
-                x_k[i] = x_k[i] + (Kx1[i] + 2*(Kx2[i] + Kx3[i]) + Kx4[i])*dt/6.0;
+                x_p[i]   = x_k[i]   + dt*Kx3[i];
+                phi_p[i] = phi_k[i] + dt*Kp3[i];
             }
-            */
+
+            calculate::gradient( Kx4, Kp4, x_p, phi_p, time);
+
+            for( int i = 0; i < x_p.size(); i++) {
+                x_k[i]   = x_k[i]   + (Kx1[i] + 2*(Kx2[i] + Kx3[i]) + Kx4[i]) * dt_o_6;
+                phi_k[i] = phi_k[i] + (Kp1[i] + 2*(Kp2[i] + Kp3[i]) + Kp4[i]) * dt_o_6;
+            }
+            time += dt;
+
+            //calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);
+            return 1;
+        }// end of function runge_kutta
+
+        double runge_kutta(std::vector<double> &x_k, std::vector<double> &phi_k, double &time, const double dt)
+        {
+            const double dt_o_2 = 0.5*dt;
+            const double dt_o_6 = dt/6.0;
+
+            // Pre-calculate random numbers
+            calculate::Normal(n_x);
+            calculate::Normal(n_phi);
+
+            // 1) Predict half step forward
+            calculate::gradient( Kx1, Kp1, x_k, phi_k, time);
+            calculate::noise_gradient( gx1, gp1, x_k, phi_k, n_x, n_phi);
+
+            // Note: because the noise gradients contain sqrt(1/dt) but
+            // we are only making a step by dt/2 we must scale the noise
+            // gradient by sqrt(2)
+            for( int i = 0; i < x_p.size(); i++) {
+                x_p[i]   = x_k[i]   + dt_o_2*(Kx1[i] + gx1[i]*root2);
+                phi_p[i] = phi_k[i] + dt_o_2*(Kp1[i] + gp1[i]*root2);
+            }
+
+            // 2) Use midpoint prediction to predict position at midpoint
+            calculate::gradient( Kx2, Kp2, x_p, phi_p, time);
+            calculate::noise_gradient( gx2, gp2, x_p, phi_p, n_x, n_phi);
+
+            for( int i = 0; i < x_p.size(); i++) {
+                x_p[i]   = x_k[i]   + dt_o_2*(Kx2[i] + gx2[i]*root2);
+                phi_p[i] = phi_k[i] + dt_o_2*(Kp2[i] + gp2[i]*root2);
+            }
+
+            // 3) Use new midpoint to predict poisiton
+            calculate::gradient( Kx3, Kp3, x_p, phi_p, time);
+            calculate::noise_gradient( gx3, gp3, x_p, phi_p, n_x, n_phi);
+
+            for( int i = 0; i < x_p.size(); i++) {
+                x_p[i]   = x_k[i]   + dt*(Kx3[i] + gx3[i]);
+                phi_p[i] = phi_k[i] + dt*(Kp3[i] + gp3[i]);
+            }
+
+            // 4) Use the prediction for compute the new gradient
+            calculate::gradient( Kx4, Kp4, x_p, phi_p, time);
+            calculate::noise_gradient( gx4, gp4, x_p, phi_p, n_x, n_phi);
+
+            // All 4 gradients are used to update the position
+            for( int i = 0; i < x_p.size(); i++) {
+                phi_k[i] = phi_k[i] + (Kp1[i] + 2*(Kp2[i] + Kp3[i]) + Kp4[i]) * dt_o_6;
+                phi_k[i] += (gp1[i] + 2*(gp2[i] + gp3[i]) + gp4[i]) * dt_o_6;
+                x_k[i] = x_k[i] + (Kx1[i] + 2*(Kx2[i] + Kx3[i]) + Kx4[i]) * dt_o_6;
+                x_k[i] += (gx1[i] + 2*(gx2[i] + gx3[i]) + gx4[i]) * dt_o_6;
+            }
+
             time += dt;
 
 

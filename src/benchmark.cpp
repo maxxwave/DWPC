@@ -179,10 +179,11 @@ namespace programs{
                 << std::setprecision(4)
                 << stor::x_coord[0]*1e9 << "\t"
                 << stor::phi_coord[0] << "\t"
-                << stor::x_coord[1]*1e9 << "\t"
-                << stor::phi_coord[1] << "\t"
-                << stor::x_coord[2]*1e9 << "\t"
-                << stor::phi_coord[2] << "\t"
+                << stor::V << "\t"
+                //<< stor::x_coord[1]*1e9 << "\t"
+                //<< stor::phi_coord[1] << "\t"
+                //<< stor::x_coord[2]*1e9 << "\t"
+                //<< stor::phi_coord[2] << "\t"
                 << std::scientific << error
                 <<std::endl;
 

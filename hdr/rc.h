@@ -32,5 +32,6 @@ namespace reservoir{
 	int run_spoken_recognition();
     int run_field_sequence();
     int run_transient();
+    int run_multi_dw();
 }
 #endif

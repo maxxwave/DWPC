@@ -75,6 +75,12 @@ int main(){
         	return 0;
     }
 
+    if( stor::program.compare("multi_dw") == 0) {
+        	std::cout << "MultiDW program." << std::endl;
+        	reservoir::run_multi_dw();
+        	return 0;
+    }
+
     if (stor::program.compare("spin_current") == 0) {
 		std::cout<<"Running spin current program" <<std::endl;
 		programs::spin_current1();

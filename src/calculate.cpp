@@ -150,10 +150,10 @@ namespace calculate{
 		return stor::V;
 	}
 
-        double Zeeman(double time, const int i){
-		//std::cout<<stor::V0_mdw[0]<<"\t"<<stor::V0_mdw[1]<<std::endl;
-		return stor::V0_mdw[i]*sin(stor::omega*time);
-	}
+    double Zeeman(double time, const int i){
+        //std::cout<<stor::V0_mdw[0]<<"\t"<<stor::V0_mdw[1]<<std::endl;
+        return stor::V0_mdw[i]*sin(stor::omega*time);
+    }
 
     // we define two function for speed and angular speed
     double phi_t(double dEx, double phi_rk, double H){
@@ -245,7 +245,7 @@ namespace calculate{
     {
         // calculate the DW coupling
         //DW_coupling(integrate::multi_dw::x_p);
-        DW_coupling(x);
+        //DW_coupling(x);
         //std::cout<<stor::x_coord[0]<<std::endl;
 
         for ( int i = 0; i < x.size(); i++) {

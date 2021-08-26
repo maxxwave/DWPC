@@ -170,33 +170,37 @@ namespace calculate{
 			return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);}
 		else return 0;
 	}
+
 	// in this routine we calculate the DWs coupling
-	double DW_coupling( std::vector <double> &X_DW ){
-		stor::H_DW.resize(stor::Nwires);
-		double S=stor::Ly*stor::Lz;
-		double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
-		// loop over the wires
-		for (int i=0; i<X_DW.size(); i++){
-			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
-			double r3=r*r*r;
+    double DW_coupling( std::vector <double> &X_DW ){
 
-			//boundary wires
-			double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
-			double r_sec3=r_sec*r_sec*r_sec;
-			stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
+        if (stor::Nwires > 1) {
+            stor::H_DW.resize(stor::Nwires);
+            double S=stor::Ly*stor::Lz;
+            double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
+            // loop over the wires
+            for (int i=0; i<X_DW.size(); i++){
+                double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
+                double r3=r*r*r;
 
-			double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
-			double r_prim3=r_prim*r_prim*r_prim;
-			stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
+                //boundary wires
+                double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
+                double r_sec3=r_sec*r_sec*r_sec;
+                stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
 
-			if((i!=0)&&(i!=(X_DW.size()-1))){
-			// We assume the NN interaction only
-			stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
-					-stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
+                double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
+                double r_prim3=r_prim*r_prim*r_prim;
+                stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
 
-		}
-	return 0;
-	}
+                if((i!=0)&&(i!=(X_DW.size()-1))){
+                    // We assume the NN interaction only
+                    stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
+                        -stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
+
+            }
+        }
+        return 0;
+    }
 
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
     {

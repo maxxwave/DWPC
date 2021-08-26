@@ -30,7 +30,7 @@ int main(){
 
 	stor::initialize();
 
-	if(stor::program.compare("Potential")==0){
+    if(stor::program.compare("Potential")==0){
         std::cout<<"Running Potential program"<<std::endl;
 		programs::show_potential();
 	}

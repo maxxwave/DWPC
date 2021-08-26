@@ -1183,73 +1183,74 @@ namespace reservoir{
             return 1;
         }
 
-        // In this routine we calculate the dynamics of multiwires by modulating the amplitude of the spin torque current
-        double multi_wires_dynamics(std::vector<double> &X_in){
-            std::ofstream outstream;
-            outstream.open("Processed_signal_mdw.txt");
-            std::ofstream outstream2;
-            outstream2.open("Current_signal.txt");
+// In this routine we calculate the dynamics of multiwires by modulating the amplitude of the spin torque current
+double multi_wires_dynamics(std::vector<double> &X_in){
+	std::ofstream outstream;
+	outstream.open("Processed_signal_mdw.txt");
+	std::ofstream outstream2;
+	outstream2.open("Current_signal.txt");
 
-            no_steps_per_node= std::round(theta / integrate::Dt);
-            array_t<2,double> Signal;
-            std::cout<<"Running the multi-DW dynamics"<<std::endl;
+	no_steps_per_node= std::round(theta / integrate::Dt);
+	array_t<2,double> Signal;
+	std::cout<<"Running the multi-DW dynamics"<<std::endl;
 
-            std::cout << "Steps per node = " << no_steps_per_node << std::endl;
-            stor::u_dw.resize(stor::Nwires);
-            stor::j_dens_dw.resize(stor::Nwires);
-            double time=0.0;
-
-
-            //call the routine to read the spectogram
-
-            //loop over samples
-            for (int i=0; i<X_in.size(); i++){
-
-                //loop over wires
-                for(int k=0; k<stor::Nwires;k++){
-                    double average_position=0.0;
-
-                    //run integration
-                    for (int t=0; t<no_steps_per_node/2; t++){
-                        stor::j_dens_dw[k]=X_in[i];
-                        integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
-                        average_position+= stor::x_coord[k]*stor::x_coord[k]*1e18;
-                    }
-                    for (int t2=no_steps_per_node/2; t2<no_steps_per_node; t2++){
-                        stor::j_dens_dw[k]=0;
-
-                        integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
-                        average_position+= stor::x_coord[k]*stor::x_coord[k]*1e18;
-
-                    }
-                    Signal(i,k)=(sqrt(average_position/no_steps_per_node));
-                    if ( outstream.is_open() )
-                        outstream << Signal(i,k) << "\t";
-                    std::cout << Signal(i,k) << "\t";
+	std::cout << "Steps per node = " << no_steps_per_node << std::endl;
+    	stor::u_dw.resize(stor::Nwires);
+    	stor::j_dens_dw.resize(stor::Nwires);
+      	double time=0.0;
 
 
-                    outstream2<<"Time"<<"\t"<<"X_in"<<"/t"<<"u(t)"<<std::endl;
+	//call the routine to read the spectogram
 
-                }
+	//loop over samples
+	for (int i=0; i<X_in.size(); i++){
 
-                outstream.close();
+		//loop over wires
+		for(int k=0; k<stor::Nwires;k++){
+			double average_position=0.0;
 
-            }
-            outstream2.close();
-        }
+			//run integration
+			for (int t=0; t<no_steps_per_node/2; t++){
+				stor::j_dens_dw[k]=X_in[i];
+				integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
+				average_position+= stor::x_coord[k]*stor::x_coord[k]*1e18;
+			}
+			for (int t2=no_steps_per_node/2; t2<no_steps_per_node; t2++){
+				stor::j_dens_dw[k]=0;
 
-        int run_multi_dw(){
-            input_map_t rc_inputs;
-            rc_inputs.read_file("rc_input");
-            rc_inputs.print();
-            std::string filename = rc_inputs.get<std::string>("file");
-            std::vector<double> input_x;
-            std::vector<double> input_y;
-            reservoir::get_input_data(filename, input_x,input_y);
-            multi_wires_dynamics(input_x);
+				integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
+				average_position+= stor::x_coord[k]*stor::x_coord[k]*1e18;
 
-            return 0;
+			}
+			Signal(i,k)=(sqrt(average_position/no_steps_per_node));
+			if ( outstream.is_open() )
+				outstream << Signal(i,k) << "\t";
+			std::cout << Signal(i,k) << "\t";
 
-        }
+
+			outstream2<<"Time"<<"\t"<<"X_in"<<"/t"<<"u(t)"<<std::endl;
+
+    		}
+
+		outstream.close();
+
+	}
+	outstream2.close();
+}
+
+
+int run_multi_dw(){
+	input_map_t rc_inputs;
+	rc_inputs.read_file("rc_input");
+	rc_inputs.print();
+	std::string filename = rc_inputs.get<std::string>("file");
+	std::vector<double> input_x;
+	std::vector<double> input_y;
+	reservoir::get_input_data(filename, input_x, input_y);
+	multi_wires_dynamics(input_x);
+
+	return 0;
+
+}
 
 }

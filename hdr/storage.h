@@ -39,6 +39,8 @@ namespace stor{
 	extern double u, mu_B, e_el, beta, P, j_dens;
 	extern double rij;
 	extern std::vector<double> H_DW;
+	extern std::vector<double> j_dens_dw;
+	extern std::vector<double> u_dw;
 	extern void initialize();
 	extern double A0, A1, A2, A3, A4, A5, A6, A7, A8;
 } //end of namespace

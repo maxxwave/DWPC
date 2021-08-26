@@ -10,7 +10,7 @@ SRCFILES= src/main.cpp \
 	  src/bifurcation.cpp \
 	  src/benchmark.cpp\
 	  src/rc.cpp
-EXE=EXEC
+EXE=DWPC
 
 ${EXE} : ${SRCFILES}
-	${CC} $^ ${CFLAGS}  -o ${EXE}
+	${CC} $^ ${CFLAGS}  -o ${EXE} -llapack -g -pg

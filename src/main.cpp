@@ -42,6 +42,8 @@ int main(){
 	if(stor::program.compare("Benchmark2")==0){
         std::cout<<"Running 'Benchmark-2 (Time-series) program"<<std::endl;
 		programs::benchmark2();
+	    std::cout<<"Simulation ended successfully!"<<std::endl;
+        return 0;
 	}
 	if(stor::program.compare("Benchmark3")==0){
         std::cout<<"Running 'Benchmark-3 (Time-series) program"<<std::endl;
@@ -72,6 +74,11 @@ int main(){
         	reservoir::run_transient();
         	return 0;
     }
+
+    if (stor::program.compare("spin_current") == 0) {
+		std::cout<<"Running spin current program" <<std::endl;
+		programs::spin_current1();
+	}
 
 	std::cout<<"Simulation ended successfully!"<<std::endl;
 	return 1;

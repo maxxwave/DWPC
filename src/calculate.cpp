@@ -22,32 +22,41 @@
 #include "../hdr/euler_integrator.h"
 
 namespace calculate{
-    // Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
-    double prefac1 = (-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
-    double prefac2 = stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);
-    double prefac3 = -stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
-    double prefac4 = -(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
-    double zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
-    double zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
-
+	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
+	double prefac1 = (-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
+	double prefac2 = stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);
+	double prefac3 = -stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
+	double prefac4 = -(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
+	double zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
+	double zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
+	const double one_rad=Pi/180.0;
+	double current_prefac=(1+2*stor::alpha*stor::beta-stor::alpha*stor::alpha);
+	// Calculating the number of cells for a given L and cell_size
+	int a = int(stor::L/stor::cell_size);
+	int N=2*a+1;
 	double kb=1.38064e-23;
-    const double one_rad=Pi/180.0;
-    // Calculating the number of cells for a given L and cell_size
-    int a = int(stor::L/stor::cell_size);
-    int N=2*a+1;
-
-    // some parameters from origin fit
-    // The expression is F(X)= A0 + A1*X**2 + A2*X**2 + A3*X**3 + A4*X**4 + ... + A8*X**8
-    // These values correspond to Py antinotches
-    /*double a0 = 2.395e-20;
-      double a1 = 6.741e-15;
-      double a2 = -1.29e-7;
-      double a3 = -2.94244;
-      double a4 = -2.567e8;
-      double a5 = 2.91623e14;
-      double a6 = 6.77e21;
-      double a7 = -7.728e27;
-      double a8 = 2.6771e35;*/
+	// some parameters from origin fit
+	// The expression is F(X)= A0 + A1*X**2 + A2*X**2 + A3*X**3 + A4*X**4 + ... + A8*X**8
+	// These values correspond to Py antinotches
+	/*double a0 = 2.395e-20;
+	double a1 = 6.741e-15;
+	double a2 = -1.29e-7;
+	double a3 = -2.94244;
+	double a4 = -2.567e8;
+	double a5 = 2.91623e14;
+	double a6 = 6.77e21;
+	double a7 = -7.728e27;
+	double a8 = 2.6771e35;*/
+	//These values correspond to Ni antinotches
+	double a0 =0;// 2.21117e-21;
+	double a1 =0;// -3.8271e-15;
+	double a2 =0;// -1.2866e-6;
+	double a3 =0;//  0.61164;
+	double a4 =0;//  1.632e8;
+	double a5 = 0.0;
+	double a6 = 0.0;
+	double a7 = 0.0;
+	double a8 = 0.0;
 
     // function which calculate the potential energy depending on x
     double update_energy_antinotches(double x){
@@ -62,6 +71,7 @@ namespace calculate{
 
         return stor::dEx;
     }// end of function
+
 
     double compute_Hpin(double &x)
     {
@@ -96,12 +106,25 @@ namespace calculate{
     }
     //In this function we implement the stochastic term
     std::default_random_engine generator;
-    std::normal_distribution<double> distribution(0.0,0.5);
+    std::normal_distribution<double> distribution(0.0, 1.0);
+    unsigned random_seed = 1234;
+    void seed_rng(const unsigned seed) {
+        generator.seed(seed);
+    }
+
+    double Normal() {
+        return distribution(generator);
+    }
+
+    void Normal(std::vector<double> &x) {
+        for ( int i=0; i < x.size(); i++)
+            x[i] = distribution(generator);
+    }
 
     double noise(double T, double DW){
-	double rand=distribution(generator);
+        double rand=distribution(generator);
 	//std::cout<<"temperatura setata=  "<<rand<<std::endl;
-    	double noise= sqrt((2*stor::alpha*kb*T/(stor::gamma*stor::muMs*stor::Lz*stor::Ly*DW*integrate::Dt))) * rand;
+    	double noise= sqrt((2*stor::alpha*kb*T*stor::gamma/(stor::Ms*stor::Lz*stor::Ly*DW*integrate::Dt))) * rand; //1/integrate::dt
 	return noise;
     }
 
@@ -127,10 +150,10 @@ namespace calculate{
 		return stor::V;
 	}
 
-    double Zeeman(double time, const int i){
-
-        return stor::V0_mdw[i]*sin(stor::omega*time);
-    }
+        double Zeeman(double time, const int i){
+		//std::cout<<stor::V0_mdw[0]<<"\t"<<stor::V0_mdw[1]<<std::endl;
+		return stor::V0_mdw[i]*sin(stor::omega*time);
+	}
 
     // we define two function for speed and angular speed
     double phi_t(double dEx, double phi_rk, double H){
@@ -140,10 +163,40 @@ namespace calculate{
         return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
     }
 
-    double current( double time ){
-        //std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
-        return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms); //need to add a time function
-    }
+	double current( double time ){
+		//std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
+		//return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms)*exp(-((time*time+25e-18-2*time*5e-9)/1e-18)); //need to add a time function
+		if(time>=5e-9){
+			return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);}
+		else return 0;
+	}
+	// in this routine we calculate the DWs coupling
+	double DW_coupling( std::vector <double> &X_DW ){
+		stor::H_DW.resize(stor::Nwires);
+		double S=stor::Ly*stor::Lz;
+		double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
+		// loop over the wires
+		for (int i=0; i<X_DW.size(); i++){
+			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
+			double r3=r*r*r;
+
+			//boundary wires
+			double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
+			double r_sec3=r_sec*r_sec*r_sec;
+			stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
+
+			double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
+			double r_prim3=r_prim*r_prim*r_prim;
+			stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
+
+			if((i!=0)&&(i!=(X_DW.size()-1))){
+			// We assume the NN interaction only
+			stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
+					-stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
+
+		}
+	return 0;
+	}
 
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
     {
@@ -156,12 +209,12 @@ namespace calculate{
         double n_phi= noise(stor::T_sim, DWs);
         double u=current(time);
         dphi = prefac3*dEx + prefac4*sin(2*phi)
-            + zeeman_prefac2*H+n_x+stor::alpha*n_phi
+            + zeeman_prefac2*H //+ (n_phi + stor::alpha*n_x)/(1+stor::alpha*stor::alpha)
             + (stor::beta-stor::alpha)*u/DWs;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi
-            + n_phi - stor::alpha*n_x
-            + u*(1-stor::alpha*stor::alpha);
-        //std::cout<<u<<std::endl;
+            //+ (n_x)*DWs/(1+stor::alpha*stor::alpha)
+            + u*current_prefac;
+        //std::cout<<u<<"\t"<<time<<std::endl;
         //std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
         //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
         //dx = phi;
@@ -169,18 +222,54 @@ namespace calculate{
 
     }
 
+
+
+    void noise_gradient(double &gx, double &gp, double x, double phi, double n_x, double n_phi)
+    {
+        double DWs = calculate_DW(phi);
+        double gamma_p = stor::gamma/(1+stor::alpha*stor::alpha);
+        double sigma = sqrt((stor::alpha*calculate::kb*stor::T_sim*gamma_p/(stor::Ms*stor::Lz*stor::Ly*DWs*integrate::Dt)));
+        //gp = sigma*(n_phi - stor::alpha*n_x)/(1+stor::alpha*stor::alpha);
+        //gx = sigma*(n_x + stor::alpha*n_phi)*DWs/(1+stor::alpha*stor::alpha);
+        gp = sigma*n_phi;
+        gx = sigma*n_x*DWs;
+    }
+
+
+
     void gradient ( std::vector<double> &dx, std::vector<double> &dphi, std::vector<double> &x, std::vector<double> &phi, const double time)
     {
+        // calculate the DW coupling
+        //DW_coupling(integrate::multi_dw::x_p);
+        DW_coupling(x);
+        //std::cout<<stor::x_coord[0]<<std::endl;
+
         for ( int i = 0; i < x.size(); i++) {
             double dEx = update_energy_antinotches(x[i]);
-            double H = Zeeman(time, i);
+            double H = Zeeman(time, i) - stor::H_DW[i];
             double DWs = calculate_DW(phi[i]);
             double n_x = noise(stor::T_sim, DWs);
             double n_phi= noise(stor::T_sim, DWs);
+            double u=current(time);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
-                + n_x +stor::alpha*n_phi;
+                //+ (n_x +stor::alpha*n_phi)/(1+stor::alpha*stor::alpha)
+                + (stor::beta-stor::alpha)*u/DWs;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
-                +n_phi - stor::alpha*n_x;
+                //+ (n_phi - stor::alpha*n_x)*DWs/(1+stor::alpha*stor::alpha)
+                + u*(1-stor::alpha*stor::alpha);
+        }
+    }
+
+    void noise_gradient(std::vector<double> &gx, std::vector<double> &gp, std::vector<double> &x, std::vector<double> &phi, std::vector<double> &n_x, std::vector<double> &n_phi)
+    {
+        for ( int i = 0; i < gx.size(); i++){
+            double DWs = calculate_DW(phi[i]);
+            double gamma_p = stor::gamma/(1+stor::alpha*stor::alpha);
+            double sigma = sqrt((stor::alpha*calculate::kb*stor::T_sim*gamma_p/(stor::Ms*stor::Lz*stor::Ly*DWs*integrate::Dt)));
+            //gp = sigma*(n_phi - stor::alpha*n_x)/(1+stor::alpha*stor::alpha);
+            //gx = sigma*(n_x + stor::alpha*n_phi)*DWs/(1+stor::alpha*stor::alpha);
+            gp[i] = sigma*n_phi[i];
+            gx[i] = sigma*n_x[i]*DWs;
         }
     }
 

@@ -1,3 +1,9 @@
+for i in $(seq 1 2 10)
+do 
+	jd=`echo $i| awk '{printf("%g", $1*1e11)}'`
+	mkdir j_dens$i
+	cd j_dens$i
+cat<<EOF >input
 # Material parameters:
 Ms=477e3
 L=200e-9
@@ -7,16 +13,7 @@ Aex=1.05e-11
 alpha=0.02
 
 Nwires=1
-#Energy profile
-a0=0 #2.21117e-21
-a1=0 #-3.8271e-15
-a2=-3.2866e-6
-a3=0 #0.61164
-a4=2.632e8
-a5=0
-a6=0
-a7=0
-a8=0
+
 
 # Field's parameters:
 H=0 #A/m
@@ -30,12 +27,16 @@ integrator=RK4
 
 #Pinning field:
 pin=0
-Temperature=10
+Temperature=0
 #spin torque paramters
-P=0.0
+P=0.7
 beta=0.04
-j=1e11 #A/m^2
+j=$jd #A/m^2
 
-program=RC
-#program=spin_current
+program=Benchmark2
 #program=Bifurcation
+EOF
+cp ../EXEC . 
+./EXEC
+cd ..
+done 

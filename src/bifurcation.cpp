@@ -33,7 +33,7 @@ namespace programs{
             // This is a local variable dedicated to control the time simulation
             double time=0.0;
             //perform some equilibration steps
-            for (int j = 0; j<(10*no_steps_per_period); j++){
+            for (int j = 0; j<(10.25*no_steps_per_period); j++){
                 integrate::runge_kutta(time);
             }//end of equilibration
 

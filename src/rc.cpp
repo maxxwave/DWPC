@@ -53,14 +53,14 @@ namespace reservoir{
 
     // in this function we generate random number for the mask which can be either -1 or +1
     void mask_values(){
-    	MASK.assign( 1024*no_nodes, 0.0);
+        MASK.assign( 1024*no_nodes, 0.0);
         mask_array.assign( no_nodes, 0);
         for (int n=0; n<no_nodes; n++){
             mask_array[n] =  rng_int_dist(rng)*2.0 - 1.0;
             std::cout<<mask_array[n]<<std::endl;
-	    for (int j=0; j<1024;j++){
-		MASK(n*1024 +j )= (rng_int_dist(rng)*2.0 - 1.0);//*0.1;
-	    }
+            for (int j=0; j<1024;j++){
+                MASK(n*1024 +j )= (rng_int_dist(rng)*2.0 - 1.0);//*0.1;
+            }
         }
 
     }
@@ -68,7 +68,7 @@ namespace reservoir{
     // In this routine we get the oscillator response x_i(t), where i is the sequential node
     // i=0..24
     void oscillation_response(double Hi){
-	double time=0.0;
+        double time=0.0;
         // we calculate the no of steps needed to be performed per node
         no_steps_per_node=std::round(theta / integrate::Dt);
 
@@ -205,10 +205,10 @@ namespace reservoir{
         outstream.close();
     }
 
-//    extern "C" {
-//        extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
-//        extern int dgelss_( int*, int*, int*, double*, int*, double*, int*, double*, double*, int*, double*, int*, int*);
-//    }
+    //    extern "C" {
+    //        extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
+    //        extern int dgelss_( int*, int*, int*, double*, int*, double*, int*, double*, double*, int*, double*, int*, int*);
+    //    }
 
     void linear_regression2( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, array_t<2,double> &input_y, double regression_factor)
     {
@@ -449,12 +449,12 @@ namespace reservoir{
 
         // transpose the matrix
         /*array_t <2,double> Weights_t;
-        Weights_t.assign(Weights.size(1), Weights.size(0), 0.0);
-        for(int i,j=0; i<Weights.size(1), j<Weights.size(0); i,j++){
-            Weights_t(i,j)=Weights(j,i);
-        }
-        std::cout<<"Sizes of Weights_t :"<<"\t"<<Weights_t.size(0)<<std::endl;
-        */
+          Weights_t.assign(Weights.size(1), Weights.size(0), 0.0);
+          for(int i,j=0; i<Weights.size(1), j<Weights.size(0); i,j++){
+          Weights_t(i,j)=Weights(j,i);
+          }
+          std::cout<<"Sizes of Weights_t :"<<"\t"<<Weights_t.size(0)<<std::endl;
+          */
         //calculate the prediction matrix
         /*if(Weights_t.size(0)!=Signal.size(1)) std::cerr<<"Conflict matrix sizes!"<<std::endl;
           for (int i=0; i<Signal.size(0);i++){
@@ -498,7 +498,7 @@ namespace reservoir{
         std::cout << "Weights = " << std::endl;
         for( int i = 0; i < no_nodes; i++){
             std::cout << Weights(0,i) << std::endl;
-	}
+        }
         std::vector<double> pred;
         linear_model(pred, Signal, Weights);
 
@@ -582,12 +582,12 @@ namespace reservoir{
         std::ofstream outstream;
         outstream.open("accuracy_valid.data");
         for ( int i = 0; i < valid_x.size(); i++)
-          outstream << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (pred[i] > 0.5 ? 1 : 0) << std::endl;
+            outstream << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (pred[i] > 0.5 ? 1 : 0) << std::endl;
         //(( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
         /*
-          for ( int i = 0; i < valid_y.size(); i++)
-          std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
-          */
+           for ( int i = 0; i < valid_y.size(); i++)
+           std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
+           */
         outstream.close();
         return Ncorrect;
     }
@@ -715,474 +715,541 @@ namespace reservoir{
         }
     }
 
-	void read_spectogram( array_t <2,double> &sp_sig){
+    void read_spectogram( array_t <2,double> &sp_sig){
 
-		//std::ifstream file("spoken_digit_files/Nicolas.dat");
-		std::ifstream file("Signal_in.data");
-		if(!file) {
-			std::cerr<<"Failed to open the spectogram file!"<<std::endl;
-		}
-		/*int num_lines=0;
-		std::string line;
-		while (std::getline(file, line))
-			++num_lines;
-		std::cout<<"No of lines is:" <<num_lines<<std::endl;
+        //std::ifstream file("spoken_digit_files/Nicolas.dat");
+        std::ifstream file("Signal_in.data");
+        if(!file) {
+            std::cerr<<"Failed to open the spectogram file!"<<std::endl;
+        }
+        /*int num_lines=0;
+          std::string line;
+          while (std::getline(file, line))
+          ++num_lines;
+          std::cout<<"No of lines is:" <<num_lines<<std::endl;
 
-		if(num_lines==0) std::cerr<<"The spectogram is empty or is not appropriate format! "<<std::endl;
-		*/
-		sp_sig.assign( 2000, 1025, 1.0 );
-		//loop over the rows and columns
-		for (int i=0; i<2000; i++){
-			for (int j=0; j<1025; j++){
-				file>>sp_sig(i,j);
-				//std::cout<<sp_sig(i,j)<<"\t"<<std::endl;
-			}
-		}
-		std::cout<<"Sizes of the matrix sp_sig ........."<<sp_sig.size(0)<<"\t"<<sp_sig.size(1)<<std::endl;
-		file.close();
-	}
-
-	void get_signal_digit(array_t<2,double> &sp_sig, array_t <2,double> &Xij){
-		int no_steps_per_node=std::round(theta / integrate::Dt);
-		Xij.assign(2000, 1024, 0.0);
-		int time_steps=16;
-		double time=0.0;
-		std::ofstream file_proc;
-		file_proc.open("Processed_spoken_signal.txt");
-		if(!file_proc) std::cerr<<"Failed to open output file"<<std::endl;
-		//////////////////// TODO: This part of the simulation can be paralelized ///////////////
-		for (int i=0; i<Xij.size(0); i++){
-			stor::x_dw=0.0, time=0.0;
-
-			//for (int k =0; k<64; k++){
-			for (int k =0; k<1024; k++){
-				double avr_pos=0.0;
-
-				//loop over the time intervals
-				//for (int n=1; n<=time_steps; n++){
-
-				//avr_pos+=sp_sig(i,k*16+n-1);
-
-				//stor::V0 = Hc + dH*sp_sig(i,k*16+n-1); //*MASK(1024*n+k);
-				stor::V0 = Hc + dH*sp_sig(i,k); //*MASK(1024*n+k);
-				//std::cout<<"V0 is ................="<<stor::V0<<"\t"<<"spoken signal"<<sp_sig(i,64*(n-1)+n-1)<<std::endl;
-
-					for (int t=0; t<no_steps_per_node; t++){
-
-						integrate::runge_kutta(time);
-						avr_pos += stor::x_dw*stor::x_dw*1e18;
-					}
-				//}
-			//Xij(i,k) = sqrt(avr_pos / (time_steps*no_steps_per_node));
-			//Xij(i,k) = (stor::x_dw*stor::x_dw/time_steps)*1e18;
-			Xij(i,k) = sqrt(avr_pos)/time_steps;
-
-			}
-
-		}
-		for (int i=0; i<Xij.size(0); i++){
-			for(int j=0; j<Xij.size(1); j++){
-				file_proc<<Xij(i,j)<<"\t";
-			}
-			file_proc<<"\n";
-		}
-
-
-	}
-
-    double MSE( array_t<2,double> &pred, array_t<2,double> &desired)
-    {
-        double error = 0.0;
-        for( int i = 0; i < pred.size(0); i++){
-            for( int j = 0; j < pred.size(1); j++){
-                error += 0.5*( pred(i,j) - desired(i,j))*( pred(i,j) - desired(i,j));
+          if(num_lines==0) std::cerr<<"The spectogram is empty or is not appropriate format! "<<std::endl;
+          */
+        sp_sig.assign( 2000, 1025, 1.0 );
+        //loop over the rows and columns
+        for (int i=0; i<2000; i++){
+            for (int j=0; j<1025; j++){
+                file>>sp_sig(i,j);
+                //std::cout<<sp_sig(i,j)<<"\t"<<std::endl;
             }
         }
-        return error/double(pred.size(0));
+        std::cout<<"Sizes of the matrix sp_sig ........."<<sp_sig.size(0)<<"\t"<<sp_sig.size(1)<<std::endl;
+        file.close();
     }
 
+    void get_signal_digit(array_t<2,double> &sp_sig, array_t <2,double> &Xij){
+        int no_steps_per_node=std::round(theta / integrate::Dt);
+        Xij.assign(2000, 1024, 0.0);
+        int time_steps=16;
+        double time=0.0;
+        std::ofstream file_proc;
+        file_proc.open("Processed_spoken_signal.txt");
+        if(!file_proc) std::cerr<<"Failed to open output file"<<std::endl;
+        //////////////////// TODO: This part of the simulation can be paralelized ///////////////
+        for (int i=0; i<Xij.size(0); i++){
+            stor::x_dw=0.0, time=0.0;
 
-    double spoken_training(double &regression_factor){
+            //for (int k =0; k<64; k++){
+            for (int k =0; k<1024; k++){
+                double avr_pos=0.0;
 
-        mask_values();
+                //loop over the time intervals
+                //for (int n=1; n<=time_steps; n++){
 
-        // in this array we store the input signal from spectogram
-        array_t<2, double> sp_sig;
-        read_spectogram(sp_sig);
+                //avr_pos+=sp_sig(i,k*16+n-1);
 
-        array_t<2,double> Xij;
-        array_t<2,double> Weights;
-        array_t<1,double> Y_digit;
-        array_t<2,double> Y_vec;
+                //stor::V0 = Hc + dH*sp_sig(i,k*16+n-1); //*MASK(1024*n+k);
+                stor::V0 = Hc + dH*sp_sig(i,k); //*MASK(1024*n+k);
+                //std::cout<<"V0 is ................="<<stor::V0<<"\t"<<"spoken signal"<<sp_sig(i,64*(n-1)+n-1)<<std::endl;
 
+                for (int t=0; t<no_steps_per_node; t++){
 
-        int Nsamples = sp_sig.size(0);
+                    integrate::runge_kutta(time);
+                    avr_pos += stor::x_dw*stor::x_dw*1e18;
+                }
+                //}
+                //Xij(i,k) = sqrt(avr_pos / (time_steps*no_steps_per_node));
+                //Xij(i,k) = (stor::x_dw*stor::x_dw/time_steps)*1e18;
+                Xij(i,k) = sqrt(avr_pos)/time_steps;
 
-        Y_digit.assign(Nsamples, 0.0);
-        Y_vec.assign(Nsamples, 10, 0.0);
+            }
 
-        for (int i = 0; i < Nsamples; i++){
-            Y_digit(i) = sp_sig(i,1024);
-            Y_vec(i, Y_digit(i)) = 1.0;
+        }
+        for (int i=0; i<Xij.size(0); i++){
+            for(int j=0; j<Xij.size(1); j++){
+                file_proc<<Xij(i,j)<<"\t";
+            }
+            file_proc<<"\n";
+        }
         }
 
-        /*for (int i = 0; i < Nsamples; i++){
-            for (int j=0; j<10; j++){
-                std::cout <<Y_vec(i,j)<<"\t";
+        double MSE( array_t<2,double> &pred, array_t<2,double> &desired)
+        {
+            double error = 0.0;
+            for( int i = 0; i < pred.size(0); i++){
+                for( int j = 0; j < pred.size(1); j++){
+                    error += 0.5*( pred(i,j) - desired(i,j))*( pred(i,j) - desired(i,j));
+                }
             }
-            std::cout<<std::endl;
-        }*/
+            return error/double(pred.size(0));
+        }
 
-        std::cout << "Nsamples = " << Nsamples << std::endl;
-       /* Xij.assign( 500, 1024*no_nodes + 1, 0.0);
-        for (int i = 0; i < Nsamples; i++){
-            Xij(i, 1024*no_nodes) = 1.0;
-            for ( int j = 0; j < 1024*no_nodes; j++){
-                Xij(i,j) = sp_sig(i,j);
-                //std::cerr << i << "  " << j << "  " << Xij(i,j) << std::endl;
+
+        double spoken_training(double &regression_factor){
+
+            mask_values();
+
+            // in this array we store the input signal from spectogram
+            array_t<2, double> sp_sig;
+            read_spectogram(sp_sig);
+
+            array_t<2,double> Xij;
+            array_t<2,double> Weights;
+            array_t<1,double> Y_digit;
+            array_t<2,double> Y_vec;
+
+
+            int Nsamples = sp_sig.size(0);
+
+            Y_digit.assign(Nsamples, 0.0);
+            Y_vec.assign(Nsamples, 10, 0.0);
+
+            for (int i = 0; i < Nsamples; i++){
+                Y_digit(i) = sp_sig(i,1024);
+                Y_vec(i, Y_digit(i)) = 1.0;
+            }
+
+            /*for (int i = 0; i < Nsamples; i++){
+              for (int j=0; j<10; j++){
+              std::cout <<Y_vec(i,j)<<"\t";
+              }
+              std::cout<<std::endl;
+              }*/
+
+            std::cout << "Nsamples = " << Nsamples << std::endl;
+            /* Xij.assign( 500, 1024*no_nodes + 1, 0.0);
+               for (int i = 0; i < Nsamples; i++){
+               Xij(i, 1024*no_nodes) = 1.0;
+               for ( int j = 0; j < 1024*no_nodes; j++){
+               Xij(i,j) = sp_sig(i,j);
+            //std::cerr << i << "  " << j << "  " << Xij(i,j) << std::endl;
             }
             //std::cerr << std::endl;
             //std::cerr << std::endl;
-        }*/
-        //std::cout << "Calculating signal now......" << std::flush;
-        get_signal_digit(sp_sig, Xij);
+            }*/
+            //std::cout << "Calculating signal now......" << std::flush;
+            get_signal_digit(sp_sig, Xij);
 
-        std::cout << " Done" << std::endl;
-        std::cout << "Starting training now ....." << std::flush;
+            std::cout << " Done" << std::endl;
+            std::cout << "Starting training now ....." << std::flush;
 
-        //Weights.assign(10, (sp_sig.size(1)-1)*no_nodes, 0.0);
-        linear_regression2( 10, Weights, Xij, Y_vec, regression_factor);
+            //Weights.assign(10, (sp_sig.size(1)-1)*no_nodes, 0.0);
+            linear_regression2( 10, Weights, Xij, Y_vec, regression_factor);
 
-        /*
-        Weights.assign( 10, Xij.size(1), 0.0);
-        for (int i=0; i<Weights.size(0);i++){
-            for (int j=0; j<Weights.size(1);j++){
-                Weights(i,j) = 0.1*(rng_dist(rng)*2.0 - 1.0);
-                //std::cout<<Weights(i,j)<<"\t";
+            /*
+               Weights.assign( 10, Xij.size(1), 0.0);
+               for (int i=0; i<Weights.size(0);i++){
+               for (int j=0; j<Weights.size(1);j++){
+               Weights(i,j) = 0.1*(rng_dist(rng)*2.0 - 1.0);
+            //std::cout<<Weights(i,j)<<"\t";
             }
             //std::cout<<"\n";
-        } */
+            } */
 
-        array_t <2,double> Pred_vec;
+            array_t <2,double> Pred_vec;
 
-        Pred_vec.assign(Nsamples, 10, 0.0);
-
-
-        linear_model_spoken(Pred_vec, Xij, Weights);
-
-        double err = 0.0;
-        err = MSE( Pred_vec, Xij);
-
-        std::cout << "Mean Squared Error = " << err << std::endl;
-
-        for (int i=0; i<Pred_vec.size(0);i++){
-            for (int j=0; j<Pred_vec.size(1);j++){
-                std::cout << std::fixed << std::setprecision(4) << Pred_vec(i,j) << "  ";
-            }
-            std::cout<<"\n";
-        }
-
-        //for (int i= 0; i < Weights.size(0); i++){
-        //       for(int j = 0; j<Weights.size(1); j++){
-        //   std::cout << i << "  " << j << "  " << Weights(i,j) << std::endl;
-        //}}
-
-        int Ncorrect = accuracy_spoken(Pred_vec, Y_vec);
-        std::cout<< "No of correct predictions:  " << Ncorrect << " out of " << Pred_vec.size(0) << std::endl;
-
-    }
-
-    int run_spoken_recognition(){
-
-        input_map_t rc_inputs;
-        rc_inputs.read_file("rc_input");
-        std::cout << "Stored values: " << std::endl;
-        rc_inputs.print();
-        int seed = rc_inputs.get<int>("seed");
-        rng.seed(seed);
-        Hc = rc_inputs.get<double>("H0");
-        dH = rc_inputs.get<double>("dH");
-        no_nodes = rc_inputs.get<int>("Nv");
-        tau = rc_inputs.get<double>("T");
-        theta = tau/no_nodes;
-        double regression_factor = rc_inputs.get<double>("lambda");
-
-        std::cout << "tau = " << tau << std::endl;
-        std::cout << "theta = " << theta << std::endl;
-        std::cout << "Number of nodes = " << no_nodes << std::endl;
-        std::cout << "Regression factor, lambda = "<<regression_factor << std::endl;
-
-        spoken_training(regression_factor);
-        return 0;
-    }
-
-    int run()
-    {
-        std::vector<double> input_x;
-        std::vector<double> input_y;
-
-        // Input is read and stored in a map class
-        input_map_t rc_inputs;
-        rc_inputs.read_file("rc_input");
-
-        // Print out the input values that have been recognised
-        std::cout << "Stored values: " << std::endl;
-        rc_inputs.print();
-
-        //Hc = rc_inputs.get<double>("H0");
-        //dH = rc_inputs.get<double>("dH");
-        int seed = rc_inputs.get<int>("seed");
-        rng.seed(seed);
+            Pred_vec.assign(Nsamples, 10, 0.0);
 
 
-        Hc = rc_inputs.get<double>("H0");
-        dH = rc_inputs.get<double>("dH");
-        no_nodes = rc_inputs.get<int>("Nv");
-        tau = rc_inputs.get<double>("T");
-        theta = tau/no_nodes;
+            linear_model_spoken(Pred_vec, Xij, Weights);
 
-        std::cout << "tau = " << tau << std::endl;
-        std::cout << "theta = " << theta << std::endl;
-        std::cout << "Number of nodes = " << no_nodes << std::endl;
+            double err = 0.0;
+            err = MSE( Pred_vec, Xij);
 
-        // Access input values through get function with type template
-        std::string filename = rc_inputs.get<std::string>("file");
-        reservoir::get_input_data(filename, input_x, input_y);
+            std::cout << "Mean Squared Error = " << err << std::endl;
 
-        std::vector<double> x_train, y_train, x_valid, y_valid;
-        for( int i = 0; i < input_x.size()/2; i++) {
-            x_train.push_back(input_x[i]);
-            y_train.push_back(input_y[i]);
-            x_valid.push_back(input_x[i + input_x.size()/2]);
-            y_valid.push_back(input_y[i + input_x.size()/2]);
-        }
-
-
-
-        double lr = rc_inputs.get<double>("lr"); // input learning rate
-        double la = rc_inputs.get<double>("la"); // input learning momentum
-        int Nepoch = rc_inputs.get<double>("Ne"); // input number of epochs
-
-        /*
-        // In this section we calculate the success rate for a range of Hc and dH
-        std::ofstream field_map_data;
-        field_map_data.open("field_map.data");
-        field_map_data<<"#"<<"HC"<<"\t"<<"dH"<<"\t" <<"N correct"<<std::endl;
-        double rate_succ=0.0;
-        for (int i=0; i<=50; i++)
-        {
-        Hc=i*50+100;
-        for (int j=1; j<=i;j++)
-        {
-        dH=50*j;
-        rate_succ=batch_training(x_train, y_train, x_valid, y_valid);
-        field_map_data<< Hc<<"\t"<<dH<<"\t"<<rate_succ<<"\t"<<std::endl;
-        }
-        }
-        field_map_data.close();
-        */
-        multi_dw_batch_training( x_train, y_train, x_valid, y_valid);
-
-        //reservoir::training(lr, la, Nepoch, x_train, y_train);
-        //reservoir::classification(x_valid, y_valid);
-
-        return 1;
-    }
-
-
-
-
-    int run_field_sequence()
-    {
-
-        // Input is read and stored in a map class
-        input_map_t rc_inputs;
-        rc_inputs.read_file("rc_input");
-
-        // Print out the input values that have been recognised
-        std::cout << "Stored values: " << std::endl;
-        rc_inputs.print();
-
-        //Hc = rc_inputs.get<double>("H0");
-        //dH = rc_inputs.get<double>("dH");
-        int seed = rc_inputs.get<int>("seed");
-        rng.seed(seed);
-
-
-        Hc = rc_inputs.get<double>("H0");
-        dH = rc_inputs.get<double>("dH");
-        no_nodes = rc_inputs.get<int>("Nv");
-        tau = rc_inputs.get<double>("T");
-        theta = tau/no_nodes;
-
-        std::cout << "tau = " << tau << std::endl;
-        std::cout << "theta = " << theta << std::endl;
-        std::cout << "Number of nodes = " << no_nodes << std::endl;
-
-        // Access input values through get function with type template
-        std::string filename = rc_inputs.get<std::string>("file");
-
-        int Nv = rc_inputs.get<int>("Nv");
-        int Ns = rc_inputs.get<int>("Ns");
-
-        array_t<2,double> input_x;
-        array_t<2,double> Signal;
-
-        input_x.assign(Ns, Nv, 0.0);
-        Signal.assign(Ns, Nv, 0.0);
-
-        std::ifstream input (filename.c_str());
-        if(input.is_open() ){
-            for (int i = 0; i < Ns; i++) {
-                for ( int j = 0; j < Nv; j++) {
-                    double x =0;
-                    input >> x;
-                    input_x(i,j) = x;
+            for (int i=0; i<Pred_vec.size(0);i++){
+                for (int j=0; j<Pred_vec.size(1);j++){
+                    std::cout << std::fixed << std::setprecision(4) << Pred_vec(i,j) << "  ";
                 }
+                std::cout<<"\n";
             }
-            input.close();
+
+            //for (int i= 0; i < Weights.size(0); i++){
+            //       for(int j = 0; j<Weights.size(1); j++){
+            //   std::cout << i << "  " << j << "  " << Weights(i,j) << std::endl;
+            //}}
+
+            int Ncorrect = accuracy_spoken(Pred_vec, Y_vec);
+            std::cout<< "No of correct predictions:  " << Ncorrect << " out of " << Pred_vec.size(0) << std::endl;
+
         }
 
+        int run_spoken_recognition(){
 
+            input_map_t rc_inputs;
+            rc_inputs.read_file("rc_input");
+            std::cout << "Stored values: " << std::endl;
+            rc_inputs.print();
+            int seed = rc_inputs.get<int>("seed");
+            rng.seed(seed);
+            Hc = rc_inputs.get<double>("H0");
+            dH = rc_inputs.get<double>("dH");
+            no_nodes = rc_inputs.get<int>("Nv");
+            tau = rc_inputs.get<double>("T");
+            theta = tau/no_nodes;
+            double regression_factor = rc_inputs.get<double>("lambda");
 
-        std::string outfilename = rc_inputs.get<std::string>("outfile");
-        std::ofstream outstream;
-        outstream.open(outfilename.c_str());
+            std::cout << "tau = " << tau << std::endl;
+            std::cout << "theta = " << theta << std::endl;
+            std::cout << "Number of nodes = " << no_nodes << std::endl;
+            std::cout << "Regression factor, lambda = "<<regression_factor << std::endl;
 
-        // we calculate the no of steps needed to be performed per node
-        no_steps_per_node=std::round(theta / integrate::Dt);
-        std::cout << "Steps per node = " << no_steps_per_node << std::endl;
+            spoken_training(regression_factor);
+            return 0;
+        }
 
-        double time = 0.0;
-        for (int t=0; t<Ns; t++)
+        int run()
         {
-            //outstream << t << "\t" << input_x[t] << "\t";
+            std::vector<double> input_x;
+            std::vector<double> input_y;
 
-            for (int i=0; i<no_nodes;i++)
+            // Input is read and stored in a map class
+            input_map_t rc_inputs;
+            rc_inputs.read_file("rc_input");
+
+            // Print out the input values that have been recognised
+            std::cout << "Stored values: " << std::endl;
+            rc_inputs.print();
+
+            //Hc = rc_inputs.get<double>("H0");
+            //dH = rc_inputs.get<double>("dH");
+            int seed = rc_inputs.get<int>("seed");
+            rng.seed(seed);
+
+
+            Hc = rc_inputs.get<double>("H0");
+            dH = rc_inputs.get<double>("dH");
+            no_nodes = rc_inputs.get<int>("Nv");
+            tau = rc_inputs.get<double>("T");
+            theta = tau/no_nodes;
+
+            std::cout << "tau = " << tau << std::endl;
+            std::cout << "theta = " << theta << std::endl;
+            std::cout << "Number of nodes = " << no_nodes << std::endl;
+
+            // Access input values through get function with type template
+            std::string filename = rc_inputs.get<std::string>("file");
+            reservoir::get_input_data(filename, input_x, input_y);
+
+            std::vector<double> x_train, y_train, x_valid, y_valid;
+            for( int i = 0; i < input_x.size()/2; i++) {
+                x_train.push_back(input_x[i]);
+                y_train.push_back(input_y[i]);
+                x_valid.push_back(input_x[i + input_x.size()/2]);
+                y_valid.push_back(input_y[i + input_x.size()/2]);
+            }
+
+
+
+            double lr = rc_inputs.get<double>("lr"); // input learning rate
+            double la = rc_inputs.get<double>("la"); // input learning momentum
+            int Nepoch = rc_inputs.get<double>("Ne"); // input number of epochs
+
+            /*
+            // In this section we calculate the success rate for a range of Hc and dH
+            std::ofstream field_map_data;
+            field_map_data.open("field_map.data");
+            field_map_data<<"#"<<"HC"<<"\t"<<"dH"<<"\t" <<"N correct"<<std::endl;
+            double rate_succ=0.0;
+            for (int i=0; i<=50; i++)
             {
-                //store the average position of the DW
-                double average_position=0.0;
-
-                // recalculate the field
-                stor::V0 = Hc + dH*input_x(t,i);
-
-                // In this loop we average over a time=theta
-                for (int j=0; j<no_steps_per_node; j++){
-                    integrate::runge_kutta(time);
-                    average_position+= stor::x_dw*stor::x_dw*1e18;
-                    //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
-                }
-
-                // store the position of the domain wall into array of outputs
-                Signal(t,i) = sqrt(average_position/no_steps_per_node);
-                // Signal(t,i) = (stor::x_dw/1e-7);
-                if ( outstream.is_open() )
-                    outstream << Signal(t,i) << "\t";
-            }
-            outstream << std::endl;
-        }
-        outstream.close();
-
-        return 1;
-    }
-
-    int run_transient()
-    {
-
-        // Input is read and stored in a map class
-        input_map_t rc_inputs;
-        rc_inputs.read_file("rc_input");
-
-        // Print out the input values that have been recognised
-        std::cout << "Stored values: " << std::endl;
-        rc_inputs.print();
-
-        //Hc = rc_inputs.get<double>("H0");
-        //dH = rc_inputs.get<double>("dH");
-        int seed = rc_inputs.get<int>("seed");
-        rng.seed(seed);
-
-
-        Hc = rc_inputs.get<double>("H0");
-        dH = rc_inputs.get<double>("dH");
-
-
-        no_nodes = rc_inputs.get<int>("Nv");
-        tau = rc_inputs.get<double>("T");
-
-        theta = tau/no_nodes;
-
-        std::cout << "tau = " << tau << std::endl;
-        std::cout << "theta = " << theta << std::endl;
-        std::cout << "Number of nodes = " << no_nodes << std::endl;
-
-        // Access input values through get function with type template
-        std::string filename = rc_inputs.get<std::string>("file");
-
-        int Nv = no_nodes;
-        int Nd = rc_inputs.get<int>("Nd");
-        int Ns = rc_inputs.get<int>("Ns");
-
-        array_t<2,double> input_x;
-        array_t<2,double> Signal;
-
-        input_x.assign(Ns, Nd, 0.0);
-        Signal.assign(Ns, Nd*Nv, 0.0);
-
-        std::ifstream input (filename.c_str());
-        if(input.is_open() ){
-            for (int i = 0; i < Ns; i++) {
-                for ( int j = 0; j < Nd; j++) {
-                    double x =0;
-                    input >> x;
-                    input_x(i,j) = x;
-                }
-            }
-            input.close();
-        }
-
-
-
-        std::string outfilename = rc_inputs.get<std::string>("outfile");
-        std::ofstream outstream;
-        outstream.open(outfilename.c_str());
-
-        // we calculate the no of steps needed to be performed per node
-        no_steps_per_node=std::round(theta / integrate::Dt);
-        std::cout << "Steps per node = " << no_steps_per_node << std::endl;
-
-        double time = 0.0;
-        for (int t=0; t<Ns; t++)
-        {
-            //outstream << t << "\t" << input_x[t] << "\t";
-
-            // loop over the input dimensions
-            for (int i=0; i<Nd;i++)
+            Hc=i*50+100;
+            for (int j=1; j<=i;j++)
             {
-                // recalculate the field
-                stor::V0 = Hc + dH*input_x(t,i);
-                stor::x_dw = 0.0;
-                stor::phi_dw = 0.0;
+            dH=50*j;
+            rate_succ=batch_training(x_train, y_train, x_valid, y_valid);
+            field_map_data<< Hc<<"\t"<<dH<<"\t"<<rate_succ<<"\t"<<std::endl;
+            }
+            }
+            field_map_data.close();
+            */
+            multi_dw_batch_training( x_train, y_train, x_valid, y_valid);
 
-                for ( int n=0; n < Nv; n++){
+            //reservoir::training(lr, la, Nepoch, x_train, y_train);
+            //reservoir::classification(x_valid, y_valid);
+
+            return 1;
+        }
+
+
+
+        int run_field_sequence()
+        {
+
+            // Input is read and stored in a map class
+            input_map_t rc_inputs;
+            rc_inputs.read_file("rc_input");
+
+            // Print out the input values that have been recognised
+            std::cout << "Stored values: " << std::endl;
+            rc_inputs.print();
+
+            //Hc = rc_inputs.get<double>("H0");
+            //dH = rc_inputs.get<double>("dH");
+            int seed = rc_inputs.get<int>("seed");
+            rng.seed(seed);
+
+
+            Hc = rc_inputs.get<double>("H0");
+            dH = rc_inputs.get<double>("dH");
+            no_nodes = rc_inputs.get<int>("Nv");
+            tau = rc_inputs.get<double>("T");
+            theta = tau/no_nodes;
+
+            std::cout << "tau = " << tau << std::endl;
+            std::cout << "theta = " << theta << std::endl;
+            std::cout << "Number of nodes = " << no_nodes << std::endl;
+
+            // Access input values through get function with type template
+            std::string filename = rc_inputs.get<std::string>("file");
+
+            int Nv = rc_inputs.get<int>("Nv");
+            int Ns = rc_inputs.get<int>("Ns");
+
+            array_t<2,double> input_x;
+            array_t<2,double> Signal;
+
+            input_x.assign(Ns, Nv, 0.0);
+            Signal.assign(Ns, Nv, 0.0);
+
+            std::ifstream input (filename.c_str());
+            if(input.is_open() ){
+                for (int i = 0; i < Ns; i++) {
+                    for ( int j = 0; j < Nv; j++) {
+                        double x =0;
+                        input >> x;
+                        input_x(i,j) = x;
+                    }
+                }
+                input.close();
+            }
+
+
+
+            std::string outfilename = rc_inputs.get<std::string>("outfile");
+            std::ofstream outstream;
+            outstream.open(outfilename.c_str());
+
+            // we calculate the no of steps needed to be performed per node
+            no_steps_per_node=std::round(theta / integrate::Dt);
+            std::cout << "Steps per node = " << no_steps_per_node << std::endl;
+
+            double time = 0.0;
+            for (int t=0; t<Ns; t++)
+            {
+                //outstream << t << "\t" << input_x[t] << "\t";
+
+                for (int i=0; i<no_nodes;i++)
+                {
+                    //store the average position of the DW
+                    double average_position=0.0;
+
+                    // recalculate the field
+                    stor::V0 = Hc + dH*input_x(t,i);
 
                     // In this loop we average over a time=theta
                     for (int j=0; j<no_steps_per_node; j++){
                         integrate::runge_kutta(time);
+                        average_position+= stor::x_dw*stor::x_dw*1e18;
                         //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
                     }
 
                     // store the position of the domain wall into array of outputs
-                    Signal(t,Nv*i + n) = (stor::x_dw/1e-7);
+                    Signal(t,i) = sqrt(average_position/no_steps_per_node);
+                    // Signal(t,i) = (stor::x_dw/1e-7);
                     if ( outstream.is_open() )
-                        outstream << Signal(t,Nv*i + n) << "\t";
+                        outstream << Signal(t,i) << "\t";
+                }
+                outstream << std::endl;
+            }
+            outstream.close();
+
+            return 1;
+        }
+
+        int run_transient()
+        {
+
+            // Input is read and stored in a map class
+            input_map_t rc_inputs;
+            rc_inputs.read_file("rc_input");
+
+            // Print out the input values that have been recognised
+            std::cout << "Stored values: " << std::endl;
+            rc_inputs.print();
+
+            //Hc = rc_inputs.get<double>("H0");
+            //dH = rc_inputs.get<double>("dH");
+            int seed = rc_inputs.get<int>("seed");
+            rng.seed(seed);
+
+
+            Hc = rc_inputs.get<double>("H0");
+            dH = rc_inputs.get<double>("dH");
+
+
+            no_nodes = rc_inputs.get<int>("Nv");
+            tau = rc_inputs.get<double>("T");
+
+            theta = tau/no_nodes;
+
+            std::cout << "tau = " << tau << std::endl;
+            std::cout << "theta = " << theta << std::endl;
+            std::cout << "Number of nodes = " << no_nodes << std::endl;
+
+            // Access input values through get function with type template
+            std::string filename = rc_inputs.get<std::string>("file");
+
+            int Nv = no_nodes;
+            int Nd = rc_inputs.get<int>("Nd");
+            int Ns = rc_inputs.get<int>("Ns");
+
+            array_t<2,double> input_x;
+            array_t<2,double> Signal;
+
+            input_x.assign(Ns, Nd, 0.0);
+            Signal.assign(Ns, Nd*Nv, 0.0);
+
+            std::ifstream input (filename.c_str());
+            if(input.is_open() ){
+                for (int i = 0; i < Ns; i++) {
+                    for ( int j = 0; j < Nd; j++) {
+                        double x =0;
+                        input >> x;
+                        input_x(i,j) = x;
+                    }
+                }
+                input.close();
+            }
+
+
+
+            std::string outfilename = rc_inputs.get<std::string>("outfile");
+            std::ofstream outstream;
+            outstream.open(outfilename.c_str());
+
+            // we calculate the no of steps needed to be performed per node
+            no_steps_per_node=std::round(theta / integrate::Dt);
+            std::cout << "Steps per node = " << no_steps_per_node << std::endl;
+
+            double time = 0.0;
+            for (int t=0; t<Ns; t++)
+            {
+                //outstream << t << "\t" << input_x[t] << "\t";
+
+                // loop over the input dimensions
+                for (int i=0; i<Nd;i++)
+                {
+                    // recalculate the field
+                    stor::V0 = Hc + dH*input_x(t,i);
+                    stor::x_dw = 0.0;
+                    stor::phi_dw = 0.0;
+
+                    for ( int n=0; n < Nv; n++){
+
+                        // In this loop we average over a time=theta
+                        for (int j=0; j<no_steps_per_node; j++){
+                            integrate::runge_kutta(time);
+                            //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
+                        }
+
+                        // store the position of the domain wall into array of outputs
+                        Signal(t,Nv*i + n) = (stor::x_dw/1e-7);
+                        if ( outstream.is_open() )
+                            outstream << Signal(t,Nv*i + n) << "\t";
+                    }
+
+                }
+                outstream << std::endl;
+            }
+            outstream.close();
+
+            return 1;
+        }
+
+        // In this routine we calculate the dynamics of multiwires by modulating the amplitude of the spin torque current
+        double multi_wires_dynamics(std::vector<double> &X_in){
+            std::ofstream outstream;
+            outstream.open("Processed_signal_mdw.txt");
+            std::ofstream outstream2;
+            outstream2.open("Current_signal.txt");
+
+            no_steps_per_node= std::round(theta / integrate::Dt);
+            array_t<2,double> Signal;
+            std::cout<<"Running the multi-DW dynamics"<<std::endl;
+
+            std::cout << "Steps per node = " << no_steps_per_node << std::endl;
+            stor::u_dw.resize(stor::Nwires);
+            stor::j_dens_dw.resize(stor::Nwires);
+            double time=0.0;
+
+
+            //call the routine to read the spectogram
+
+            //loop over samples
+            for (int i=0; i<X_in.size(); i++){
+
+                //loop over wires
+                for(int k=0; k<stor::Nwires;k++){
+                    double average_position=0.0;
+
+                    //run integration
+                    for (int t=0; t<no_steps_per_node/2; t++){
+                        stor::j_dens_dw[k]=X_in[i];
+                        integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
+                        average_position+= stor::x_coord[k]*stor::x_coord[k]*1e18;
+                    }
+                    for (int t2=no_steps_per_node/2; t2<no_steps_per_node; t2++){
+                        stor::j_dens_dw[k]=0;
+
+                        integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
+                        average_position+= stor::x_coord[k]*stor::x_coord[k]*1e18;
+
+                    }
+                    Signal(i,k)=(sqrt(average_position/no_steps_per_node));
+                    if ( outstream.is_open() )
+                        outstream << Signal(i,k) << "\t";
+                    std::cout << Signal(i,k) << "\t";
+
+
+                    outstream2<<"Time"<<"\t"<<"X_in"<<"/t"<<"u(t)"<<std::endl;
+
                 }
 
-            }
-            outstream << std::endl;
-        }
-        outstream.close();
+                outstream.close();
 
-        return 1;
-    }
-    }
+            }
+            outstream2.close();
+        }
+
+        int run_multi_dw(){
+            input_map_t rc_inputs;
+            rc_inputs.read_file("rc_input");
+            rc_inputs.print();
+            std::string filename = rc_inputs.get<std::string>("file");
+            std::vector<double> input_x;
+            std::vector<double> input_y;
+            reservoir::get_input_data(filename, input_x,input_y);
+            multi_wires_dynamics(input_x);
+
+            return 0;
+
+        }
+
+}

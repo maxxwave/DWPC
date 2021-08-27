@@ -105,6 +105,7 @@ namespace stor{
         std::cout<<"Integration time step, Dt = "<<integrate::Dt <<" s"<<std::endl;
         std::cout<<"Initialization completed!"<<std::endl;
         std::cout<<"The coefficients of E(x) are:"<<"\t"<<stor::A0<<"\t"<<stor::A1<<"\t"<<stor::A2<<"\t"<<stor::A3<<"\t"<<stor::A4<<std::endl;
+        std::cout<<"Predicted critical current = " << stor::gamma*stor::mu0*stor::H_demag*0.5*calculate::calculate_DW(0.78539816339744830962) << std::endl;
         std::cout<<"=====================================================================<"<<std::endl;
 
         // Initialise the parameters for the integration

@@ -96,9 +96,8 @@ namespace integrate{
 		stor::x_dw = x_k + (k1 + g1 + 2*(k2 + g2 + k3 + g3) + k4 + g4)*Dt/6.0;
 		time += integrate::Dt;
 
+        // Calculate speed for outputs
         calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);
-
-
 
 	return 1;
 	}// end of function runge_kutta
@@ -153,6 +152,7 @@ namespace integrate{
             n_phi.assign(Nwires, 0.0);
         }
 
+        // RK4 for multiple DWs without thermal effects
         double runge_kutta_noT(std::vector<double> &x_k, std::vector<double> &phi_k, double &time, const double dt)
         {
             const double dt_o_2 = 0.5*dt;
@@ -161,22 +161,22 @@ namespace integrate{
             calculate::gradient( Kx1, Kp1, x_k, phi_k, time);
 
             for( int i = 0; i < x_p.size(); i++) {
-                x_p[i]   = x_k[i]   + 0.5*dt*Kx1[i];
-                phi_p[i] = phi_k[i] + 0.5*dt*Kp1[i];
+                x_p[i]   = x_k[i]   + dt_o_2 * Kx1[i];
+                phi_p[i] = phi_k[i] + dt_o_2 * Kp1[i];
             }
 
             calculate::gradient( Kx2, Kp2, x_p, phi_p, time);
 
             for( int i = 0; i < x_p.size(); i++) {
-                x_p[i]   = x_k[i]   + 0.5*dt*Kx2[i];
-                phi_p[i] = phi_k[i] + 0.5*dt*Kp2[i];
+                x_p[i]   = x_k[i]   + dt_o_2 * Kx2[i];
+                phi_p[i] = phi_k[i] + dt_o_2 * Kp2[i];
             }
 
             calculate::gradient( Kx3, Kp3, x_p, phi_p, time);
 
             for( int i = 0; i < x_p.size(); i++) {
-                x_p[i]   = x_k[i]   + dt*Kx3[i];
-                phi_p[i] = phi_k[i] + dt*Kp3[i];
+                x_p[i]   = x_k[i]   + dt * Kx3[i];
+                phi_p[i] = phi_k[i] + dt * Kp3[i];
             }
 
             calculate::gradient( Kx4, Kp4, x_p, phi_p, time);
@@ -185,9 +185,8 @@ namespace integrate{
                 x_k[i]   = x_k[i]   + (Kx1[i] + 2*(Kx2[i] + Kx3[i]) + Kx4[i]) * dt_o_6;
                 phi_k[i] = phi_k[i] + (Kp1[i] + 2*(Kp2[i] + Kp3[i]) + Kp4[i]) * dt_o_6;
             }
-            time += dt;
 
-            //calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);
+            time += dt;
             return 1;
         }// end of function runge_kutta
 
@@ -208,8 +207,8 @@ namespace integrate{
             // we are only making a step by dt/2 we must scale the noise
             // gradient by sqrt(2)
             for( int i = 0; i < x_p.size(); i++) {
-                x_p[i]   = x_k[i]   + dt_o_2*(Kx1[i] + gx1[i]*root2);
-                phi_p[i] = phi_k[i] + dt_o_2*(Kp1[i] + gp1[i]*root2);
+                x_p[i]   = x_k[i]   + dt_o_2 * (Kx1[i] + gx1[i]*root2);
+                phi_p[i] = phi_k[i] + dt_o_2 * (Kp1[i] + gp1[i]*root2);
             }
 
             // 2) Use midpoint prediction to predict position at midpoint
@@ -217,8 +216,8 @@ namespace integrate{
             calculate::noise_gradient( gx2, gp2, x_p, phi_p, n_x, n_phi);
 
             for( int i = 0; i < x_p.size(); i++) {
-                x_p[i]   = x_k[i]   + dt_o_2*(Kx2[i] + gx2[i]*root2);
-                phi_p[i] = phi_k[i] + dt_o_2*(Kp2[i] + gp2[i]*root2);
+                x_p[i]   = x_k[i]   + dt_o_2 * (Kx2[i] + gx2[i] * root2);
+                phi_p[i] = phi_k[i] + dt_o_2 * (Kp2[i] + gp2[i] * root2);
             }
 
             // 3) Use new midpoint to predict poisiton
@@ -226,8 +225,8 @@ namespace integrate{
             calculate::noise_gradient( gx3, gp3, x_p, phi_p, n_x, n_phi);
 
             for( int i = 0; i < x_p.size(); i++) {
-                x_p[i]   = x_k[i]   + dt*(Kx3[i] + gx3[i]);
-                phi_p[i] = phi_k[i] + dt*(Kp3[i] + gp3[i]);
+                x_p[i]   = x_k[i]   + dt * (Kx3[i] + gx3[i]);
+                phi_p[i] = phi_k[i] + dt * (Kp3[i] + gp3[i]);
             }
 
             // 4) Use the prediction for compute the new gradient
@@ -243,9 +242,6 @@ namespace integrate{
             }
 
             time += dt;
-
-
-            //calculate::gradient( stor::vx, stor::phi_dt, stor::x_dw, stor::phi_dw, time);
             return 1;
         }// end of function runge_kutta
     }

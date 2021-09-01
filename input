@@ -22,6 +22,8 @@ a8=0
 H=0 #A/m
 f=500e6
 
+use_DW_coupling=1
+
 # Simulation's parameters:
 Dt=1e-13
 totaltime=10e-9

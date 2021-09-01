@@ -178,23 +178,23 @@ namespace calculate{
             double S=stor::Ly*stor::Lz;
             double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
             // loop over the wires
+
+            //boundary wires
+            double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
+            double r_sec3=r_sec*r_sec*r_sec;
+            stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
+
+            double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
+            double r_prim3=r_prim*r_prim*r_prim;
+            stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
+
             for (int i=0; i<X_DW.size(); i++){
                 double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
                 double r3=r*r*r;
-
-                //boundary wires
-                double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
-                double r_sec3=r_sec*r_sec*r_sec;
-                stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
-
-                double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
-                double r_prim3=r_prim*r_prim*r_prim;
-                stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
-
                 if((i!=0)&&(i!=(X_DW.size()-1))){
                     // We assume the NN interaction only
                     stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
-                        -stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
+                                    -stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
 
             }
         }
@@ -252,7 +252,9 @@ namespace calculate{
             double DWs = calculate_DW(phi[i]);
             double n_x = noise(stor::T_sim, DWs);
             double n_phi= noise(stor::T_sim, DWs);
+
             stor::u_dw[i]=current(time, stor::j_dens_dw[i]);
+
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
                 + (stor::beta-stor::alpha)*stor::u_dw[i]/DWs;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]

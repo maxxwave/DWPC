@@ -56,10 +56,14 @@ namespace stor{
         stor::program = inputs.get<std::string>("program");
 
         stor::Nwires = inputs.get<int>("Nwires");
-        stor::x_coord.assign(stor::Nwires, 0.0);
+        stor::x_coord.assign(stor::Nwires, 8.70547e-08);
         stor::phi_coord.assign(stor::Nwires, 0.0);
         stor::V0_mdw.assign(stor::Nwires, stor::V0);
         stor::H_DW.assign(stor::Nwires, 0.0);
+
+        stor::use_DW_coupling = inputs.get<bool>("use_DW_coupling", false);
+        std::cout << "Use DW coupling = " << stor::use_DW_coupling << std::endl;
+
 
         //stor::x_coord[0] = -2.5e-8;
         //stor::x_coord[1] = 0.0;

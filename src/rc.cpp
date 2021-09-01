@@ -1185,21 +1185,21 @@ namespace reservoir{
 
 // In this routine we calculate the dynamics of multiwires by modulating the amplitude of the spin torque current
 int multi_wires_dynamics(){
-	
+
 	input_map_t rc_inputs;
 	rc_inputs.read_file("rc_input");
-	
+
 	std::cout << "Stored values:"<<std::endl;
 	rc_inputs.print();
-	
+
 	no_nodes= rc_inputs.get<double>("Nv");
 	tau=rc_inputs.get<double>("T");
-	//number of virtual nodes Nv 
-	//number of samples Ns	
+	//number of virtual nodes Nv
+	//number of samples Ns
 	int Nv=rc_inputs.get<int>("Nv");
 	int Ns=rc_inputs.get<int>("Ns");
-	// Access input values through get function with type template 
-	std::string filename = rc_inputs.get<std::string>("file"); 
+	// Access input values through get function with type template
+	std::string filename = rc_inputs.get<std::string>("file");
 	array_t<2,double> input_x;
 	array_t<2,double> Signal;
 
@@ -1212,7 +1212,7 @@ int multi_wires_dynamics(){
 			double x=0;
 			input>>x;
 			for( int j=0; j<stor::Nwires; j++){
-			input_x(i,j) = x; //times mask 
+			input_x(i,j) = x; //times mask
 			//std::cout<<input_x(i,j)<<"\t"<<x<<std::endl;
 			}
 
@@ -1249,28 +1249,28 @@ int multi_wires_dynamics(){
 			}
 			//run integration
 			for (int t=0; t<no_steps_per_node/2; t++){
-				integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);	
+				integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
 			}
 		for(int k=0;k<stor::Nwires;k++){
 			stor::j_dens_dw[k]=0.0;
-		
+
 		}
-		
+
 		for (int t2=no_steps_per_node/2; t2<no_steps_per_node; t2++){
-			
+
 			integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
 
 		}
 		for (int k=0; k<stor::Nwires; k++){
 			Signal(i,k)=stor::x_coord[k];
 		}
-		
+
 			//outstream2<<time<<"\t"<<stor::j_dens_dw[k]<< "\t"<<stor::u_dw[k]<<std::endl;
 
 	}
 	for (int i=0; i<Ns; i++){
 		for (int j=0; j<stor::Nwires;j++){
-			outstream<<Signal(i,j)<<"\t"; 
+			outstream<<Signal(i,j)<<"\t";
 		}
 		outstream<<std::endl;
 	}

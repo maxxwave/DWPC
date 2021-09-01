@@ -163,14 +163,12 @@ namespace calculate{
         return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
     }
 
-	double current( double time ){
+	double current( double time, double j_dens ){
 		//std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
 		//return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms)*exp(-((time*time+25e-18-2*time*5e-9)/1e-18)); //need to add a time function
-		if(time>=5e-9){
-			return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);}
-		else return 0;
+		//if(time>=5e-9){
+		return j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);
 	}
-
 	// in this routine we calculate the DWs coupling
     double DW_coupling( std::vector <double> &X_DW ){
 
@@ -211,7 +209,7 @@ namespace calculate{
         double DWs = calculate_DW(phi);
         double n_x = noise(stor::T_sim, DWs);
         double n_phi= noise(stor::T_sim, DWs);
-        double u=current(time);
+        double u=current(time,stor::j_dens);
         dphi = prefac3*dEx + prefac4*sin(2*phi)
             + zeeman_prefac2*H //+ (n_phi + stor::alpha*n_x)/(1+stor::alpha*stor::alpha)
             + (stor::beta-stor::alpha)*u/DWs;
@@ -254,13 +252,13 @@ namespace calculate{
             double DWs = calculate_DW(phi[i]);
             double n_x = noise(stor::T_sim, DWs);
             double n_phi= noise(stor::T_sim, DWs);
-            double u=current(time);
+            stor::u_dw[i]=current(time, stor::j_dens_dw[i]);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
                 //+ (n_x +stor::alpha*n_phi)/(1+stor::alpha*stor::alpha)
-                + (stor::beta-stor::alpha)*u/DWs;
+                + (stor::beta-stor::alpha)*stor::u_dw[i]/DWs;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
                 //+ (n_phi - stor::alpha*n_x)*DWs/(1+stor::alpha*stor::alpha)
-                + u*(1-stor::alpha*stor::alpha);
+                + stor::u_dw[i]*(1-stor::alpha*stor::alpha);
         }
     }
 

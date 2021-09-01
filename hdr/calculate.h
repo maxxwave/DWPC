@@ -23,7 +23,7 @@ namespace calculate{
 	extern double Zeeman(double Dt);
 	extern double noise( double T, double DW );
 	extern double current_prefac;
-	extern double current(double time);
+	extern double current(double time, double );
 	extern double prefac1, prefac2, prefac3, prefac4, zeeman_prefac1, zeeman_prefac2;
 	double x_t(double DWs, double phi, double phi_t);
 	double phi_t(double dEx, double phi_rk, double H);

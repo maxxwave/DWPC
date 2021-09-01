@@ -1,14 +1,14 @@
 #input filename
-file=TIdigits_test.txt
+file=sine_square_init
 outfile=TIsignal_test.txt
 
 #time duration
 T=6.5e-9
 
 #number of virtual nodes
-Nv=13
+Nv=10
 
-Ns=274660
+Ns=1280
 
 #number of epochs
 Ne=3

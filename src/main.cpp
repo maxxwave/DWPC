@@ -77,7 +77,7 @@ int main(){
 
     if( stor::program.compare("multi_dw") == 0) {
         	std::cout << "MultiDW program." << std::endl;
-        	reservoir::run_multi_dw();
+        	reservoir::multi_wires_dynamics();
         	return 0;
     }
 

@@ -30,12 +30,12 @@ integrator=RK4
 
 #Pinning field:
 pin=0
-Temperature=10
+Temperature=0
 #spin torque paramters
-P=0.0
+P=0.7
 beta=0.04
-j=1e11 #A/m^2
-
-program=RC
+j=0 #A/m^2
+program=multi_dw
+#program=RC
 #program=spin_current
 #program=Bifurcation

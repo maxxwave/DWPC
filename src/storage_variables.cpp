@@ -119,4 +119,6 @@ namespace stor{
 	std::vector<double> Dw;
 	double Dw_size=0.0;
 
+    bool use_DW_coupling = false;
+
 }// end of namespace

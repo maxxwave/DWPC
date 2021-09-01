@@ -90,7 +90,7 @@ namespace programs{
         std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
         std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
 
-        outputfile << "#time(ns)       X(nm)           phi             dx/dt           V" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << std::endl;
         outputfile << std::fixed;
 
         double error = 0.0;
@@ -120,6 +120,7 @@ namespace programs{
                 << stor::phi_dw << "\t"
                 << stor::vx << "\t"
                 << stor::V << "\t"
+                << stor::u << "\t"
                 << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
                 << std::scientific << error
                 <<std::endl;
@@ -213,7 +214,7 @@ namespace programs{
         outputfile << "#time(ns)       X(nm)           phi            J_dens           H		v(m/s)" << std::endl;
         outputfile << std::fixed;
 
-	double const amp=stor::j_dens;
+	    double const amp=stor::j_dens;
         double error;
 
         for (int k=0; k<no_h_values;k++)

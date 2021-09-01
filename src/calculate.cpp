@@ -163,11 +163,21 @@ namespace calculate{
         return prefac2*sin(2*phi)*DWs + stor::alpha*DWs*phi_t;
     }
 
+<<<<<<< HEAD
 	double current( double time, double j_dens ){
 		//std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
 		//return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms)*exp(-((time*time+25e-18-2*time*5e-9)/1e-18)); //need to add a time function
 		//if(time>=5e-9){
 		return j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);
+=======
+    double current( double time ){
+        //std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
+		//return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms)*exp(-((time*time+25e-18-2*time*5e-9)/1e-18)); //need to add a time function
+		//if(time>=5e-9){
+        stor::u = stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);
+        return stor::u;
+		//else return 0;
+>>>>>>> 3b062500ec986d61392dffca0ef64288c94bd09c
 	}
 	// in this routine we calculate the DWs coupling
     double DW_coupling( std::vector <double> &X_DW ){
@@ -214,8 +224,7 @@ namespace calculate{
             + zeeman_prefac2*H //+ (n_phi + stor::alpha*n_x)/(1+stor::alpha*stor::alpha)
             + (stor::beta-stor::alpha)*u/DWs;
         dx = prefac2*sin(2*phi)*DWs + stor::alpha*DWs*dphi
-            //+ (n_x)*DWs/(1+stor::alpha*stor::alpha)
-            + u*current_prefac;
+            + u;
         //std::cout<<u<<"\t"<<time<<std::endl;
         //std::cout<<"nx=   "<<n_x<<"\t"<<n_phi<<"\t"<<prefac3*dEx<<std::endl;
         //double d = 0.2, g = 0.3, a = 1, b = -1, w=1;
@@ -243,7 +252,7 @@ namespace calculate{
     {
         // calculate the DW coupling
         //DW_coupling(integrate::multi_dw::x_p);
-        //DW_coupling(x);
+        if(stor::use_DW_coupling) DW_coupling(x);
         //std::cout<<stor::x_coord[0]<<std::endl;
 
         for ( int i = 0; i < x.size(); i++) {
@@ -254,11 +263,17 @@ namespace calculate{
             double n_phi= noise(stor::T_sim, DWs);
             stor::u_dw[i]=current(time, stor::j_dens_dw[i]);
             dphi[i] = prefac3*dEx + prefac4*sin(2*phi[i]) + zeeman_prefac2*H
+<<<<<<< HEAD
                 //+ (n_x +stor::alpha*n_phi)/(1+stor::alpha*stor::alpha)
                 + (stor::beta-stor::alpha)*stor::u_dw[i]/DWs;
             dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
                 //+ (n_phi - stor::alpha*n_x)*DWs/(1+stor::alpha*stor::alpha)
                 + stor::u_dw[i]*(1-stor::alpha*stor::alpha);
+=======
+                    + (stor::beta-stor::alpha)*u/DWs;
+            dx[i] = prefac2*sin(2*phi[i])*DWs + stor::alpha*DWs*dphi[i]
+                    + u;
+>>>>>>> 3b062500ec986d61392dffca0ef64288c94bd09c
         }
     }
 

@@ -43,5 +43,6 @@ namespace stor{
 	extern std::vector<double> u_dw;
 	extern void initialize();
 	extern double A0, A1, A2, A3, A4, A5, A6, A7, A8;
+    extern bool use_DW_coupling;
 } //end of namespace
 #endif

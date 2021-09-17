@@ -6,7 +6,7 @@ Lz=5e-9
 Aex=1.05e-11
 alpha=0.02
 
-Nwires=1
+Nwires=4
 #Energy profile
 a0=0 #2.21117e-21
 a1=0 #-3.8271e-15
@@ -22,7 +22,7 @@ a8=0
 H=0 #A/m
 f=500e6
 
-use_DW_coupling=1
+use_DW_coupling=0
 
 # Simulation's parameters:
 Dt=1e-13
@@ -31,12 +31,12 @@ out_time=0.1e-9
 integrator=RK4
 
 #Pinning field:
-pin=0
+pin=1
 Temperature=0
 #spin torque paramters
 P=0.7
 beta=0.04
-j=0 #A/m^2
+j=1e12 #A/m^2
 program=multi_dw
 #program=RC
 #program=spin_current

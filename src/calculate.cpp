@@ -167,39 +167,58 @@ namespace calculate{
 		//std::cout<<stor::P<<"\t"<<stor::mu_B<<"\t"<<stor::j_dens<<std::endl; //need to add a time function
 		//return stor::j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms)*exp(-((time*time+25e-18-2*time*5e-9)/1e-18)); //need to add a time function
 		//if(time>=5e-9){
-		return j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);
+		return stor::j_dens*j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);
 	}
 
 	// in this routine we calculate the DWs coupling
-    double DW_coupling( std::vector <double> &X_DW ){
+	double DW_coupling( std::vector <double> &X_DW ){
+		if(stor::Nwires>1){
+		// the monopole interaction
+		stor::H_DW.resize(stor::Nwires);
+		// the dipolar interaction
+		stor::H_dd.resize(stor::Nwires);
 
-        if (stor::Nwires > 1) {
-            stor::H_DW.resize(stor::Nwires);
-            double S=stor::Ly*stor::Lz;
-            double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
-            // loop over the wires
+		double S=stor::Ly*stor::Lz;
+		double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
+		double prefac_dd=0.375*stor::my*stor::my/(Pi*stor::Ms*S);
+			
+		// loop over the wires
+		for (int i=0; i<X_DW.size(); i++){
+			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
+			double r3=r*r*r;
+			double r7=r*r*r*r*r*r*r;
 
-            //boundary wires
-            double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
-            double r_sec3=r_sec*r_sec*r_sec;
-            stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
+			//boundary wires
+			double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
+			double r_sec3=r_sec*r_sec*r_sec;
+			double r_sec7=r_sec*r_sec*r_sec*r_sec*r_sec*r_sec*r_sec;
 
-            double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
-            double r_prim3=r_prim*r_prim*r_prim;
-            stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
+			stor::H_dd[0]= prefac_dd*(X_DW[0]-X_DW[1])*((X_DW[0]-X_DW[1]) *(X_DW[0]-X_DW[1])-4*rijd)/r_sec7;
 
-            for (int i=0; i<X_DW.size(); i++){
-                double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
-                double r3=r*r*r;
-                if((i!=0)&&(i!=(X_DW.size()-1))){
-                    // We assume the NN interaction only
-                    stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
-                                    -stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);}
+			stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
 
-            }
-        }
-        return 0;
-    }
+			double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
+			double r_prim3=r_prim*r_prim*r_prim;
+			double r_prim7=r_prim*r_prim*r_prim*r_prim*r_prim*r_prim*r_prim;
+
+			stor::H_dd[X_DW.size()-1]= prefac_dd*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*
+				((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) * (X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])-4*rijd)/r_prim7;
+			
+			stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
+
+			if((i!=0)&&(i!=(X_DW.size()-1))){
+			// We assume the NN interaction only
+			stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
+					-stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);
+			
+			stor::H_dd[i]= prefac_dd*(X_DW[i]-X_DW[i+1])*((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1])-4*rijd)/r7
+				     + prefac_dd*(X_DW[i]-X_DW[i-1])*((X_DW[i]-X_DW[i-1])*(X_DW[i]-X_DW[i-1])-4*rijd)/r7;
+			}
+
+		}
+	}
+	return 0;
+	}
 
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
     {
@@ -243,8 +262,9 @@ namespace calculate{
     {
         // calculate the DW coupling
         //DW_coupling(integrate::multi_dw::x_p);
-        if(stor::use_DW_coupling) DW_coupling(x);
+        //if(stor::use_DW_coupling) DW_coupling(x);
         //std::cout<<stor::x_coord[0]<<std::endl;
+	DW_coupling(x);
 
         for ( int i = 0; i < x.size(); i++) {
             double dEx = update_energy_antinotches(x[i]);

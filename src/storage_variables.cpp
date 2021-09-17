@@ -117,7 +117,12 @@ namespace stor{
 
 	// creating an array for the domain wall width
 	std::vector<double> Dw;
+	std::vector<double> H_dd;
+	std::vector<double> H_DD; 
 	double Dw_size=0.0;
+
+	//declaring the my of the DW
+	double my=7.1e-18; //SI 
 
     bool use_DW_coupling = false;
 

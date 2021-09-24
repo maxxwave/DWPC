@@ -55,6 +55,8 @@ namespace stor{
 	double freq=0.0;
 	double omega=0.0;
 
+    double H_const = 0.0; // constant field
+
 	//defining the length of the cell
 	//needs to be around half of the exchange length
 	double cell_size=3e-10; // in m
@@ -118,12 +120,19 @@ namespace stor{
 	// creating an array for the domain wall width
 	std::vector<double> Dw;
 	std::vector<double> H_dd;
-	std::vector<double> H_DD; 
+	std::vector<double> H_DD;
 	double Dw_size=0.0;
 
 	//declaring the my of the DW
-	double my=7.1e-18; //SI 
+	double my=7.1e-18; //SI
 
     bool use_DW_coupling = false;
+
+    bool use_edge = false;
+
+    double edge_scale=5.0e9;
+    double H_edge_max = 0.0;
+    array_t<2,double> H_edge;
+
 
 }// end of namespace

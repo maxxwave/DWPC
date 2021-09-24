@@ -107,9 +107,17 @@ namespace calculate{
     //In this function we implement the stochastic term
     std::default_random_engine generator;
     std::normal_distribution<double> distribution(0.0, 1.0);
+    std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
+
     unsigned random_seed = 1234;
+
     void seed_rng(const unsigned seed) {
         generator.seed(seed);
+    }
+
+    double Uniform()
+    {
+        return uniform_dist(generator);
     }
 
     double Normal() {
@@ -140,10 +148,29 @@ namespace calculate{
         return - Pi_sqr * (stor::A / ( DW(phi) * K_eff(phi)*K_eff(phi))) * dK_eff(phi);
     }
 
-    // In this routine we calculate the Zeeman field taking into account the frequency of the field
-    double Zeeman(double time){
+    double edge_field( double &x, int i)
+    {
+        if (stor::use_edge){
+            double y, intpart;
+            y = std::modf(x/stor::L + 0.5, &intpart);
+            int j = std::floor( y*stor::L/stor::edge_scale);
+            //std::cerr << x << "  " << j << "  " << y << "  " << stor::H_edge(i,j) << std::endl;
+            return stor::H_edge(i,j);
+        } else {
+            return 0.0;
+        }
 
-        stor::V = stor::V0*sin(stor::omega*time);
+    }
+
+
+    // In this routine we calculate the Zeeman field taking into account the frequency of the field
+    double Zeeman(double time, double x){
+
+        if( time < 25e-9){
+        stor::V = stor::V0*sin(stor::omega*time) + stor::H_const + edge_field(x, 0);
+        } else {
+        stor::V = stor::V0*sin(stor::omega*time) + edge_field(x, 0);
+        }
 
 		//this equation can be used for benchmark1 program
 		//stor::V=stor::V0*cos(stor::omega*time);
@@ -170,62 +197,63 @@ namespace calculate{
 		return stor::j_dens*j_dens*stor::P*stor::mu_B/(stor::e_el*stor::Ms);
 	}
 
-	// in this routine we calculate the DWs coupling
-	double DW_coupling( std::vector <double> &X_DW ){
-		if(stor::Nwires>1){
-		// the monopole interaction
-		stor::H_DW.resize(stor::Nwires);
-		// the dipolar interaction
-		stor::H_dd.resize(stor::Nwires);
+    // in this routine we calculate the DWs coupling
+    double DW_coupling( std::vector <double> &X_DW ){
+        if((stor::Nwires>1) && stor::use_DW_coupling){
+            // the monopole interaction
+            //stor::H_DW.resize(stor::Nwires);
+            // the dipolar interaction
+            //stor::H_dd.resize(stor::Nwires);
 
-		double S=stor::Ly*stor::Lz;
-		double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
-		double prefac_dd=0.375*stor::my*stor::my/(Pi*stor::Ms*S);
-			
-		// loop over the wires
-		for (int i=0; i<X_DW.size(); i++){
-			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
-			double r3=r*r*r;
-			double r7=r*r*r*r*r*r*r;
+            double S=stor::Ly*stor::Lz;
+            double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
+            double prefac_dd=0.375*stor::my*stor::my/(Pi*stor::Ms*S);
 
-			//boundary wires
-			double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
-			double r_sec3=r_sec*r_sec*r_sec;
-			double r_sec7=r_sec*r_sec*r_sec*r_sec*r_sec*r_sec*r_sec;
+            //boundary wires
+            double r_sec=sqrt((X_DW[0]-X_DW[1])*(X_DW[0]-X_DW[1]) + rijd);
+            double r_sec3=r_sec*r_sec*r_sec;
+            double r_sec7=r_sec*r_sec*r_sec*r_sec*r_sec*r_sec*r_sec;
 
-			stor::H_dd[0]= prefac_dd*(X_DW[0]-X_DW[1])*((X_DW[0]-X_DW[1]) *(X_DW[0]-X_DW[1])-4*rijd)/r_sec7;
+            stor::H_dd[0]= prefac_dd*(X_DW[0]-X_DW[1])*((X_DW[0]-X_DW[1]) *(X_DW[0]-X_DW[1])-4*rijd)/r_sec7;
 
-			stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
+            stor::H_DW[0] = -stor::Ms*S*(X_DW[0]-X_DW[1])/(2*Pi*r_sec3);
 
-			double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
-			double r_prim3=r_prim*r_prim*r_prim;
-			double r_prim7=r_prim*r_prim*r_prim*r_prim*r_prim*r_prim*r_prim;
+            double r_prim=sqrt((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) + rijd);
+            double r_prim3=r_prim*r_prim*r_prim;
+            double r_prim7=r_prim*r_prim*r_prim*r_prim*r_prim*r_prim*r_prim;
 
-			stor::H_dd[X_DW.size()-1]= prefac_dd*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*
-				((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) * (X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])-4*rijd)/r_prim7;
-			
-			stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
+            stor::H_dd[X_DW.size()-1]= prefac_dd*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*
+                ((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) * (X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])-4*rijd)/r_prim7;
 
-			if((i!=0)&&(i!=(X_DW.size()-1))){
-			// We assume the NN interaction only
-			stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
-					-stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);
-			
-			stor::H_dd[i]= prefac_dd*(X_DW[i]-X_DW[i+1])*((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1])-4*rijd)/r7
-				     + prefac_dd*(X_DW[i]-X_DW[i-1])*((X_DW[i]-X_DW[i-1])*(X_DW[i]-X_DW[i-1])-4*rijd)/r7;
-			}
+            stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
 
-		}
-	}
-	return 0;
-	}
+            // loop over the wires
+            for (int i=0; i<X_DW.size(); i++){
+                double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
+                double r3=r*r*r;
+                double r7=r*r*r*r*r*r*r;
+
+
+                if((i!=0)&&(i!=(X_DW.size()-1))){
+                    // We assume the NN interaction only
+                    stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
+                        -stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);
+
+                    stor::H_dd[i]= prefac_dd*(X_DW[i]-X_DW[i+1])*((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1])-4*rijd)/r7
+                        + prefac_dd*(X_DW[i]-X_DW[i-1])*((X_DW[i]-X_DW[i-1])*(X_DW[i]-X_DW[i-1])-4*rijd)/r7;
+                }
+
+            }
+        }
+        return 0;
+    }
 
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
     {
         //const double dEx = update_energy_antinotches(x);
         //const double dEx = compute_Hpin(x);
         double dEx = update_energy_antinotches(x);
-        double H = Zeeman(time);
+        double H = Zeeman(time, x) ;
         double DWs = calculate_DW(phi);
         double n_x = noise(stor::T_sim, DWs);
         double n_phi= noise(stor::T_sim, DWs);
@@ -264,11 +292,11 @@ namespace calculate{
         //DW_coupling(integrate::multi_dw::x_p);
         //if(stor::use_DW_coupling) DW_coupling(x);
         //std::cout<<stor::x_coord[0]<<std::endl;
-	DW_coupling(x);
+        DW_coupling(x);
 
         for ( int i = 0; i < x.size(); i++) {
             double dEx = update_energy_antinotches(x[i]);
-            double H = Zeeman(time, i) - stor::H_DW[i];
+            double H = Zeeman(time, i) - stor::H_DW[i] - stor::H_dd[i];
             double DWs = calculate_DW(phi[i]);
             double n_x = noise(stor::T_sim, DWs);
             double n_phi= noise(stor::T_sim, DWs);
@@ -302,7 +330,7 @@ namespace calculate{
     void Jacobian( array_t<2,double> &J, double x, double phi, const double time)
     {
         double dEx = update_energy_antinotches(x);
-        double H = Zeeman(time);
+        double H = Zeeman(time, x);
         double DWs = calculate_DW(phi);
         double dphi = prefac3*dEx + prefac4*sin(2*phi) + zeeman_prefac2*H;
 

@@ -1067,7 +1067,7 @@ namespace reservoir{
                     for (int j=0; j<no_steps_per_node; j++){
                         integrate::runge_kutta(time);
                         average_position+= stor::x_dw*stor::x_dw*1e18;
-                        //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
+                        if (j%100 == 99) std::cerr << time*1e9 << "\t" << stor::x_dw*1e9 << "\t" << stor::V0 << "\t" << sqrt(average_position/no_steps_per_node) << std::endl;
                     }
 
                     // store the position of the domain wall into array of outputs

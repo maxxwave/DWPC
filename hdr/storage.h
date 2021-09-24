@@ -1,9 +1,11 @@
+#ifndef __STORAGE_H__
+#define __STORAGE_H__
+
 #include <iostream>
 #include <vector>
 #include <string>
 
-#ifndef __STORAGE_H__
-#define __STORAGE_H__
+#include "../hdr/arrays.h"
 
 
 const double Pi =  3.1415926535897932384626;
@@ -21,6 +23,7 @@ namespace stor{
 	extern double A;
 	extern double xl,xr;
 	extern double V, V0, freq, omega;
+    extern double H_const;
 	extern double cell_size;
 	extern int Nwires;
 	extern std::vector<double> V0_mdw;
@@ -46,5 +49,10 @@ namespace stor{
 	extern void initialize();
 	extern double A0, A1, A2, A3, A4, A5, A6, A7, A8;
     extern bool use_DW_coupling;
+
+    extern bool use_edge;
+    extern double H_edge_max;
+    extern double edge_scale;
+    extern array_t<2,double> H_edge;
 } //end of namespace
 #endif

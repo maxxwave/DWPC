@@ -35,7 +35,7 @@ namespace integrate{
 
 	double euler( double &time){
 
-		calculate::Zeeman(time);
+		//calculate::Zeeman(time);
 		//std::cout<<prefac1<<"\t"<<prefac2<<"\t"<<prefac3<<"\t"<<prefac4<<std::endl;
 
 		// transfer the coordinates into eurler variables

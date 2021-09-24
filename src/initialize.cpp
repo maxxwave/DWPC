@@ -21,6 +21,7 @@
 #include "../hdr/calculate.h"
 #include "../hdr/euler_integrator.h"
 #include "../hdr/input_map.h"
+#include "../hdr/arrays.h"
 
 namespace stor{
 
@@ -60,8 +61,13 @@ namespace stor{
         stor::phi_coord.assign(stor::Nwires, 0.0);
         stor::V0_mdw.assign(stor::Nwires, stor::V0);
         stor::H_DW.assign(stor::Nwires, 0.0);
+        stor::H_dd.assign(stor::Nwires, 0.0);
 
-        stor::use_DW_coupling = inputs.get<bool>("use_DW_coupling", false);
+        stor::H_const = inputs.get<double>("H_const", 0.0);
+
+        stor::use_DW_coupling = false;
+        if ( inputs.get<int>("use_DW_coupling", 0) > 0)
+            stor::use_DW_coupling = true;
         std::cout << "Use DW coupling = " << stor::use_DW_coupling << std::endl;
 
 
@@ -90,6 +96,37 @@ namespace stor{
         calculate::random_seed = d.count();
         std::cout << calculate::random_seed << std::endl;
         calculate::seed_rng(calculate::random_seed);
+
+
+
+        if( inputs.get<int>("use_edge_roughness", 0) > 0){
+            stor::use_edge = true;
+            stor::H_edge_max = inputs.get<double>("H_edge_max", 0.0);
+            stor::edge_scale = inputs.get<double>("edge_scale", 20e-9); // discretisation of the edge roughness
+            int Nx = std::round( stor::L / stor::edge_scale);
+            std::cerr << stor::edge_scale << "  " << Nx << std::endl;
+            stor::H_edge.assign(stor::Nwires, Nx, 0.0);
+
+            int edge_seed = inputs.get<int>("edge_seed", 0);
+
+            // if a seed if set for the edge roughness we reset the RNG
+            if( edge_seed > 0)
+                calculate::seed_rng(edge_seed);
+
+
+            for( int i = 0; i < stor::Nwires; i++){
+                for( int j = 0; j < Nx; j++){
+                    stor::H_edge(i,j) = (calculate::Uniform() - calculate::Uniform())*stor::H_edge_max;
+                    std::cerr << i << "  " << j << "  " << stor::H_edge(i,j) << std::endl;
+                }
+            }
+
+            // After the edge roughness has been calculated reset the RNG to
+            // its originial random seed
+            if( edge_seed > 0)
+                calculate::seed_rng(calculate::random_seed);
+        }
+
 
 
         //if( stor::Nwires > 1 ){

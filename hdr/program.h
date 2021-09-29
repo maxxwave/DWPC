@@ -11,7 +11,7 @@ namespace programs{
 	extern double benchmark1();
 	extern double benchmark2();
 	extern double benchmark3();
-	extern double show_potential();
+	extern void show_potential();
 	extern double spin_current1();
 }
 #endif

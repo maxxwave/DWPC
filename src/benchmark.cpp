@@ -133,7 +133,7 @@ namespace programs{
 
     }// end of benchmark2
 
-    double show_potential(){
+    void show_potential(){
         for (int l=-200;l<200; l++){
             calculate::update_energy_antinotches(l*1e-9);
             std::cout<<stor::Ex<<"\t"<<stor::dEx<<"\t"<<l*1e-9<<std::endl;
@@ -190,9 +190,8 @@ namespace programs{
 
         }
 
-
-
-    }// end of benchmark2
+        return 0;
+    }// end of benchmark3
 
    // double multi_DW(){
 

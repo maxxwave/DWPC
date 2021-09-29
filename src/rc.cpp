@@ -887,7 +887,7 @@ namespace reservoir{
 
             int Ncorrect = accuracy_spoken(Pred_vec, Y_vec);
             std::cout<< "No of correct predictions:  " << Ncorrect << " out of " << Pred_vec.size(0) << std::endl;
-
+            return 0;
         }
 
         int run_spoken_recognition(){

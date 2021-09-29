@@ -13,4 +13,4 @@ SRCFILES= src/main.cpp \
 EXE=DWPC
 
 ${EXE} : ${SRCFILES}
-	${CC} $^ ${CFLAGS}  -o ${EXE} -llapack -g -pg
+	${CC} $^ ${CFLAGS}  -o ${EXE} -llapack

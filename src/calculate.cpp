@@ -181,7 +181,7 @@ namespace calculate{
 		double S=stor::Ly*stor::Lz;
 		double rijd=(stor::rij+stor::Ly)*(stor::rij+stor::Ly);
 		double prefac_dd=0.375*stor::my*stor::my/(Pi*stor::Ms*S);
-			
+
 		// loop over the wires
 		for (int i=0; i<X_DW.size(); i++){
 			double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
@@ -203,14 +203,14 @@ namespace calculate{
 
 			stor::H_dd[X_DW.size()-1]= prefac_dd*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])*
 				((X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2]) * (X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])-4*rijd)/r_prim7;
-			
+
 			stor::H_DW[X_DW.size()-1] = -stor::Ms*S*(X_DW[X_DW.size()-1]-X_DW[X_DW.size()-2])/(2*Pi*r_prim3);
 
 			if((i!=0)&&(i!=(X_DW.size()-1))){
 			// We assume the NN interaction only
 			stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
 					-stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);
-			
+
 			stor::H_dd[i]= prefac_dd*(X_DW[i]-X_DW[i+1])*((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1])-4*rijd)/r7
 				     + prefac_dd*(X_DW[i]-X_DW[i-1])*((X_DW[i]-X_DW[i-1])*(X_DW[i]-X_DW[i-1])-4*rijd)/r7;
 			}

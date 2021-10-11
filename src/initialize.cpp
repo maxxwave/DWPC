@@ -53,8 +53,8 @@ namespace stor{
         integrate::Dt = inputs.get<double>("Dt");
         integrate::totaltime = inputs.get<double>("totaltime");
         integrate::out_time = inputs.get<double>("out_time");
-        integrate::scheme = inputs.get<std::string>("integrator");
-        stor::program = inputs.get<std::string>("program");
+        integrate::scheme = inputs.get<std::string>("integrator", "RK4");
+        stor::program = inputs.get<std::string>("program", "Benchmark2");
 
         stor::Nwires = inputs.get<int>("Nwires");
         stor::x_coord.assign(stor::Nwires, 8.70547e-08);

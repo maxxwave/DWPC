@@ -3,7 +3,7 @@ file=sine_square_new
 outfile=TIsignal_test.txt
 
 #time duration
-T=6.5e-9
+T=5e-9
 
 #number of virtual nodes
 Nv=10
@@ -20,8 +20,8 @@ lr=0.01
 la=0.5
 
 #field parameters
-H0=1280
-dH=500
+H0=2280
+dH=1500
 #regression factor
 lambda=2.1
 

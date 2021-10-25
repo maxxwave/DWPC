@@ -71,8 +71,8 @@ namespace stor{
         std::cout << "Use DW coupling = " << stor::use_DW_coupling << std::endl;
 
 
-        //stor::x_coord[0] = 0.0;
-        stor::x_coord[1] = 0.0;
+        stor::x_coord[0] = 0.0;
+        //stor::x_coord[1] = 0.0;
         //stor::x_coord[2] = 0.0;
 
         // initialize with polynomial coefficients (a0,a1, ..., a8)

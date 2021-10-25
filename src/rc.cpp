@@ -53,68 +53,18 @@ namespace reservoir{
 
     // in this function we generate random number for the mask which can be either -1 or +1
     void mask_values(){
-        MASK.assign( 1024*no_nodes, 0.0);
+        MASK.assign( 1280*no_nodes, 0.0);
         mask_array.assign( no_nodes, 0);
         for (int n=0; n<no_nodes; n++){
             mask_array[n] =  rng_int_dist(rng)*2.0 - 1.0;
             std::cout<<mask_array[n]<<std::endl;
             for (int j=0; j<1024;j++){
-                MASK(n*1024 +j )= (rng_int_dist(rng)*2.0 - 1.0);//*0.1;
+                MASK(n*1280 +j )= (rng_int_dist(rng)*2.0 - 1.0);//*0.1;
             }
         }
 
     }
 
-    // In this routine we get the oscillator response x_i(t), where i is the sequential node
-    // i=0..24
-    void oscillation_response(double Hi){
-        double time=0.0;
-        // we calculate the no of steps needed to be performed per node
-        no_steps_per_node=std::round(theta / integrate::Dt);
-
-        // In this loop we apply a sequence of input fields from
-
-        //we loop over the nodes
-        for (int i=0; i<no_nodes;i++){
-            //store the average position of the DW
-            double average_position=0.0;
-
-            // recalculate the field
-            stor::V0 = Hc + dH*(0.001 +Hi)*mask_array[i];
-
-            // In this loop we average over a time=theta
-            for (int j=0; j<no_steps_per_node; j++){
-                integrate::runge_kutta(time);
-                average_position+=stor::x_dw*stor::x_dw*1e18;
-
-
-                // stor the position of the domain wall into array of outputs
-                //s_x.push_back(sqrt(average_position/no_steps_per_node));
-                s_x.push_back(stor::x_dw/1e-7);
-            }
-            outputfile << std::fixed
-                << std::setprecision(6)
-                << time*1e9 << "\t"
-                << stor::V << "\t"
-                << stor::V0 << "\t"
-                << stor::x_dw*1e9 << "\t"
-                << sqrt(average_position/(no_steps_per_node)) << "\t"
-                << Hi
-                <<std::endl;
-
-        }
-    }
-
-    // here we define new variables for the following training process
-    std::vector<double> W; // in this array we store the output weights
-    const double r=0.001; // rate of learning
-    double y_p=0.0; // target & output weight
-    const double sigma=0.001;
-    double e_p=0.0;
-
-    double sigmoid(double x){
-        return 1/(1+exp(-x));
-    }
 
 
     void generate_signal_multi_dw( array_t<2, double> &mask, array_t<2,double> &Signal, std::vector<double> &input_x, const char* file)
@@ -190,7 +140,7 @@ namespace reservoir{
                 // In this loop we average over a time=theta
                 for (int j=0; j<no_steps_per_node; j++){
                     integrate::runge_kutta(time);
-                    //average_position+= stor::x_dw*stor::x_dw*1e18;
+                    average_position+= stor::x_dw*stor::x_dw*1e18;
                     //if (j%100 == 99) outstream << time*1e9 << "\t" << stor::x_dw*1e7 << "\t" << stor::V0 << std::endl;
                 }
 
@@ -205,10 +155,10 @@ namespace reservoir{
         outstream.close();
     }
 
-    //    extern "C" {
-    //        extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
-    //        extern int dgelss_( int*, int*, int*, double*, int*, double*, int*, double*, double*, int*, double*, int*, int*);
-    //    }
+        extern "C" {
+            extern int dgesv_( int*, int*, double*, int*, int*, double*, int*, int*);
+            extern int dgelss_( int*, int*, int*, double*, int*, double*, int*, double*, double*, int*, double*, int*, int*);
+        }
 
     void linear_regression2( const int Nout, array_t<2,double> &Weights, array_t<2,double> &S, array_t<2,double> &input_y, double regression_factor)
     {
@@ -261,8 +211,8 @@ namespace reservoir{
 
 
         //dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
-        //dgelss_( &N, &N, &NRHS, &STS(0,0), &LDA, &STY(0,0), &LDB, SV, &RCOND, &RANK, WORK, &LWORK, &INFO);
-        exit(-1);
+        dgelss_( &N, &N, &NRHS, &STS(0,0), &LDA, &STY(0,0), &LDB, SV, &RCOND, &RANK, WORK, &LWORK, &INFO);
+        //exit(-1);
 
         // Check if linear solver has completed correctly
         if( INFO == 0) {
@@ -323,8 +273,9 @@ namespace reservoir{
         int LDB = N;
         int INFO;
 
-        //dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
-        exit(-1);
+        dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
+        
+	//exit(-1);
         // Check if linear solver has completed correctly
         if( INFO == 0) {
             // Store the result as the transposed weights
@@ -380,8 +331,8 @@ namespace reservoir{
         int LDB = N;
         int INFO;
 
-        //dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
-        exit(-1);
+        dgesv_( &N, &NRHS, &STS(0,0), &LDA, IPIV, &STY(0,0), &LDB, &INFO);
+        //exit(-1);
 
         // Check if linear solver has completed correctly
         if( INFO == 0) {
@@ -447,27 +398,6 @@ namespace reservoir{
             }
         }
 
-        // transpose the matrix
-        /*array_t <2,double> Weights_t;
-          Weights_t.assign(Weights.size(1), Weights.size(0), 0.0);
-          for(int i,j=0; i<Weights.size(1), j<Weights.size(0); i,j++){
-          Weights_t(i,j)=Weights(j,i);
-          }
-          std::cout<<"Sizes of Weights_t :"<<"\t"<<Weights_t.size(0)<<std::endl;
-          */
-        //calculate the prediction matrix
-        /*if(Weights_t.size(0)!=Signal.size(1)) std::cerr<<"Conflict matrix sizes!"<<std::endl;
-          for (int i=0; i<Signal.size(0);i++){
-          for(int j=0; j<Weights_t.size(1); j++){
-          double sum=0.0;
-          for( int k=0; k<Signal.size(1); k++){
-          sum+=Signal(i,k)*Weights_t(k,j);}
-          pred(i,j)=sum;
-          }
-          }*/
-
-
-        //std::cout<<"Pred size mxn.................. : "<<"\t"<<pred.size(0)<<"\t"<<pred.size(1)<<std::endl;
     }
 
     void linear_model( std::vector<double> &pred, array_t<2,double> &Signal, array_t<2,double> &Weights)
@@ -509,7 +439,6 @@ namespace reservoir{
         Signal.assign( valid_x.size(), stor::Nwires*no_nodes, 0.0);
 
         generate_signal( Signal, valid_x, "Valid_Signal.out");
-
         pred.clear();
         linear_model( pred, Signal, Weights);
 
@@ -517,12 +446,13 @@ namespace reservoir{
 
 
         std::cout << "Validation: Number correct = " << Ncorrect << " out of " << valid_y.size() << std::endl;
-        for ( int i = 0; i < valid_x.size(); i++)
+       /* for ( int i = 0; i < valid_x.size(); i++)
             std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << "\t" << (( ((pred[i] > 0.5) ? 1 : 0) == int(input_y[i])) ? 1 : 0) << std::endl;
 
-        //for ( int i = 0; i < valid_y.size(); i++)
-        //    std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
-        return Ncorrect;
+        for ( int i = 0; i < valid_y.size(); i++)
+            std::cout << i << "\t" << valid_x[i] << "\t" << valid_y[i] << "\t" << pred[i] << std::endl;
+        */
+	return Ncorrect;
     }
 
     double multi_dw_batch_training( std::vector<double> &input_x, std::vector<double> &input_y, std::vector<double> &valid_x, std::vector<double> &valid_y)
@@ -592,115 +522,6 @@ namespace reservoir{
         return Ncorrect;
     }
 
-
-    double bias;
-    // the aim is to obtain a trainer capable to classify the corresponding inputs
-    // the training process is implemented using gradient method detailed in Ref. "An Introduction to Neural Networks" by Kevin Gurney, p. 90
-    // Dwi= rate*(t_p-y_p)x_i, where Dwi are the weiactoghts adjustements
-    void training( double lr, double la, int Nepoch, std::vector<double> &input_x, std::vector<double> &input_y){
-        outputfile.open("reservoir.data");
-        //initialize the mask
-        mask_values();
-
-        bias = 0.0;
-        // initialize the output weight array W
-        for (int z=0; z<no_nodes; z++){
-            // the weight are initialized randomly between -0.5 and 0.5
-            W.push_back( rng_dist(rng) - 0.5);
-        }
-
-
-        int epoch = 0;
-        do{
-            // clear s_x
-            // loop over samples
-            for (int t=0; t<input_x.size(); t++){
-
-                // delete the elements of the vector
-                s_x.clear();
-
-                // calculate the response per node
-                oscillation_response(input_x[t]);
-                // In this loo we calculate the activation y_p;
-                // Calculate y_p = \sum_j W_j S_j
-                y_p = bias;
-                for(int l=0; l<no_nodes; l++){
-                    y_p += W[l] * s_x[l];
-                }
-                y_p = sigmoid(y_p);
-
-                e_p=(input_y[t]-y_p)*(input_y[t] - y_p);
-                for(int l=0; l<no_nodes; l++){
-                    //re-adjust the weights
-                    W[l] += lr*(input_y[t] - y_p)*s_x[l]*(y_p*(1-y_p));
-                }
-                bias += lr*(input_y[t] - y_p)*(y_p*(1.0 - y_p));
-
-                std::cout << std::fixed
-                    << std::setprecision(0)
-                    << t << "\t"
-                    << std::setprecision(6)
-                    << input_x[t] << "\t"
-                    << input_y[t] << "\t"
-                    << e_p << "\t"
-                    << y_p << "\t"
-                    << s_x[0] << "\t"
-                    << s_x[1]
-                    << std::endl;
-
-            }
-            epoch++;
-            if( epoch > Nepoch) break;
-        }
-        while(e_p>sigma);
-        //close the file
-        outputfile.close();
-
-    }
-
-    double classification(std::vector<double> &input_x, std::vector<double> &input_y){
-        // Define a variable to store the average error
-        double average_e=0.0;
-        int Rate_success_sine=0, Rate_success_square=0;
-        int count=0;
-        // print the weights values
-        std::cout<<"Print the values of weights:"<<std::endl;
-        for (int k =0; k<no_nodes;k++){
-            std::cout<<W[k]<<std::endl;
-        }
-        std::cout<<"Print the values of yk:"<<std::endl;
-
-        // loop over test values of H
-        for (int t=0; t<input_x.size(); t++){
-            // delete the elements of the vector
-            s_x.clear();
-            // calculate the response per node
-            oscillation_response(input_x[t]);
-            y_p=bias;
-            //loop over the nodes and sum the x_ki
-            for (int z=0; z<no_nodes; z++){
-                y_p += W[z] * s_x[z];
-            }
-            y_p = sigmoid(y_p);
-
-            // if predict sine
-            if( y_p <0.5 && input_y[t]==0.0){
-                Rate_success_sine++;
-            }
-
-            if(y_p>=0.5 && input_y[t]==1.0){
-                Rate_success_square++;
-            }
-
-            count ++;
-
-            std::cout<<"Validation Error:" << "\t"<<fabs(y_p - input_x[t])<<"\t"<<input_y[t]<<"\t"<<y_p <<"\t"<<bias <<std::endl;
-        }
-        std::cout<<"Rate of success" << "\t"<<(Rate_success_sine+Rate_success_square)/(input_x.size()*0.5)<<"\t"
-            <<"No of sines & sqaures detected"<<  "\t"<<Rate_success_sine<<"\t"<<Rate_success_square<<std::endl;
-
-        return 1;
-    }//end of classification function
 
 
     void get_input_data(std::string &filename, std::vector<double> &input_x, std::vector<double> &input_y)
@@ -927,14 +748,14 @@ namespace reservoir{
             std::cout << "Stored values: " << std::endl;
             rc_inputs.print();
 
-            //Hc = rc_inputs.get<double>("H0");
-            //dH = rc_inputs.get<double>("dH");
+            Hc = rc_inputs.get<double>("H0");
+            dH = rc_inputs.get<double>("dH");
             int seed = rc_inputs.get<int>("seed");
             rng.seed(seed);
 
 
-            Hc = rc_inputs.get<double>("H0");
-            dH = rc_inputs.get<double>("dH");
+            //Hc = rc_inputs.get<double>("H0");
+            //dH = rc_inputs.get<double>("dH");
             no_nodes = rc_inputs.get<int>("Nv");
             tau = rc_inputs.get<double>("T");
             theta = tau/no_nodes;
@@ -944,7 +765,7 @@ namespace reservoir{
             std::cout << "Number of nodes = " << no_nodes << std::endl;
 
             // Access input values through get function with type template
-            std::string filename = rc_inputs.get<std::string>("file");
+            std::string filename = rc_inputs.get<std::string>("file", "sine_square_init");
             reservoir::get_input_data(filename, input_x, input_y);
 
             std::vector<double> x_train, y_train, x_valid, y_valid;
@@ -961,12 +782,14 @@ namespace reservoir{
             double la = rc_inputs.get<double>("la"); // input learning momentum
             int Nepoch = rc_inputs.get<double>("Ne"); // input number of epochs
 
-            /*
+            
             // In this section we calculate the success rate for a range of Hc and dH
             std::ofstream field_map_data;
             field_map_data.open("field_map.data");
             field_map_data<<"#"<<"HC"<<"\t"<<"dH"<<"\t" <<"N correct"<<std::endl;
-            double rate_succ=0.0;
+	    /*
+
+	    double rate_succ=0.0;
             for (int i=0; i<=50; i++)
             {
             Hc=i*50+100;
@@ -976,10 +799,11 @@ namespace reservoir{
             rate_succ=batch_training(x_train, y_train, x_valid, y_valid);
             field_map_data<< Hc<<"\t"<<dH<<"\t"<<rate_succ<<"\t"<<std::endl;
             }
-            }
+            }*/
+	    
+	    field_map_data<<batch_training(x_train, y_train, x_valid,y_valid)<<std::endl;
             field_map_data.close();
-            */
-            multi_dw_batch_training( x_train, y_train, x_valid, y_valid);
+            
 
             //reservoir::training(lr, la, Nepoch, x_train, y_train);
             //reservoir::classification(x_valid, y_valid);

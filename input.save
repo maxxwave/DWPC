@@ -19,14 +19,14 @@ a7=0
 a8=0
 
 # Field's parameters:
-H=2000 #A/m
+H=0 #A/m
 f=500e6
 
 use_DW_coupling=0
 
 #roughnss parameters
 use_edge_roughness=1
-H_edge_max=1000
+H_edge:q_max=5000
 edge_scale=20e-9
 edge_seed=1234
 
@@ -44,7 +44,7 @@ P=0.7
 beta=0.04
 j=0 #1e12 #A/m^2
 #program=multi_dw
-#program=Benchmark2
-program=RC
+program=Benchmark2
+#program=RC
 #program=spin_current
 #program=Bifurcation

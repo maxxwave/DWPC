@@ -1017,7 +1017,7 @@ namespace reservoir{
             std::cout << "Number of nodes = " << no_nodes << std::endl;
 
             // Access input values through get function with type template
-            std::string filename = rc_inputs.get<std::string>("file");
+            std::string filename = rc_inputs.get<std::string>("file", "Jin");
 
             int Nv = rc_inputs.get<int>("Nv");
             int Ns = rc_inputs.get<int>("Ns");
@@ -1042,7 +1042,7 @@ namespace reservoir{
 
 
 
-            std::string outfilename = rc_inputs.get<std::string>("outfile");
+            std::string outfilename = rc_inputs.get<std::string>("outfile", "Jout");
             std::ofstream outstream;
             outstream.open(outfilename.c_str());
 
@@ -1067,7 +1067,7 @@ namespace reservoir{
                     for (int j=0; j<no_steps_per_node; j++){
                         integrate::runge_kutta(time);
                         average_position+= stor::x_dw*stor::x_dw*1e18;
-                        if (j%100 == 99) std::cerr << time*1e9 << "\t" << stor::x_dw*1e9 << "\t" << stor::V0 << "\t" << sqrt(average_position/no_steps_per_node) << std::endl;
+                        //if (j%100 == 99) std::cerr << time*1e9 << "\t" << stor::x_dw*1e9 << "\t" << stor::V0 << "\t" << sqrt(average_position/no_steps_per_node) << std::endl;
                     }
 
                     // store the position of the domain wall into array of outputs

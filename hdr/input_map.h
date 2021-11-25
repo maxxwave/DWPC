@@ -80,7 +80,7 @@ class input_map_t {
         template <typename T>
         T get(const char* char_key)
         {
-            T val = T(0);
+            T val(0);
             std::string key(char_key);
             auto it = inp_map.find(key);
             if ( it != inp_map.end() ) {
@@ -92,6 +92,7 @@ class input_map_t {
 
             return val;
         }
+
 
         template <typename T>
         T get(const char* char_key, T val)

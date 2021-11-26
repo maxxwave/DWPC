@@ -43,11 +43,11 @@ namespace stor{
         stor::A = inputs.get<double>("Aex");
         stor::alpha = inputs.get<double>("alpha");
         stor::V0 = inputs.get<double>("H");
-        stor::T_sim = inputs.get<double>("Temperature");
+        stor::T_sim = inputs.get<double>("Temperature", 0.0);
         stor::freq = inputs.get<double>("f");
-        stor::P= inputs.get<double>("P");
-        stor::j_dens= inputs.get<double>("j");
-        stor::beta= inputs.get<double>("beta");
+        stor::P= inputs.get<double>("P", 0.0);
+        stor::j_dens= inputs.get<double>("j", 0.0);
+        stor::beta= inputs.get<double>("beta", 0.0);
         stor::omega=2*Pi*stor::freq;
         integrate::Dt = inputs.get<double>("Dt");
         integrate::totaltime = inputs.get<double>("totaltime");

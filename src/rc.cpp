@@ -1225,8 +1225,10 @@ namespace reservoir{
             theta = tau / double(Nv);
             no_steps_per_node=std::round(theta / integrate::Dt);
 
+            std::string outfilename = rc_inputs.get<std::string>("outfile");
             std::ofstream outstream;
-            outstream.open("Processed_signal_mdw.txt");
+            outstream.open(outfilename.c_str());
+
             std::ofstream outstream2;
             outstream2.open("Current_signal.txt");
 
@@ -1270,15 +1272,12 @@ namespace reservoir{
                 for (int k=0; k<stor::Nwires; k++)
                     Signal(i,k)=stor::x_coord[k];
 
-
-            }
-            for (int i=0; i<Ns; i++){
                 for (int j=0; j<stor::Nwires;j++){
                     outstream<<Signal(i,j)<<"\t";
                 }
                 outstream<<std::endl;
-            }
 
+            }
 
             outstream.close();
             outstream2.close();

@@ -262,16 +262,16 @@ namespace calculate{
     {
         // calculate the DW coupling
         //DW_coupling(integrate::multi_dw::x_p);
-        //if(stor::use_DW_coupling) DW_coupling(x);
+        if(stor::use_DW_coupling) DW_coupling(x);
         //std::cout<<stor::x_coord[0]<<std::endl;
-	DW_coupling(x);
+	//DW_coupling(x);
 
         for ( int i = 0; i < x.size(); i++) {
             double dEx = update_energy_antinotches(x[i]);
             double H = Zeeman(time, i) - stor::H_DW[i];
             double DWs = calculate_DW(phi[i]);
-            double n_x = noise(stor::T_sim, DWs);
-            double n_phi= noise(stor::T_sim, DWs);
+            double n_x =0.0;  // noise(stor::T_sim, DWs);
+            double n_phi=0.0; //  noise(stor::T_sim, DWs);
 
             stor::u_dw[i]=current(time, stor::j_dens_dw[i]);
 

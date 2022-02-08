@@ -61,7 +61,7 @@ namespace stor{
         stor::phi_coord.assign(stor::Nwires, 0.0);
         stor::V0_mdw.assign(stor::Nwires, stor::V0);
         stor::H_DW.assign(stor::Nwires, 0.0);
-
+	stor::rij = inputs.get<double>("Rij",50e-9); 
         stor::use_DW_coupling = inputs.get<bool>("use_DW_coupling", false);
         std::cout << "Use DW coupling = " << stor::use_DW_coupling << std::endl;
 
@@ -108,6 +108,7 @@ namespace stor{
         std::cout<<"Amplitude of oscillating field, H0 = "<<stor::V0<<" A/m"<<std::endl;
         std::cout<<"Frequency of the field, omega = " <<stor::omega<<" Hz"<<std::endl;
         std::cout<<"Integration time step, Dt = "<<integrate::Dt <<" s"<<std::endl;
+	std::cout<<"Distance between the wires, Rij= " <<stor::rij<<" m"<<std::endl;
         std::cout<<"Initialization completed!"<<std::endl;
         std::cout<<"The coefficients of E(x) are:"<<"\t"<<stor::A0<<"\t"<<stor::A1<<"\t"<<stor::A2<<"\t"<<stor::A3<<"\t"<<stor::A4<<std::endl;
         std::cout<<"Predicted critical current = " << stor::gamma*stor::mu0*stor::H_demag*0.5*calculate::calculate_DW(0.78539816339744830962) << std::endl;

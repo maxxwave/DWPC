@@ -108,9 +108,11 @@ namespace stor{
 	// creating the potential arrays Ex and the derivative dEx
 	std::vector<double> E_x;
 	std::vector<double> dE_x;
+
 	// separation distance between nanowires
-	double rij=50e-9;
+	double rij=25e-9; //50nm by DEFAULT
 	//std::vector<double> rij;
+
 	std::vector<double> H_DW;
 	std::vector<double> j_dens_dw;
 	std::vector<double> u_dw;

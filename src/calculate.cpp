@@ -270,9 +270,14 @@ namespace calculate{
             double dEx = update_energy_antinotches(x[i]);
             double H = Zeeman(time, i) - stor::H_DW[i];
             double DWs = calculate_DW(phi[i]);
+<<<<<<< HEAD
             
 	    double n_x = 0.0; // noise(stor::T_sim, DWs);
             double n_phi=0.0; // noise(stor::T_sim, DWs);
+=======
+            double n_x =0.0;  // noise(stor::T_sim, DWs);
+            double n_phi=0.0; //  noise(stor::T_sim, DWs);
+>>>>>>> bfcd5d580d58c958e44044a4b890c02297d5e505
 
             stor::u_dw[i]=current(time, stor::j_dens_dw[i]);
 

@@ -1240,11 +1240,11 @@ namespace reservoir{
             stor::j_dens_dw.resize(Ns, 0.0);
             double time=0.0;
 
-
             //call the routine to read the spectogram
 
             outstream2<<"Time"<<"\t"<<"jdens"<<"\t"<<"u(t)"<<std::endl;
-            //loop over samples
+            
+	    //loop over samples
             for (int i=0; i<Ns; i++){
 
                 //loop over wires
@@ -1254,7 +1254,7 @@ namespace reservoir{
                 }
 
                 //run integration
-                for (int t=0; t<no_steps_per_node/2; t++){
+                for (int t=0; t<no_steps_per_node/stor::tpr; t++){
                     integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
                     if (t % 100 == 0) outstream2<<time<<"\t"<<stor::j_dens_dw[0]<< "\t"<<stor::H_DW[1] << "\t" << stor::x_coord[0] << "\t" << stor::x_coord[1] <<
 			   "\t"<<stor::x_coord[2]<<"\t"<<stor::x_coord[3]<< std::endl;
@@ -1263,7 +1263,7 @@ namespace reservoir{
                 for(int k=0;k<stor::Nwires;k++)
                     stor::j_dens_dw[k]=0.0;
 
-                for (int t2=no_steps_per_node/2; t2<no_steps_per_node; t2++){
+                for (int t2=no_steps_per_node/stor::tpr; t2<no_steps_per_node; t2++){
                     integrate::multi_dw::runge_kutta(stor::x_coord, stor::phi_coord, time, integrate::Dt);
                     if (t2 % 100 == 0) outstream2<<time<<"\t"<<stor::j_dens_dw[0]<< "\t"<<stor::H_DW[1] << "\t" << stor::x_coord[0] << "\t" << stor::x_coord[1] <<
 			   "\t"<<stor::x_coord[2]<<"\t"<<stor::x_coord[3]<<std::endl;

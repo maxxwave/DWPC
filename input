@@ -22,7 +22,7 @@ a8=0
 H=0 #A/m
 f=500e6
 
-use_DW_coupling=0
+use_DW_coupling=1
 
 # Simulation's parameters:
 Dt=1e-13
@@ -37,6 +37,8 @@ Temperature=0
 P=0.7
 beta=0.04
 j=1e12 #A/m^2
+pulse_ratio=1.75
+
 program=multi_dw
 #program=RC
 #program=spin_current

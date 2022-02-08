@@ -36,7 +36,7 @@ namespace stor{
 	extern double Ex, dEx;
 	extern double vx, phi_dt;
 	extern double Dw_size;
-	extern double u, mu_B, e_el, beta, P, j_dens;
+	extern double u, mu_B, e_el, beta, P, j_dens, tpr;
 	extern double rij;
 	extern std::vector<double> H_DW;
 	extern std::vector<double> H_dd;

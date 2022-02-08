@@ -3,7 +3,7 @@ file=sine_square_new
 outfile=TIsignal_test.txt
 
 #time duration
-T=6.5e-9
+T=1.5e-9
 
 #number of virtual nodes
 Nv=10

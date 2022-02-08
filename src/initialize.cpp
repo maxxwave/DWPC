@@ -46,8 +46,9 @@ namespace stor{
         stor::T_sim = inputs.get<double>("Temperature", 0.0);
         stor::freq = inputs.get<double>("f");
         stor::P= inputs.get<double>("P", 0.0);
-        stor::j_dens= inputs.get<double>("j", 0.0);
-        stor::beta= inputs.get<double>("beta", 0.0);
+        stor::j_dens = inputs.get<double>("j", 0.0);
+        stor::tpr = inputs.get<double>("pulse_ratio",0.0);
+	stor::beta= inputs.get<double>("beta", 0.0);
         stor::omega=2*Pi*stor::freq;
         integrate::Dt = inputs.get<double>("Dt");
         integrate::totaltime = inputs.get<double>("totaltime");
@@ -65,8 +66,8 @@ namespace stor{
         std::cout << "Use DW coupling = " << stor::use_DW_coupling << std::endl;
 
 
-        //stor::x_coord[0] = 0.0;
-        stor::x_coord[1] = 0.0;
+        stor::x_coord[0] = 0.0;
+        //stor::x_coord[1] = 0.0;
         //stor::x_coord[2] = 0.0;
 
         // initialize with polynomial coefficients (a0,a1, ..., a8)

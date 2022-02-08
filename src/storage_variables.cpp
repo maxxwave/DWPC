@@ -114,6 +114,7 @@ namespace stor{
 	std::vector<double> H_DW;
 	std::vector<double> j_dens_dw;
 	std::vector<double> u_dw;
+	double tpr=0.0;
 
 	// creating an array for the domain wall width
 	std::vector<double> Dw;

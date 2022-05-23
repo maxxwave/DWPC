@@ -54,5 +54,6 @@ namespace stor{
     extern double H_edge_max;
     extern double edge_scale;
     extern array_t<2,double> H_edge;
+    extern array_t<2,double> E_edge;
 } //end of namespace
 #endif

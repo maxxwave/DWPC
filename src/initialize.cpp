@@ -106,6 +106,7 @@ namespace stor{
             int Nx = std::round( stor::L / stor::edge_scale);
             std::cerr << stor::edge_scale << "  " << Nx << std::endl;
             stor::H_edge.assign(stor::Nwires, Nx, 0.0);
+            stor::H_edge.assign(stor::Nwires, Nx+1, 0.0);
 
             int edge_seed = inputs.get<int>("edge_seed", 0);
 
@@ -115,9 +116,12 @@ namespace stor{
 
 
             for( int i = 0; i < stor::Nwires; i++){
+                stor::E_edge(i,0) = calculate::Uniform();
+                    std::cerr << i << "  " << -1 << "  " << stor::E_edge(i,0) << "  " << 0.0 << std::endl;
                 for( int j = 0; j < Nx; j++){
-                    stor::H_edge(i,j) = (calculate::Uniform() - calculate::Uniform())*stor::H_edge_max;
-                    std::cerr << i << "  " << j << "  " << stor::H_edge(i,j) << std::endl;
+                    stor::E_edge(i, j+1) = calculate::Uniform();
+                    stor::H_edge(i,j) = (E_edge(i,j) - E_edge(i,j+1))*stor::H_edge_max;
+                    std::cerr << i << "  " << j << "  " << stor::E_edge(i,j+1) << "  " << stor::H_edge(i,j) << std::endl;
                 }
             }
 

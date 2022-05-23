@@ -133,6 +133,7 @@ namespace stor{
     double edge_scale=5.0e9;
     double H_edge_max = 0.0;
     array_t<2,double> H_edge;
+    array_t<2,double> E_edge;
 
 
 }// end of namespace

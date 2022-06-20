@@ -14,10 +14,12 @@
 #include <cmath>
 #include <string>
 #include "../hdr/storage.h"
-#define PI 3.1415926535897932384626433832795028841971693993751058209749445923078164062
+
+
 namespace stor{
 
     std::string program("RC");
+	double kb=1.38064852e-23;// m2Kgs-2K-1
 
 	// The length of the chain on x-component
 	double L=200.0e-9;
@@ -28,13 +30,13 @@ namespace stor{
 	//Lz -thickness,t
 
 	//declare the magnetisation
-	double Ms=477e3; // A/m
-	double mu0=PI*4e-7; //T^2 J^-1 m^3
+	double Ms = 477e3; // A/m
+	double mu0 = Pi*4e-7; //T^2 J^-1 m^3
 
 	// defining the Demag factors
 	//double Nx=0.021829576;
-	double Ny = 1 - (2/PI)*atan(Ly/Lz) + (1/(2*PI))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*PI))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly));
-	double Nz = 1 - (2/PI)*atan(Lz/Ly) + (1/(2*PI))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*PI))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz));
+	double Ny = 1 - (2/Pi)*atan(Ly/Lz) + (1/(2*Pi))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*Pi))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly));
+	double Nz = 1 - (2/Pi)*atan(Lz/Ly) + (1/(2*Pi))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*Pi))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz));
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
@@ -53,9 +55,27 @@ namespace stor{
 	double freq=0.0;
 	double omega=0.0;
 
+    double H_const = 0.0; // constant field
+
 	//defining the length of the cell
 	//needs to be around half of the exchange length
 	double cell_size=3e-10; // in m
+
+	//declare the coefficients of the energy polynom
+	double A0,A1,A2,A3,A4,A5,A6,A7,A8;
+
+	//define the current parameters
+	double e_el=1.602176634e-19;
+	double beta=0.0;
+	double j_dens=0.0;
+	double P=0.0;
+	double mu_B=9.274e-24;
+	double u;
+
+    //Number of wires
+    int Nwires = 1;
+
+    std::vector<double> V0_mdw;
 
 	// Defining the coordinates arrays
 	// Within 1D model we assume two colective coordinates defined by the x and azimuthal angle
@@ -90,9 +110,30 @@ namespace stor{
 	// creating the potential arrays Ex and the derivative dEx
 	std::vector<double> E_x;
 	std::vector<double> dE_x;
+	// separation distance between nanowires
+	double rij=50e-9;
+	//std::vector<double> rij;
+	std::vector<double> H_DW;
+	std::vector<double> j_dens_dw;
+	std::vector<double> u_dw;
 
 	// creating an array for the domain wall width
 	std::vector<double> Dw;
+	std::vector<double> H_dd;
+	std::vector<double> H_DD;
 	double Dw_size=0.0;
+
+	//declaring the my of the DW
+	double my=7.1e-18; //SI
+
+    bool use_DW_coupling = false;
+
+    bool use_edge = false;
+
+    double edge_scale=5.0e9;
+    double H_edge_max = 0.0;
+    array_t<2,double> H_edge;
+    array_t<2,double> E_edge;
+
 
 }// end of namespace

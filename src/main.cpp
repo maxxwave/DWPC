@@ -30,7 +30,7 @@ int main(){
 
 	stor::initialize();
 
-	if(stor::program.compare("Potential")==0){
+    if(stor::program.compare("Potential")==0){
         std::cout<<"Running Potential program"<<std::endl;
 		programs::show_potential();
 	}
@@ -42,6 +42,12 @@ int main(){
 	if(stor::program.compare("Benchmark2")==0){
         std::cout<<"Running 'Benchmark-2 (Time-series) program"<<std::endl;
 		programs::benchmark2();
+	    std::cout<<"Simulation ended successfully!"<<std::endl;
+        return 0;
+	}
+	if(stor::program.compare("Benchmark3")==0){
+        std::cout<<"Running 'Benchmark-3 (Time-series) program"<<std::endl;
+		programs::benchmark3();
 	}
 	if (stor::program.compare("Bifurcation")==0){
         std::cout<<"Running Bifurcation program"<<std::endl;
@@ -52,8 +58,33 @@ int main(){
         	std::cout << "Running Reservoir Computing (RC) program." << std::endl;
         	reservoir::run();
         	return 0;
-    	}
+    }
+	if (stor::program.compare("spoken_digit_recognition") == 0) {
+		std::cout<<"Running spoken digits recognition program" <<std::endl;
+		reservoir::run_spoken_recognition();
+	}
+	if( stor::program.compare("RC_field_sequence") == 0) {
+        	std::cout << "Running Reservoir Computing (RC) program." << std::endl;
+        	reservoir::run_field_sequence();
+        	return 0;
+    }
 
+	if( stor::program.compare("RC_transient") == 0) {
+        	std::cout << "Running Transient Reservoir Computing (RC) program." << std::endl;
+        	reservoir::run_transient();
+        	return 0;
+    }
+
+    if( stor::program.compare("multi_dw") == 0) {
+        	std::cout << "MultiDW program." << std::endl;
+        	reservoir::multi_wires_dynamics();
+        	return 0;
+    }
+
+    if (stor::program.compare("spin_current") == 0) {
+		std::cout<<"Running spin current program" <<std::endl;
+		programs::spin_current1();
+	}
 
 	std::cout<<"Simulation ended successfully!"<<std::endl;
 	return 1;

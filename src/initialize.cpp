@@ -106,7 +106,7 @@ namespace stor{
             int Nx = std::round( stor::L / stor::edge_scale);
             std::cerr << stor::edge_scale << "  " << Nx << std::endl;
             stor::H_edge.assign(stor::Nwires, Nx, 0.0);
-            stor::H_edge.assign(stor::Nwires, Nx+1, 0.0);
+            stor::E_edge.assign(stor::Nwires, Nx+1, 0.0);
 
             int edge_seed = inputs.get<int>("edge_seed", 0);
 

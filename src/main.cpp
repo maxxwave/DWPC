@@ -20,13 +20,19 @@
 #include "../hdr/euler_integrator.h"
 #include "../hdr/program.h"
 #include "../hdr/rc.h"
+#include "../hdr/DW_model.h"
 
 int main(){
 
     std::cout<<"Developers: Razvan Ababei, Matt Ellis and Tom Hayward"<<std::endl;
     std::cout<<"University of Sheffield"<<std::endl;
 	// In this step we initialize the variables from the input file set by the user
-    //
+
+    DW_model_t DW_model;
+
+    std::cout << DW_model.Aex << std::endl;
+    return 1;
+
 
 	stor::initialize();
 

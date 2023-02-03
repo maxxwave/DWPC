@@ -1,12 +1,13 @@
 // DW model class
 // Created:     2/2/2023
-// Modified:    2/2/2023
+// Modified:    3/2/2023
 // Author:      Matthew Ellis
 //
 
 #ifndef __DW_MODEL_H__
 #define __DW_MODEL_H__
 
+#include <cmath>
 #include <iostream>
 #include <string>
 
@@ -84,12 +85,12 @@ public:
 
 double DW_model_t::K_eff(const double phi)
 {
-    return ::util::mu_0 * sqr(_Ms * sin(phi)) + _B_k;
+    return ::util::mu_0 * sqr(_Ms * sin(phi)) + _Ms * _B_k;
 }
 
 double DW_model_t::DW_width(const double phi)
 {
-    return 1e-9 * Pi * sqrt( _Aex / K_eff(phi) );
+    return 1e9 * Pi * sqrt( _Aex / K_eff(phi) );
 }
 
 void DW_model_t::initialise()
@@ -116,7 +117,8 @@ void DW_model_t::initialise()
     _Temperature = inputs.get<double>("Temperature");
     _freq = inputs.get<double>("f");
 
-    _omega = 2 * Pi * _freq;
+    // Convert to per ns
+    _omega = 2 * Pi * _freq * 1e-9;
 
     _P = inputs.get<double>("P");
     _j_dens = inputs.get<double>("j");
@@ -166,7 +168,7 @@ void DW_model_t::gradient(double &dq, double &dphi, const double q, const double
     const double D = DW_width(phi);
 
     dq = D * _gamma_p * (_alpha * Bq - Bphi);
-    dphi = _gamma_p * (Bq - _alpha * Bphi);
+    dphi = _gamma_p * (Bq + _alpha * Bphi);
 }
 
 #endif

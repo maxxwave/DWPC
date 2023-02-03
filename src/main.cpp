@@ -22,6 +22,8 @@
 #include "../hdr/rc.h"
 #include "../hdr/DW_model.h"
 
+#include "../hdr/RK4.h"
+
 int main(){
 
     std::cout<<"Developers: Razvan Ababei, Matt Ellis and Tom Hayward"<<std::endl;
@@ -30,10 +32,21 @@ int main(){
 
     DW_model_t DW_model;
 
+	RK4_t integrator;
+
 	DW_model.initialise();
 
-	for (int i = -20; i <= 20; i++)
-    	std::cout << i * 10.0 << "  " << DW_model.B_q( double(i)*10.0, 0.0, 0.0) << std::endl;
+	integrator.init();
+	double t = 0.0, q = 0.0, phi =0.0;
+	std::cout << t << "  " << q << "  " << phi << std::endl;
+
+	for (auto i = 0; i < 200; i++) {
+		integrator.multistep(10, q, phi, t, DW_model);
+		std::cout << t << "  " << q << "  " << phi << "  " << DW_model.DW_width(phi) << std::endl;
+	}
+
+	//for (int i = -20; i <= 20; i++)
+    //	std::cout << i * 10.0 << "  " << DW_model.B_q( double(i)*10.0, 0.0, 0.0) << std::endl;
     return 1;
 
 

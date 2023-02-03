@@ -22,6 +22,17 @@
 #include "../hdr/euler_integrator.h"
 
 namespace calculate{
+
+    void compute_demag_factor( double3 &N, double3& L)
+    {	
+		const double r1 = L[1]/L[2];
+		const double r2 = 1.0/r1;
+        N[0] = 0.0;
+		N[1] = 1.0 - (2*atan(r1) + 0.5*r2*log10(1 + sqr(r1)) - 0.5*r1*log10(1 + sqr(r2)))/Pi;
+		N[2] = 1.0 - (2*atan(r2) + 0.5*r1*log10(1 + sqr(r2)) - 0.5*r2*log10(1 + sqr(r1)))/Pi;
+	}
+
+
 	// Defining some prefactors where we incorporate the constants in order to not be called each time in the loop
 	double prefac1 = (-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
 	double prefac2 = stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);

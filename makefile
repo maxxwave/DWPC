@@ -1,5 +1,5 @@
 CC=g++
-CFLAGS= -std=c++11 -O3 #-Wall
+CFLAGS= -std=c++11 -O3
 
 SRCFILES= src/main.cpp \
 	  src/initialize.cpp \
@@ -10,7 +10,11 @@ SRCFILES= src/main.cpp \
 	  src/bifurcation.cpp \
 	  src/benchmark.cpp\
 	  src/rc.cpp
+	  
 EXE=DWPC
 
 ${EXE} : ${SRCFILES}
-	${CC} $^ ${CFLAGS}  -o ${EXE} -llapack -g -pg
+	${CC} $^ ${CFLAGS}  -o ${EXE} -llapack
+
+debug: ${SRCFILES}
+	${CC} $^ ${CFLAGS} -o ${EXE} -llapack -g -pg -Wall

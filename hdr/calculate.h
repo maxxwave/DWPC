@@ -4,6 +4,8 @@
 #include <vector>
 #include "../hdr/storage.h"
 
+#include "../hdr/utility.h"
+
 namespace calculate{
     extern unsigned random_seed;
     void seed_rng(const unsigned);
@@ -39,5 +41,7 @@ namespace calculate{
     double Uniform();
     double Normal();
     void Normal(std::vector<double> &);
+
+	void compute_demag_factor( double3 &N, double3& L);
 }
 #endif

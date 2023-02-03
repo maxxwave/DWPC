@@ -30,7 +30,10 @@ int main(){
 
     DW_model_t DW_model;
 
-    std::cout << DW_model.Aex << std::endl;
+	DW_model.initialise();
+
+	for (int i = -20; i <= 20; i++)
+    	std::cout << i * 10.0 << "  " << DW_model.B_q( double(i)*10.0, 0.0, 0.0) << std::endl;
     return 1;
 
 

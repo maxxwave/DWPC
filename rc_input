@@ -1,11 +1,14 @@
 #input filename
-file=sine_square_init
+file=sine_square_new 
+outfile=TIsignal_test.txt
 
 #time duration
-T=16e-9
+T=5e-9
 
 #number of virtual nodes
-Nv=8
+Nv=10
+
+Ns=1280
 
 #number of epochs
 Ne=3
@@ -17,7 +20,9 @@ lr=0.01
 la=0.5
 
 #field parameters
-H0=1500
-dH=950
+H0=2280
+dH=1500
+#regression factor
+lambda=2.1
 
-seed=1
+seed=27256

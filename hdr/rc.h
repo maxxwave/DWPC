@@ -19,16 +19,20 @@ namespace reservoir{
 	extern std::vector <double> H_class;
 	extern std::vector <double> mask_array;
 	extern double sigmoid(double x);
-	extern double mask_values();
+	extern void mask_values();
 	double classification(std::vector<double>&, std::vector<double>&);
 	double training( std::vector<double>&, std::vector<double>&);
 	//extern double V_min, V_max;
 	extern long int no_steps_per_node;
 	extern double time;
-	extern double mask();
-	extern double oscillation_response(double Hi);
-    extern double field_map();
+	extern void oscillation_response(double Hi);
+	extern double field_map();
 	void get_input_data(std::string&, std::vector<double> &, std::vector<double> &);
-    int run();
+	int run();
+	int run_spoken_recognition();
+    int run_field_sequence();
+    int run_transient();
+    int multi_wires_dynamics();
+  
 }
 #endif

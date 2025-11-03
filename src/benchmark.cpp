@@ -253,5 +253,133 @@ namespace programs{
 
     }
 
+double Lyapunov_exponent(){
+	//in this vector we store the displacements x0,x1, .., xn
+	std::vector<double> data_series;
+	//in this vector we store the lyapunov values
+	std::vector<double> lyapunov_series;
+
+
+	// declare the output file
+        std::ofstream outputfile;
+        outputfile.open("output");
+        //perform some equilibration steps
+        double time=0.0;
+        int Nsteps = std::round(integrate::totaltime / integrate::Dt);
+        int Nout = std::round(integrate::out_time / integrate::Dt);
+
+        std::cout << "Using integrator: " << integrate::scheme << std::endl;
+        std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
+        std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
+
+        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << std::endl;
+        outputfile << std::fixed;
+
+        double error = 0.0;
+        int loop_steps = std::round(Nsteps / Nout);
+
+        // perform some integrations
+        for (long int i=0; i<loop_steps; i++){
+            for(long int j=0; j<Nout; j++){
+                if( integrate::scheme.compare("EULER") == 0)
+                    integrate::euler(time);
+                else if( integrate::scheme.compare("RK4") == 0)
+                    integrate::runge_kutta(time);
+                else if( integrate::scheme.compare("HEUN") == 0)
+                    integrate::heun(time);
+                else if( integrate::scheme.compare("RK45") == 0)
+                    error = integrate::RK45::runge_kutta_45(time, integrate::Dt);
+                else {
+                    std::cerr << "ERROR: Integrator not identified!" << std::endl;
+                    exit(-1);}//end of else loop
+            }//end of Nout loop
+
+            outputfile << std::fixed << std::setprecision(4)
+                << time*1e9 << "\t\t"
+                << std::setprecision(12)
+                << stor::x_dw*1e9 << "\t"
+                << stor::phi_dw << "\t"
+                << stor::vx << "\t"
+                << stor::V << "\t"
+                << calculate::current(time, stor::j_dens) << "\t"
+                << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
+                << std::scientific << error
+                <<std::endl;
+	    //std::cout<<"value of field is ....."<<stor::V<<std::endl;
+	    //if(stor::V0-0.0001<stor::V){
+		//std::cout<<"value of V is...."<<stor::V<<std::endl;
+	    	data_series.push_back(stor::x_dw); 
+	    //}
+
+        }// end of integration loop	
+
+	std::vector<double> data_series2;
+	// reset the initial position 
+	stor::x_dw=1e-10;
+	stor::phi_dw=1e-11;
+	time=0.0;
+	//data_series2[0]=5e-9;
+	// perform some integrations
+        for (long int i=0; i<loop_steps; i++){
+            for(long int j=0; j<Nout; j++){
+                if( integrate::scheme.compare("EULER") == 0)
+                    integrate::euler(time);
+                else if( integrate::scheme.compare("RK4") == 0)
+                    integrate::runge_kutta(time);
+                else if( integrate::scheme.compare("HEUN") == 0)
+                    integrate::heun(time);
+                else if( integrate::scheme.compare("RK45") == 0)
+                    error = integrate::RK45::runge_kutta_45(time, integrate::Dt);
+                else {
+                    std::cerr << "ERROR: Integrator not identified!" << std::endl;
+                    exit(-1);}//end of else loop
+            }//end of Nout loop
+
+            outputfile << std::fixed << std::setprecision(4)
+                << time*1e9 << "\t\t"
+                << std::setprecision(12)
+                << stor::x_dw*1e9 << "\t"
+                << stor::phi_dw << "\t"
+                << stor::vx << "\t"
+                << stor::V << "\t"
+                << calculate::current(time, stor::j_dens) << "\t"
+                << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
+                << std::scientific << error
+                <<std::endl;
+	    	data_series2.push_back(stor::x_dw); 
+	    //}
+
+        }// end of integration loop
+
+	std::cout<<"Length of data_series is ... "<<data_series.size()<<std::endl;
+        std::cerr << "Dynamics calculations have been finished" <<std::endl;
+        outputfile.close();
+
+	std::cout<<"Calculating the Lyapunov series .. "<< std::endl;
+	double lyapunov_sum=0.0;
+	double delta_x0=std::max(fabs(data_series2[0] - data_series[0]),1e-11);
+
+	for (int i=0; i<data_series.size()-1; i++){
+		double delta_x = std::max(fabs(data_series2[i]-data_series[i]),1e-23); // /(integrate::Dt*Nout);
+		//double delta_x = fabs(data_series2[i]-data_series[i]); // /(integrate::Dt*Nout);
+		std::cout<<delta_x<<std::endl;
+		lyapunov_series.push_back(log(fabs(delta_x/delta_x0))/Nout);
+		//lyapunov_series.push_back(log(delta_x / delta_x0) / (integrate::Dt * Nout));	
+	}
+	
+	//std::cout<<"incepe afisarea ...................."<<std::endl;
+	for (int i=0; i<lyapunov_series.size(); i++){
+		lyapunov_sum += lyapunov_series[i];
+		//std::cout<<lyapunov_series.size()<<"\t"<<data_series.size()<<std::endl;
+		std::cout<<std::fixed<<std::setprecision(4)<<
+			lyapunov_sum<<"\t"<<
+			lyapunov_sum/(i+1)<<"\t"<<
+			lyapunov_series[i]<<"\t"
+			<<i<<std::scientific<<std::endl;
+	}
+	std::cout<<"delta x0 is   "<<delta_x0<<"delta x2   "<<"Last Lyap"<< lyapunov_series[lyapunov_series.size()-1]<<std::endl;	
+        return 1;
+
+}
 
 }// end of namespace

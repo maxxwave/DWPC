@@ -13,6 +13,7 @@ namespace programs{
 	extern double benchmark3();
 	extern double show_potential();
 	extern double spin_current1();
+	extern double Lyapunov_exponent(); 
 }
 #endif
 

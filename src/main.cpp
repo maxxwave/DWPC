@@ -85,6 +85,12 @@ int main(){
 		std::cout<<"Running spin current program" <<std::endl;
 		programs::spin_current1();
 	}
+    if (stor::program.compare("Lyapunov") == 0){
+    		std::cout<<"Running Largest Lyapunov exponent calculations" << std::endl;
+		programs::Lyapunov_exponent();
+		return 0;
+	
+    }
 
 	std::cout<<"Simulation ended successfully!"<<std::endl;
 	return 1;

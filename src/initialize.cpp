@@ -57,7 +57,7 @@ namespace stor{
         stor::program = inputs.get<std::string>("program", "Benchmark2");
 
         stor::Nwires = inputs.get<int>("Nwires");
-        stor::x_coord.assign(stor::Nwires, 8.70547e-08);
+	stor::x_coord.assign(stor::Nwires, 8.70547e-08);
         stor::phi_coord.assign(stor::Nwires, 0.0);
         stor::V0_mdw.assign(stor::Nwires, stor::V0);
         stor::H_DW.assign(stor::Nwires, 0.0);
@@ -71,8 +71,8 @@ namespace stor{
         std::cout << "Use DW coupling = " << stor::use_DW_coupling << std::endl;
 
 
-        stor::x_coord[0] = 0.0;
-        //stor::x_coord[1] = 0.0;
+        stor::x_coord[0] = 10e-9;
+        stor::x_coord[1] = 10.0e-9;
         //stor::x_coord[2] = 0.0;
 
         // initialize with polynomial coefficients (a0,a1, ..., a8)
@@ -133,10 +133,10 @@ namespace stor{
 
 
 
-        //if( stor::Nwires > 1 ){
+        if( stor::Nwires > 1 ){
         integrate::multi_dw::setup(stor::Nwires);
-	    //stor::V0_mdw[1]=stor::V0;
-	    //}
+	    stor::V0_mdw[1]=stor::V0;
+	    }
 
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;
         std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;

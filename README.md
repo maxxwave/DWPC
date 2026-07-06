@@ -3,9 +3,6 @@ This code is dedicated to simulate a 1D domain-wall propagation into a nano-stri
 
 As an extension of this, the dynamics of the DW can be applied to reproduce the multiplexing of a signal into a Recurrent Neural Netword (RNN) in order to obtain a classification of different input signals.
 
-This code is developed by Razvan Ababei and Matt Ellis in collaboration with Tom Hayward at University of Sheffield, UK.
-
-
 # Installing DWPC
 DWPC requires to be run on Linux OS using g++ compiler. The installation can be done by cloning github repository as follow:
 

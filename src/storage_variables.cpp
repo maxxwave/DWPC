@@ -41,12 +41,18 @@ namespace stor{
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
 
-	// Temperature dependence of Ms: Ms(T) = Ms0*(1 - T/Tc)^Ms_exponent
-	// Ms0 and Tc/Ms_exponent are to be obtained from atomistic (VAMPIRE) M(T) curves
+	// Temperature dependence of Ms: Ms(T) = Ms0*(1 - (T/Tc)^Ms_rescaling_exponent)^Ms_exponent
+	// Tc, Ms_exponent (beta) and Ms_rescaling_exponent (alpha) as fitted to atomistic
+	// (VAMPIRE) M(T) curves, e.g. Evans et al., PRB 91, 144425 (2015), Eq. (5)
 	bool use_Ms_T = false;
 	double Ms0 = 477e3;      // A/m, saturation magnetisation at T=0 K
 	double Tc = 0.0;         // K, Curie temperature
 	double Ms_exponent = 0.0; // critical exponent of M(T)
+	double Ms_rescaling_exponent = 1.0; // temperature rescaling exponent (1 = classical)
+
+	// Exchange stiffness: A(T) = Aex0*(Ms(T)/Ms0)^Aex_exponent (Aex_exponent=0: constant)
+	double Aex0 = 0.0;
+	double Aex_exponent = 0.0;
 
 	// Gaussian temperature pulse: T(t) = T0 + T_pulse_peak*exp(-(t-T_pulse_t0)^2/(2*T_pulse_sigma^2))
 	bool use_T_pulse = false;

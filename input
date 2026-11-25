@@ -48,6 +48,20 @@ use_T_pulse=0
 T_pulse_peak=0
 T_pulse_t0=0
 T_pulse_sigma=0
+#Two-temperature model (use either TTM_P0 [W/m^3] or TTM_fluence [absorbed, J/m^2]):
+# gamma_e*Te dTe/dt = -G(Te-Tl) + P0*exp(-(t-TTM_t0)^2/(2*TTM_sigma^2))
+# C_l dTl/dt = G(Te-Tl) - C_l(Tl-Temperature)/TTM_tau_cool
+use_TTM=0
+TTM_gamma_e=0
+TTM_C_l=0
+TTM_G=0
+TTM_fluence=0
+TTM_t0=0
+TTM_sigma=0
+TTM_tau_cool=0
+TTM_tau_m=0
+TTM_spin_temperature=electron
+TTM_dt_max=1e-14
 #spin torque paramters
 P=0.7
 beta=0.04

@@ -16,6 +16,7 @@
 #include <stdlib.h>
 #include <string>
 #include <sstream>
+#include <iomanip>
 #include <stdio.h>
 #include <string.h>
 #include "../hdr/storage.h"
@@ -23,6 +24,7 @@
 #include "../hdr/euler_integrator.h"
 #include "../hdr/input_map.h"
 #include "../hdr/arrays.h"
+#include "../hdr/ttm.h"
 
 namespace stor{
 
@@ -64,6 +66,8 @@ namespace stor{
     // Set the current temperature and update Ms and everything depending on it
     void set_temperature(double T){
         stor::T_sim = T;
+        stor::T_e = T;
+        stor::T_l = T;
         if( stor::use_Ms_T ){
             stor::Ms = stor::Ms_T(T);
             stor::update_magnetic_parameters();
@@ -73,7 +77,39 @@ namespace stor{
     // Called by the integrators at every evaluation of the right-hand side,
     // i.e. also at the intermediate Runge-Kutta stages.
     void update_temperature(double time){
-        if( stor::use_T_pulse ) stor::set_temperature(stor::T_of_t(time));
+        if( stor::use_T_pulse ){
+            stor::set_temperature(stor::T_of_t(time));
+        }
+        else if( ttm::enabled ){
+            ttm::evaluate(time);
+            stor::T_e = ttm::Te;
+            stor::T_l = ttm::Tl;
+            // Spin temperature: drives Ms(T) and the thermal noise
+            stor::T_sim = ttm::spin_follows_electrons ? ttm::Te : ttm::Tl;
+            if( stor::use_Ms_T ){
+                stor::Ms = ( ttm::tau_m > 0.0 ) ? ttm::m*stor::Ms0 : stor::Ms_T(stor::T_sim);
+                if( stor::Ms < 1e-3*stor::Ms0 ){
+                    std::cerr << "Error: at t = " << time << " s the spin temperature is " << stor::T_sim
+                              << " K and Ms = " << stor::Ms << " A/m (< 0.1% of Ms0, Tc = " << stor::Tc << " K)."
+                              << " The 1D DW model is not defined for a demagnetised wire."
+                              << " Reduce the pulse energy or use a finite TTM_tau_m." << std::endl;
+                    exit(-1);
+                }
+                stor::update_magnetic_parameters();
+            }
+        }
+    }
+
+    // Append the temperatures and Ms at the given time to an output line,
+    // keeping the stream formatting unchanged for the other columns.
+    void write_temperature_columns(std::ostream &out, double time){
+        stor::update_temperature(time);
+        std::ios::fmtflags flags = out.flags();
+        std::streamsize prec = out.precision();
+        out << std::scientific << std::setprecision(8)
+            << "\t" << stor::T_e << "\t" << stor::T_l << "\t" << stor::Ms;
+        out.flags(flags);
+        out.precision(prec);
     }
 
     void initialize(){
@@ -133,7 +169,6 @@ namespace stor{
 
         stor::compute_demag_factors();
         stor::update_magnetic_parameters();
-        stor::set_temperature(stor::T_of_t(0.0));
         stor::freq = inputs.get<double>("f");
         stor::P= inputs.get<double>("P");
         stor::j_dens= inputs.get<double>("j");
@@ -144,6 +179,55 @@ namespace stor{
         integrate::out_time = inputs.get<double>("out_time");
         integrate::scheme = inputs.get<std::string>("integrator", "RK4");
         stor::program = inputs.get<std::string>("program", "Benchmark2");
+
+        // Two-temperature model for ultrafast laser heating
+        ttm::enabled = ( inputs.get<int>("use_TTM", 0) > 0 );
+        if( ttm::enabled ){
+            if( stor::use_T_pulse ){
+                std::cerr << "Error: use_TTM=1 and use_T_pulse=1 are mutually exclusive." << std::endl;
+                exit(-1);
+            }
+            ttm::gamma_e  = inputs.get<double>("TTM_gamma_e", 0.0);
+            ttm::C_l      = inputs.get<double>("TTM_C_l", 0.0);
+            ttm::G        = inputs.get<double>("TTM_G", 0.0);
+            ttm::t0       = inputs.get<double>("TTM_t0", 0.0);
+            ttm::sigma    = inputs.get<double>("TTM_sigma", 0.0);
+            ttm::tau_cool = inputs.get<double>("TTM_tau_cool", 0.0);
+            ttm::tau_m    = inputs.get<double>("TTM_tau_m", 0.0);
+            ttm::dt_max   = inputs.get<double>("TTM_dt_max", 1e-14);
+            std::string spin_T = inputs.get<std::string>("TTM_spin_temperature", "electron");
+            if( spin_T == "electron" ) ttm::spin_follows_electrons = true;
+            else if( spin_T == "phonon" ) ttm::spin_follows_electrons = false;
+            else {
+                std::cerr << "Error: TTM_spin_temperature must be 'electron' or 'phonon'." << std::endl;
+                exit(-1);
+            }
+            // Pulse energy: either the peak absorbed power density P0 (W/m^3) or the
+            // absorbed fluence F (J/m^2), assumed uniformly absorbed over the thickness Lz:
+            //   P0 = F / (Lz * sigma * sqrt(2*pi))
+            const double fluence = inputs.get<double>("TTM_fluence", 0.0);
+            ttm::P0 = inputs.get<double>("TTM_P0", 0.0);
+            if( fluence > 0.0 && ttm::P0 > 0.0 ){
+                std::cerr << "Error: give either TTM_P0 or TTM_fluence, not both." << std::endl;
+                exit(-1);
+            }
+            if( ttm::sigma <= 0.0 || ttm::gamma_e <= 0.0 || ttm::C_l <= 0.0 || ttm::G <= 0.0 ){
+                std::cerr << "Error: use_TTM=1 requires TTM_gamma_e, TTM_C_l, TTM_G and TTM_sigma > 0." << std::endl;
+                exit(-1);
+            }
+            if( stor::T0 <= 0.0 ){
+                std::cerr << "Error: use_TTM=1 requires Temperature > 0 (electron heat capacity gamma_e*Te)." << std::endl;
+                exit(-1);
+            }
+            if( ttm::tau_m > 0.0 && !stor::use_Ms_T ){
+                std::cerr << "Error: TTM_tau_m > 0 requires use_Ms_T=1." << std::endl;
+                exit(-1);
+            }
+            if( fluence > 0.0 ) ttm::P0 = fluence/(stor::Lz*ttm::sigma*sqrt(2.0*Pi));
+            ttm::initialise( stor::T0 );
+        }
+        stor::set_temperature(stor::T0);
+        stor::update_temperature(0.0);
 
         stor::Nwires = inputs.get<int>("Nwires");
 	stor::x_coord.assign(stor::Nwires, 8.70547e-08);
@@ -237,6 +321,14 @@ namespace stor{
                      <<" K, t0 = "<<stor::T_pulse_t0<<" s, sigma = "<<stor::T_pulse_sigma<<" s"<<std::endl;
             if( stor::use_Ms_T )
                 std::cout<<"Ms at pulse maximum = "<<stor::Ms_T(stor::T0+stor::T_pulse_peak)<<" A/m"<<std::endl;
+        }
+        if( ttm::enabled ){
+            std::cout<<"Two-temperature model: gamma_e = "<<ttm::gamma_e<<" J/m^3/K^2, C_l = "<<ttm::C_l
+                     <<" J/m^3/K, G = "<<ttm::G<<" W/m^3/K"<<std::endl;
+            std::cout<<"  Laser: P0 = "<<ttm::P0<<" W/m^3, t0 = "<<ttm::t0<<" s, sigma = "<<ttm::sigma
+                     <<" s, absorbed energy density = "<<ttm::P0*ttm::sigma*sqrt(2.0*Pi)<<" J/m^3"<<std::endl;
+            std::cout<<"  tau_cool = "<<ttm::tau_cool<<" s, tau_m = "<<ttm::tau_m<<" s, spin temperature = "
+                     <<( ttm::spin_follows_electrons ? "electron" : "phonon" )<<std::endl;
         }
         else
             std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;

@@ -30,6 +30,11 @@ namespace stor{
 	extern double T_of_t(double time);
 	extern void set_temperature(double T);
 	extern void update_temperature(double time);
+	// Electron and lattice temperatures (equal to T_sim unless the TTM is used)
+	extern double T_e, T_l;
+	// Appends "\tT_e\tT_l\tMs" (at the given time) to an output line
+	extern void write_temperature_columns(std::ostream &out, double time);
+	extern const char *temperature_columns_header;
 	extern double Nx, Ny, Nz;
 	extern double alpha;
 	extern double A;

@@ -250,10 +250,13 @@ namespace stor{
 
         stor::H_const = inputs.get<double>("H_const", 0.0);
 
+        // edge-to-edge gap between neighbouring wires (centre distance = rij + Ly)
+        stor::rij = inputs.get<double>("rij", stor::rij);
         stor::use_DW_coupling = false;
         if ( inputs.get<int>("use_DW_coupling", 0) > 0)
             stor::use_DW_coupling = true;
-        std::cout << "Use DW coupling = " << stor::use_DW_coupling << std::endl;
+        std::cout << "Use DW coupling = " << stor::use_DW_coupling << ", wire gap rij = " << stor::rij
+                  << " m (centre distance " << stor::rij + stor::Ly << " m)" << std::endl;
 
 
         // default initial DW positions (as before), optionally overridden by

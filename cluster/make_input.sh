@@ -13,9 +13,11 @@ P0=2.3279e22          # W/m^3, peak absorbed power (1.24e9 J/m^3 in a 50 fs FWHM
 SIGMA=2.1233e-14      # s (50 fs FWHM)
 TAU_M=200e-15         # s
 TAU_COOL=0            # s (0 = no cooling)
+RIJ=${RIJ:-50e-9}     # m, edge-to-edge gap between wires (env var); RIJ=inf -> no coupling
+if [ "$RIJ" = inf ]; then COUPLING=0; RIJ=50e-9; else COUPLING=1; fi
 
 sed -e 's/^Ms=.*/Ms=509407.45/' -e 's/^Aex=.*/Aex=1.19752e-11/' \
-    -e 's/^Nwires=.*/Nwires=3/' -e 's/^use_DW_coupling=.*/use_DW_coupling=1/' -e "s/^rng_seed=.*/rng_seed=$SEED/" \
+    -e 's/^Nwires=.*/Nwires=3/' -e "s/^use_DW_coupling=.*/use_DW_coupling=$COUPLING/" -e "s/^rij=.*/rij=$RIJ/" -e "s/^rng_seed=.*/rng_seed=$SEED/" \
     -e 's/^Temperature=.*/Temperature=300/' -e 's/^use_Ms_T=.*/use_Ms_T=1/' -e 's/^Tc=.*/Tc=635/' \
     -e 's/^Ms_exponent=.*/Ms_exponent=0.341/' -e 's/^Ms_rescaling_exponent=.*/Ms_rescaling_exponent=2.322/' \
     -e 's/^Aex_exponent=.*/Aex_exponent=2/' -e 's/^pinning_exponent=.*/pinning_exponent=2/' \

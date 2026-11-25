@@ -26,6 +26,8 @@ H=990 #A/m
 f=500e6
 
 use_DW_coupling=0
+#edge-to-edge gap between wires (m); centre distance = rij + Ly
+rij=50e-9
 
 #roughnss parameters
 use_edge_roughness=0

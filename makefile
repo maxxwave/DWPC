@@ -9,7 +9,8 @@ SRCFILES= src/main.cpp \
 	  src/euler_integrator.cpp \
 	  src/bifurcation.cpp \
 	  src/benchmark.cpp\
-	  src/rc.cpp
+	  src/rc.cpp \
+	  src/ttm.cpp
 EXE=DWPC
 
 ${EXE} : ${SRCFILES}

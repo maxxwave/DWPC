@@ -55,6 +55,11 @@ namespace stor{
 	double T_pulse_t0 = 0.0;    // s, time of the pulse maximum
 	double T_pulse_sigma = 0.0; // s, standard deviation of the Gaussian
 
+	// Electron and lattice temperatures (two-temperature model)
+	double T_e = 0.0;
+	double T_l = 0.0;
+	const char *temperature_columns_header = "\tT_e(K)\tT_l(K)\tMs(A/m)";
+
 	// Gilbert Damping
 	double alpha=0.02;
 

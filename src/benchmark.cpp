@@ -31,7 +31,7 @@ namespace programs{
         int Nout = std::round(integrate::out_time / integrate::Dt);
         double no_h_values=2;
 
-        outputfile << "#time(ns)       X(nm)           phi             H0           H		v(m/s)" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi             H0           H		v(m/s)" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
         double error;
@@ -65,7 +65,9 @@ namespace programs{
                     << stor::phi_dw << "\t"
                     << stor::V0 << "\t"
                     << stor::V << "\t"
-                    << stor::vx <<std::endl;
+                    << stor::vx;
+                stor::write_temperature_columns(outputfile, time);
+                outputfile << std::endl;
 
             }
         }
@@ -90,7 +92,7 @@ namespace programs{
         std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
         std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
 
-        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
         double error = 0.0;
@@ -122,8 +124,9 @@ namespace programs{
                 << stor::V << "\t"
                 << calculate::current(time, stor::j_dens) << "\t"
                 << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
-                << std::scientific << error
-                <<std::endl;
+                << std::scientific << error;
+            stor::write_temperature_columns(outputfile, time);
+            outputfile << std::endl;
 
         }
 
@@ -155,7 +158,7 @@ namespace programs{
         std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
         std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
 
-        outputfile << "#time(ns)       X(nm)           phi             dx/dt           V" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi             dx/dt           V" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
         double error = 0.0;
@@ -185,8 +188,9 @@ namespace programs{
                 //<< stor::phi_coord[1] << "\t"
                 //<< stor::x_coord[2]*1e9 << "\t"
                 //<< stor::phi_coord[2] << "\t"
-                << std::scientific << error
-                <<std::endl;
+                << std::scientific << error;
+            stor::write_temperature_columns(outputfile, time);
+            outputfile << std::endl;
 
         }
 
@@ -211,7 +215,7 @@ namespace programs{
         int Nout = std::round(integrate::out_time / integrate::Dt);
         double no_h_values=10;
 
-        outputfile << "#time(ns)       X(nm)           phi            J_dens           H		v(m/s)" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi            J_dens           H		v(m/s)" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
 	    double const amp=stor::j_dens;
@@ -244,7 +248,9 @@ namespace programs{
                     << stor::phi_dw << "\t"
                     << stor::j_dens << "\t"
                     << stor::V << "\t"
-                    << stor::vx <<std::endl;
+                    << stor::vx;
+                stor::write_temperature_columns(outputfile, time);
+                outputfile << std::endl;
 
             }
         }
@@ -272,7 +278,7 @@ double Lyapunov_exponent(){
         std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
         std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
 
-        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
         double error = 0.0;
@@ -303,8 +309,9 @@ double Lyapunov_exponent(){
                 << stor::V << "\t"
                 << calculate::current(time, stor::j_dens) << "\t"
                 << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
-                << std::scientific << error
-                <<std::endl;
+                << std::scientific << error;
+            stor::write_temperature_columns(outputfile, time);
+            outputfile << std::endl;
 	    //std::cout<<"value of field is ....."<<stor::V<<std::endl;
 	    //if(stor::V0-0.0001<stor::V){
 		//std::cout<<"value of V is...."<<stor::V<<std::endl;
@@ -344,8 +351,9 @@ double Lyapunov_exponent(){
                 << stor::V << "\t"
                 << calculate::current(time, stor::j_dens) << "\t"
                 << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
-                << std::scientific << error
-                <<std::endl;
+                << std::scientific << error;
+            stor::write_temperature_columns(outputfile, time);
+            outputfile << std::endl;
 	    	data_series2.push_back(stor::x_dw); 
 	    //}
 

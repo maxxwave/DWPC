@@ -1066,6 +1066,7 @@ namespace reservoir{
             //call the routine to read the spectogram
 
             outstream2<<"Time"<<"\t"<<"jdens"<<"\t"<<"u(t)"<<stor::temperature_columns_header<<std::endl;
+            outstream2 << std::setprecision(12);
             //loop over samples
             for (int i=0; i<Ns; i++){
 

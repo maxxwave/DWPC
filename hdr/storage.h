@@ -18,6 +18,11 @@ namespace stor{
 	extern double Lz, Ly;
 	extern double Ms, mu0;
 	extern double muMs;
+	// Temperature dependence of the saturation magnetisation
+	extern bool use_Ms_T;
+	extern double Ms0, Tc, Ms_exponent;
+	extern double Ms_T(double T);
+	extern void update_magnetic_parameters();
 	extern double Nx, Ny, Nz;
 	extern double alpha;
 	extern double A;

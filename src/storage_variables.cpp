@@ -41,6 +41,13 @@ namespace stor{
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
 
+	// Temperature dependence of Ms: Ms(T) = Ms0*(1 - T/Tc)^Ms_exponent
+	// Ms0 and Tc/Ms_exponent are to be obtained from atomistic (VAMPIRE) M(T) curves
+	bool use_Ms_T = false;
+	double Ms0 = 477e3;      // A/m, saturation magnetisation at T=0 K
+	double Tc = 0.0;         // K, Curie temperature
+	double Ms_exponent = 0.0; // critical exponent of M(T)
+
 	// Gilbert Damping
 	double alpha=0.02;
 

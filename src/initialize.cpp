@@ -25,6 +25,26 @@
 
 namespace stor{
 
+    // Saturation magnetisation at temperature T (in K):
+    //   Ms(T) = Ms0 * (1 - T/Tc)^Ms_exponent,   for T < Tc
+    //   Ms(T) = 0,                              for T >= Tc
+    // If use_Ms_T is false the constant Ms0 is returned.
+    double Ms_T(double T){
+        if( !stor::use_Ms_T ) return stor::Ms0;
+        if( T <= 0.0 ) return stor::Ms0;
+        if( T >= stor::Tc ) return 0.0;
+        return stor::Ms0 * pow(1.0 - T/stor::Tc, stor::Ms_exponent);
+    }
+
+    // Recompute every quantity that depends on Ms or on the cross-section.
+    // Must be called whenever Ms, Ly or Lz change.
+    void update_magnetic_parameters(){
+        stor::Ny = 1 - (2/Pi)*atan(stor::Ly/stor::Lz) + (1/(2*Pi))*(stor::Lz/stor::Ly)*log10(1 + (stor::Ly/stor::Lz)*(stor::Ly/stor::Lz)) - (1/(2*Pi))*(stor::Ly/stor::Lz)*log10(1 + (stor::Lz/stor::Ly)*(stor::Lz/stor::Ly));
+        stor::Nz = 1 - (2/Pi)*atan(stor::Lz/stor::Ly) + (1/(2*Pi))*(stor::Ly/stor::Lz)*log10(1 + (stor::Lz/stor::Ly)*(stor::Lz/stor::Ly)) - (1/(2*Pi))*(stor::Lz/stor::Ly)*log10(1 + (stor::Ly/stor::Lz)*(stor::Ly/stor::Lz));
+        stor::muMs = stor::mu0*stor::Ms;
+        stor::H_demag = stor::Ms*(stor::Nz - stor::Ny);
+    }
+
     void initialize(){
 
         // Input is read and stored in a map class
@@ -45,6 +65,26 @@ namespace stor{
         stor::alpha = inputs.get<double>("alpha");
         stor::V0 = inputs.get<double>("H");
         stor::T_sim = inputs.get<double>("Temperature");
+
+        // Temperature dependent saturation magnetisation
+        // Ms from the input file is interpreted as Ms0 (T = 0 K) when use_Ms_T=1
+        stor::Ms0 = stor::Ms;
+        stor::use_Ms_T = ( inputs.get<int>("use_Ms_T", 0) > 0 );
+        if( stor::use_Ms_T ){
+            stor::Tc = inputs.get<double>("Tc", 0.0);
+            stor::Ms_exponent = inputs.get<double>("Ms_exponent", 0.0);
+            if( stor::Tc <= 0.0 || stor::Ms_exponent <= 0.0 ){
+                std::cerr << "Error: use_Ms_T=1 requires Tc>0 and Ms_exponent>0 in the input file." << std::endl;
+                exit(-1);
+            }
+            if( stor::T_sim >= stor::Tc ){
+                std::cerr << "Error: Temperature (" << stor::T_sim << " K) >= Tc (" << stor::Tc
+                          << " K); Ms vanishes and the 1D DW model is not defined." << std::endl;
+                exit(-1);
+            }
+            stor::Ms = stor::Ms_T(stor::T_sim);
+        }
+        stor::update_magnetic_parameters();
         stor::freq = inputs.get<double>("f");
         stor::P= inputs.get<double>("P");
         stor::j_dens= inputs.get<double>("j");
@@ -139,7 +179,12 @@ namespace stor{
 	    }
 
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;
-        std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;
+        if( stor::use_Ms_T ){
+            std::cout<<"Ms(T) = Ms0*(1-T/Tc)^"<<stor::Ms_exponent<<", Ms0 = "<<stor::Ms0<<" A/m, Tc = "<<stor::Tc<<" K"<<std::endl;
+            std::cout<<"Saturation, Ms(T = "<<stor::T_sim<<" K) = "<<stor::Ms<<" A/m"<<std::endl;
+        }
+        else
+            std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;
         std::cout<<"Length of the strip = "<<stor::L<<" m"<<std::endl;
         std::cout<<"Width = "<<stor::Ly<<" m"<<std::endl;
         std::cout<<"Thickness = "<<stor::Lz<<" m"<<std::endl;

@@ -39,6 +39,10 @@ integrator=RK4
 #Pinning field:
 pin=1
 Temperature=100
+#Temperature dependent Ms: Ms(T)=Ms*(1-T/Tc)^Ms_exponent (Ms above is taken as Ms at 0 K)
+use_Ms_T=0
+Tc=0
+Ms_exponent=0
 #spin torque paramters
 P=0.7
 beta=0.04

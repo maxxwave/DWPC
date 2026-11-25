@@ -20,7 +20,8 @@ namespace stor{
 	extern double muMs;
 	// Temperature dependence of the saturation magnetisation
 	extern bool use_Ms_T;
-	extern double Ms0, Tc, Ms_exponent;
+	extern double Ms0, Tc, Ms_exponent, Ms_rescaling_exponent;
+	extern double Aex0, Aex_exponent;
 	extern double Ms_T(double T);
 	extern void update_magnetic_parameters();
 	extern void compute_demag_factors();

@@ -39,10 +39,13 @@ integrator=RK4
 #Pinning field:
 pin=1
 Temperature=100
-#Temperature dependent Ms: Ms(T)=Ms*(1-T/Tc)^Ms_exponent (Ms above is taken as Ms at 0 K)
+#Temperature dependent Ms: Ms(T)=Ms*(1-(T/Tc)^Ms_rescaling_exponent)^Ms_exponent (Ms above is taken as Ms at 0 K)
+#Exchange: A(T)=Aex*(Ms(T)/Ms)^Aex_exponent (Aex above is taken as A at 0 K if Aex_exponent!=0)
 use_Ms_T=0
 Tc=0
 Ms_exponent=0
+Ms_rescaling_exponent=1
+Aex_exponent=0
 #Gaussian temperature pulse: T(t)=Temperature+T_pulse_peak*exp(-(t-T_pulse_t0)^2/(2*T_pulse_sigma^2))
 use_T_pulse=0
 T_pulse_peak=0

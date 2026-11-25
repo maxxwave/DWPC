@@ -29,14 +29,14 @@
 namespace stor{
 
     // Saturation magnetisation at temperature T (in K):
-    //   Ms(T) = Ms0 * (1 - T/Tc)^Ms_exponent,   for T < Tc
+    //   Ms(T) = Ms0 * (1 - (T/Tc)^a)^Ms_exponent,  for T < Tc,  a = Ms_rescaling_exponent
     //   Ms(T) = 0,                              for T >= Tc
     // If use_Ms_T is false the constant Ms0 is returned.
     double Ms_T(double T){
         if( !stor::use_Ms_T ) return stor::Ms0;
         if( T <= 0.0 ) return stor::Ms0;
         if( T >= stor::Tc ) return 0.0;
-        return stor::Ms0 * pow(1.0 - T/stor::Tc, stor::Ms_exponent);
+        return stor::Ms0 * pow(1.0 - pow(T/stor::Tc, stor::Ms_rescaling_exponent), stor::Ms_exponent);
     }
 
     // Demagnetising factors of the strip cross-section (depend only on Ly, Lz)
@@ -49,6 +49,8 @@ namespace stor{
     // prefactors). Must be called whenever Ms changes.
     void update_magnetic_parameters(){
         stor::muMs = stor::mu0*stor::Ms;
+        if( stor::Aex_exponent != 0.0 )
+            stor::A = stor::Aex0*pow(stor::Ms/stor::Ms0, stor::Aex_exponent);
         stor::H_demag = stor::Ms*(stor::Nz - stor::Ny);
         calculate::prefac1 =(-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
         calculate::prefac2 =stor::mu0*stor::gamma*stor::H_demag/2.0;
@@ -141,6 +143,10 @@ namespace stor{
         if( stor::use_Ms_T ){
             stor::Tc = inputs.get<double>("Tc", 0.0);
             stor::Ms_exponent = inputs.get<double>("Ms_exponent", 0.0);
+            stor::Ms_rescaling_exponent = inputs.get<double>("Ms_rescaling_exponent", 1.0);
+            // Aex from the input is A0 (T = 0 K) when Aex_exponent != 0
+            stor::Aex0 = stor::A;
+            stor::Aex_exponent = inputs.get<double>("Aex_exponent", 0.0);
             if( stor::Tc <= 0.0 || stor::Ms_exponent <= 0.0 ){
                 std::cerr << "Error: use_Ms_T=1 requires Tc>0 and Ms_exponent>0 in the input file." << std::endl;
                 exit(-1);
@@ -313,7 +319,9 @@ namespace stor{
 
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;
         if( stor::use_Ms_T ){
-            std::cout<<"Ms(T) = Ms0*(1-T/Tc)^"<<stor::Ms_exponent<<", Ms0 = "<<stor::Ms0<<" A/m, Tc = "<<stor::Tc<<" K"<<std::endl;
+            std::cout<<"Ms(T) = Ms0*(1-(T/Tc)^"<<stor::Ms_rescaling_exponent<<")^"<<stor::Ms_exponent<<", Ms0 = "<<stor::Ms0<<" A/m, Tc = "<<stor::Tc<<" K"<<std::endl;
+            if( stor::Aex_exponent != 0.0 )
+                std::cout<<"A(T) = A0*(Ms/Ms0)^"<<stor::Aex_exponent<<", A0 = "<<stor::Aex0<<" J/m, A(t=0) = "<<stor::A<<" J/m"<<std::endl;
             std::cout<<"Saturation, Ms(T = "<<stor::T_sim<<" K) = "<<stor::Ms<<" A/m (at t = 0)"<<std::endl;
         }
         if( stor::use_T_pulse ){

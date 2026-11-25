@@ -54,6 +54,11 @@ namespace stor{
 	double Aex0 = 0.0;
 	double Aex_exponent = 0.0;
 
+	// Pinning energy E(x,T) = E(x)*(Ms(T)/Ms(T0))^pinning_exponent (0: no scaling)
+	double pinning_exponent = 0.0;
+	double Ms_pin_ref = 0.0;
+	double pin_scale = 1.0;
+
 	// Gaussian temperature pulse: T(t) = T0 + T_pulse_peak*exp(-(t-T_pulse_t0)^2/(2*T_pulse_sigma^2))
 	bool use_T_pulse = false;
 	double T0 = 0.0;            // K, base (bath) temperature

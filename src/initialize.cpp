@@ -49,6 +49,8 @@ namespace stor{
     // prefactors). Must be called whenever Ms changes.
     void update_magnetic_parameters(){
         stor::muMs = stor::mu0*stor::Ms;
+        if( stor::pinning_exponent != 0.0 && stor::Ms_pin_ref > 0.0 )
+            stor::pin_scale = pow(stor::Ms/stor::Ms_pin_ref, stor::pinning_exponent);
         if( stor::Aex_exponent != 0.0 )
             stor::A = stor::Aex0*pow(stor::Ms/stor::Ms0, stor::Aex_exponent);
         stor::H_demag = stor::Ms*(stor::Nz - stor::Ny);
@@ -147,6 +149,10 @@ namespace stor{
             // Aex from the input is A0 (T = 0 K) when Aex_exponent != 0
             stor::Aex0 = stor::A;
             stor::Aex_exponent = inputs.get<double>("Aex_exponent", 0.0);
+            // pinning energy E(x) scaled as (Ms(T)/Ms(T0))^pinning_exponent; the
+            // polynomial a0..a8 is taken to correspond to the base temperature T0
+            stor::pinning_exponent = inputs.get<double>("pinning_exponent", 0.0);
+            stor::Ms_pin_ref = stor::Ms_T(stor::T0);
             if( stor::Tc <= 0.0 || stor::Ms_exponent <= 0.0 ){
                 std::cerr << "Error: use_Ms_T=1 requires Tc>0 and Ms_exponent>0 in the input file." << std::endl;
                 exit(-1);
@@ -250,9 +256,16 @@ namespace stor{
         std::cout << "Use DW coupling = " << stor::use_DW_coupling << std::endl;
 
 
+        // default initial DW positions (as before), optionally overridden by
+        // DW_x0_<i> (m) and DW_phi0_<i> (rad) in the input file
         stor::x_coord[0] = 10e-9;
-        stor::x_coord[1] = 10.0e-9;
-        //stor::x_coord[2] = 0.0;
+        if( stor::Nwires > 1 ) stor::x_coord[1] = 10.0e-9;
+        for( int i = 0; i < stor::Nwires; i++ ){
+            std::ostringstream kx, kp;
+            kx << "DW_x0_" << i;  kp << "DW_phi0_" << i;
+            stor::x_coord[i]   = inputs.get<double>(kx.str().c_str(), stor::x_coord[i]);
+            stor::phi_coord[i] = inputs.get<double>(kp.str().c_str(), stor::phi_coord[i]);
+        }
 
         // initialize with polynomial coefficients (a0,a1, ..., a8)
         stor::A0=inputs.get<double>("a0", 0.0);
@@ -273,6 +286,8 @@ namespace stor{
         //myclock::duration d = myclock::now() - beginning;
         myclock::duration d = tp.time_since_epoch();
         calculate::random_seed = d.count();
+        // fixed seed for reproducible thermal noise (0 = seed from the clock)
+        if( inputs.get<long>("rng_seed", 0) > 0 ) calculate::random_seed = inputs.get<long>("rng_seed", 0);
         std::cout << calculate::random_seed << std::endl;
         calculate::seed_rng(calculate::random_seed);
 
@@ -320,6 +335,8 @@ namespace stor{
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;
         if( stor::use_Ms_T ){
             std::cout<<"Ms(T) = Ms0*(1-(T/Tc)^"<<stor::Ms_rescaling_exponent<<")^"<<stor::Ms_exponent<<", Ms0 = "<<stor::Ms0<<" A/m, Tc = "<<stor::Tc<<" K"<<std::endl;
+            if( stor::pinning_exponent != 0.0 )
+                std::cout<<"Pinning energy scaled by (Ms(T)/Ms(T0))^"<<stor::pinning_exponent<<", Ms(T0) = "<<stor::Ms_pin_ref<<" A/m"<<std::endl;
             if( stor::Aex_exponent != 0.0 )
                 std::cout<<"A(T) = A0*(Ms/Ms0)^"<<stor::Aex_exponent<<", A0 = "<<stor::Aex0<<" J/m, A(t=0) = "<<stor::A<<" J/m"<<std::endl;
             std::cout<<"Saturation, Ms(T = "<<stor::T_sim<<" K) = "<<stor::Ms<<" A/m (at t = 0)"<<std::endl;

@@ -67,7 +67,7 @@ namespace calculate{
 
         // this is the analytical derivative of the potential dE/dx
         //stor::dEx=stor::A1+ 2*stor::A2*x + 3*stor::A3*x*x + 4*stor::A4*pow(x,3) + 5*stor::A5*pow(x,4) + 6*stor::A6*pow(x,5) + 7*stor::A7*pow(x,6) + 8*stor::A8*pow(x,7);
-        stor::dEx= 2*x*(stor::A2 + x*( 2*stor::A4*x + 3*stor::A6*x*x*x) );
+        stor::dEx= stor::pin_scale*2*x*(stor::A2 + x*( 2*stor::A4*x + 3*stor::A6*x*x*x) );
 
         return stor::dEx;
     }// end of function
@@ -75,11 +75,11 @@ namespace calculate{
 
     double compute_Hpin(double &x)
     {
-        return 2*x*(stor::A2 + x*( 2*stor::A4*x + 3*stor::A6*x*x*x) );
+        return stor::pin_scale*2*x*(stor::A2 + x*( 2*stor::A4*x + 3*stor::A6*x*x*x) );
     }
 
     double Vp_2deriv( const double x) {
-        return 2*stor::A2 + 12*stor::A4*x*x;
+        return stor::pin_scale*(2*stor::A2 + 12*stor::A4*x*x);
     }
 
     // in this function we will calculate the pinning energy for anti-notches
@@ -229,18 +229,19 @@ namespace calculate{
 
             // loop over the wires
             for (int i=0; i<X_DW.size(); i++){
-                double r=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
-                double r3=r*r*r;
-                double r7=r*r*r*r*r*r*r;
-
-
                 if((i!=0)&&(i!=(X_DW.size()-1))){
+                    // (computed only for inner wires: X_DW[i+1] is out of range for the last one)
+                    // distances to the next (n) and previous (p) wire
+                    double rn=sqrt((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1]) + rijd);
+                    double rp=sqrt((X_DW[i]-X_DW[i-1])*(X_DW[i]-X_DW[i-1]) + rijd);
+                    double rn3=rn*rn*rn, rp3=rp*rp*rp;
+                    double rn7=rn3*rn3*rn, rp7=rp3*rp3*rp;
                     // We assume the NN interaction only
-                    stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*r3)
-                        -stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*r3);
+                    stor::H_DW[i] = -stor::Ms*S*(X_DW[i]-X_DW[i+1])/(2*Pi*rn3)
+                        -stor::Ms*S*(X_DW[i]-X_DW[i-1])/(2*Pi*rp3);
 
-                    stor::H_dd[i]= prefac_dd*(X_DW[i]-X_DW[i+1])*((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1])-4*rijd)/r7
-                        + prefac_dd*(X_DW[i]-X_DW[i-1])*((X_DW[i]-X_DW[i-1])*(X_DW[i]-X_DW[i-1])-4*rijd)/r7;
+                    stor::H_dd[i]= prefac_dd*(X_DW[i]-X_DW[i+1])*((X_DW[i]-X_DW[i+1])*(X_DW[i]-X_DW[i+1])-4*rijd)/rn7
+                        + prefac_dd*(X_DW[i]-X_DW[i-1])*((X_DW[i]-X_DW[i-1])*(X_DW[i]-X_DW[i-1])-4*rijd)/rp7;
                 }
 
             }

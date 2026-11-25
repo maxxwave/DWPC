@@ -48,6 +48,13 @@ namespace stor{
 	double Tc = 0.0;         // K, Curie temperature
 	double Ms_exponent = 0.0; // critical exponent of M(T)
 
+	// Gaussian temperature pulse: T(t) = T0 + T_pulse_peak*exp(-(t-T_pulse_t0)^2/(2*T_pulse_sigma^2))
+	bool use_T_pulse = false;
+	double T0 = 0.0;            // K, base (bath) temperature
+	double T_pulse_peak = 0.0;  // K, peak temperature rise above T0
+	double T_pulse_t0 = 0.0;    // s, time of the pulse maximum
+	double T_pulse_sigma = 0.0; // s, standard deviation of the Gaussian
+
 	// Gilbert Damping
 	double alpha=0.02;
 

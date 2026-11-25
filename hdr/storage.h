@@ -22,6 +22,7 @@ namespace stor{
 	extern bool use_Ms_T;
 	extern double Ms0, Tc, Ms_exponent, Ms_rescaling_exponent;
 	extern double Aex0, Aex_exponent;
+	extern double pinning_exponent, Ms_pin_ref, pin_scale;
 	extern double Ms_T(double T);
 	extern void update_magnetic_parameters();
 	extern void compute_demag_factors();

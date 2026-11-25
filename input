@@ -7,6 +7,9 @@ Aex=1.05e-11
 alpha=0.02
 
 Nwires=1
+#optional initial DW positions/angles per wire: DW_x0_0=..., DW_phi0_0=...
+#optional fixed RNG seed for the thermal noise (0 = from clock)
+rng_seed=0
 #Energy profile
 a0=2.21117e-21
 a1=-3.8271e-15
@@ -46,6 +49,8 @@ Tc=0
 Ms_exponent=0
 Ms_rescaling_exponent=1
 Aex_exponent=0
+#Pinning energy E(x)*(Ms(T)/Ms(Temperature))^pinning_exponent
+pinning_exponent=0
 #Gaussian temperature pulse: T(t)=Temperature+T_pulse_peak*exp(-(t-T_pulse_t0)^2/(2*T_pulse_sigma^2))
 use_T_pulse=0
 T_pulse_peak=0

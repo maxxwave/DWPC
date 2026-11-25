@@ -150,6 +150,8 @@ namespace integrate{
             gp4.assign(Nwires, 0.0);
             n_x.assign(Nwires, 0.0);
             n_phi.assign(Nwires, 0.0);
+            if( stor::u_dw.size() != (std::size_t)Nwires ) stor::u_dw.assign(Nwires, 0.0);
+            if( stor::j_dens_dw.size() != (std::size_t)Nwires ) stor::j_dens_dw.assign(Nwires, 0.0);
         }
 
         // RK4 for multiple DWs without thermal effects
@@ -165,21 +167,21 @@ namespace integrate{
                 phi_p[i] = phi_k[i] + dt_o_2 * Kp1[i];
             }
 
-            calculate::gradient( Kx2, Kp2, x_p, phi_p, time);
+            calculate::gradient( Kx2, Kp2, x_p, phi_p, time + dt_o_2);
 
             for( int i = 0; i < x_p.size(); i++) {
                 x_p[i]   = x_k[i]   + dt_o_2 * Kx2[i];
                 phi_p[i] = phi_k[i] + dt_o_2 * Kp2[i];
             }
 
-            calculate::gradient( Kx3, Kp3, x_p, phi_p, time);
+            calculate::gradient( Kx3, Kp3, x_p, phi_p, time + dt_o_2);
 
             for( int i = 0; i < x_p.size(); i++) {
                 x_p[i]   = x_k[i]   + dt * Kx3[i];
                 phi_p[i] = phi_k[i] + dt * Kp3[i];
             }
 
-            calculate::gradient( Kx4, Kp4, x_p, phi_p, time);
+            calculate::gradient( Kx4, Kp4, x_p, phi_p, time + dt);
 
             for( int i = 0; i < x_p.size(); i++) {
                 x_k[i]   = x_k[i]   + (Kx1[i] + 2*(Kx2[i] + Kx3[i]) + Kx4[i]) * dt_o_6;
@@ -212,7 +214,7 @@ namespace integrate{
             }
 
             // 2) Use midpoint prediction to predict position at midpoint
-            calculate::gradient( Kx2, Kp2, x_p, phi_p, time);
+            calculate::gradient( Kx2, Kp2, x_p, phi_p, time + dt_o_2);
             calculate::noise_gradient( gx2, gp2, x_p, phi_p, n_x, n_phi);
 
             for( int i = 0; i < x_p.size(); i++) {
@@ -221,7 +223,7 @@ namespace integrate{
             }
 
             // 3) Use new midpoint to predict poisiton
-            calculate::gradient( Kx3, Kp3, x_p, phi_p, time);
+            calculate::gradient( Kx3, Kp3, x_p, phi_p, time + dt_o_2);
             calculate::noise_gradient( gx3, gp3, x_p, phi_p, n_x, n_phi);
 
             for( int i = 0; i < x_p.size(); i++) {
@@ -230,7 +232,7 @@ namespace integrate{
             }
 
             // 4) Use the prediction for compute the new gradient
-            calculate::gradient( Kx4, Kp4, x_p, phi_p, time);
+            calculate::gradient( Kx4, Kp4, x_p, phi_p, time + dt);
             calculate::noise_gradient( gx4, gp4, x_p, phi_p, n_x, n_phi);
 
             // All 4 gradients are used to update the position

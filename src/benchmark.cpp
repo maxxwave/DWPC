@@ -58,7 +58,7 @@ namespace programs{
                     }
                 }
 
-                outputfile << std::setprecision(4)
+                outputfile << std::setprecision(10)
                     << time*1e9 << "\t\t"
                     << std::setprecision(8)
                     << stor::x_dw*1e9 << "\t"
@@ -115,7 +115,7 @@ namespace programs{
                 }
             }
 
-            outputfile << std::fixed << std::setprecision(4)
+            outputfile << std::fixed << std::setprecision(10)
                 << time*1e9 << "\t\t"
                 << std::setprecision(12)
                 << stor::x_dw*1e9 << "\t"
@@ -178,7 +178,7 @@ namespace programs{
                 }
             }
 
-            outputfile << std::fixed << std::setprecision(4)
+            outputfile << std::fixed << std::setprecision(10)
                 << time*1e9 << "\t\t"
                 << std::setprecision(4)
                 << stor::x_coord[0]*1e9 << "\t"
@@ -241,7 +241,7 @@ namespace programs{
                     }
                 }
 
-                outputfile << std::setprecision(4)
+                outputfile << std::setprecision(10)
                     << time*1e9 << "\t\t"
                     << std::setprecision(8)
                     << stor::x_dw*1e9 << "\t"
@@ -300,7 +300,7 @@ double Lyapunov_exponent(){
                     exit(-1);}//end of else loop
             }//end of Nout loop
 
-            outputfile << std::fixed << std::setprecision(4)
+            outputfile << std::fixed << std::setprecision(10)
                 << time*1e9 << "\t\t"
                 << std::setprecision(12)
                 << stor::x_dw*1e9 << "\t"
@@ -342,7 +342,7 @@ double Lyapunov_exponent(){
                     exit(-1);}//end of else loop
             }//end of Nout loop
 
-            outputfile << std::fixed << std::setprecision(4)
+            outputfile << std::fixed << std::setprecision(10)
                 << time*1e9 << "\t\t"
                 << std::setprecision(12)
                 << stor::x_dw*1e9 << "\t"

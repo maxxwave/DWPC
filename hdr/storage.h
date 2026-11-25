@@ -23,6 +23,13 @@ namespace stor{
 	extern double Ms0, Tc, Ms_exponent;
 	extern double Ms_T(double T);
 	extern void update_magnetic_parameters();
+	extern void compute_demag_factors();
+	// Time dependent temperature (Gaussian pulse)
+	extern bool use_T_pulse;
+	extern double T0, T_pulse_peak, T_pulse_t0, T_pulse_sigma;
+	extern double T_of_t(double time);
+	extern void set_temperature(double T);
+	extern void update_temperature(double time);
 	extern double Nx, Ny, Nz;
 	extern double alpha;
 	extern double A;

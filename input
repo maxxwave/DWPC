@@ -43,6 +43,11 @@ Temperature=100
 use_Ms_T=0
 Tc=0
 Ms_exponent=0
+#Gaussian temperature pulse: T(t)=Temperature+T_pulse_peak*exp(-(t-T_pulse_t0)^2/(2*T_pulse_sigma^2))
+use_T_pulse=0
+T_pulse_peak=0
+T_pulse_t0=0
+T_pulse_sigma=0
 #spin torque paramters
 P=0.7
 beta=0.04

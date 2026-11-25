@@ -250,6 +250,7 @@ namespace calculate{
 
     void gradient ( double &dx, double &dphi, double x, double phi, const double time)
     {
+        stor::update_temperature(time);
         //const double dEx = update_energy_antinotches(x);
         //const double dEx = compute_Hpin(x);
         double dEx = update_energy_antinotches(x);
@@ -288,6 +289,7 @@ namespace calculate{
 
     void gradient ( std::vector<double> &dx, std::vector<double> &dphi, std::vector<double> &x, std::vector<double> &phi, const double time)
     {
+        stor::update_temperature(time);
         // calculate the DW coupling
         //DW_coupling(integrate::multi_dw::x_p);
         //if(stor::use_DW_coupling) DW_coupling(x);
@@ -329,6 +331,7 @@ namespace calculate{
     //      ( dfphi/dx ,   dfphi/dphi)
     void Jacobian( array_t<2,double> &J, double x, double phi, const double time)
     {
+        stor::update_temperature(time);
         double dEx = update_energy_antinotches(x);
         double H = Zeeman(time, x);
         double DWs = calculate_DW(phi);

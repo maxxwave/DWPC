@@ -8,6 +8,7 @@
 //
 //
 
+#include <algorithm>
 #include <chrono>
 #include <cmath>
 #include <iostream>
@@ -36,13 +37,43 @@ namespace stor{
         return stor::Ms0 * pow(1.0 - T/stor::Tc, stor::Ms_exponent);
     }
 
-    // Recompute every quantity that depends on Ms or on the cross-section.
-    // Must be called whenever Ms, Ly or Lz change.
-    void update_magnetic_parameters(){
+    // Demagnetising factors of the strip cross-section (depend only on Ly, Lz)
+    void compute_demag_factors(){
         stor::Ny = 1 - (2/Pi)*atan(stor::Ly/stor::Lz) + (1/(2*Pi))*(stor::Lz/stor::Ly)*log10(1 + (stor::Ly/stor::Lz)*(stor::Ly/stor::Lz)) - (1/(2*Pi))*(stor::Ly/stor::Lz)*log10(1 + (stor::Lz/stor::Ly)*(stor::Lz/stor::Ly));
         stor::Nz = 1 - (2/Pi)*atan(stor::Lz/stor::Ly) + (1/(2*Pi))*(stor::Ly/stor::Lz)*log10(1 + (stor::Lz/stor::Ly)*(stor::Lz/stor::Ly)) - (1/(2*Pi))*(stor::Lz/stor::Ly)*log10(1 + (stor::Ly/stor::Lz)*(stor::Ly/stor::Lz));
+    }
+
+    // Recompute every quantity that depends on Ms (including the integration
+    // prefactors). Must be called whenever Ms changes.
+    void update_magnetic_parameters(){
         stor::muMs = stor::mu0*stor::Ms;
         stor::H_demag = stor::Ms*(stor::Nz - stor::Ny);
+        calculate::prefac1 =(-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
+        calculate::prefac2 =stor::mu0*stor::gamma*stor::H_demag/2.0;
+        calculate::prefac3 =-stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
+        calculate::prefac4 =-(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
+    }
+
+    // Temperature at time t (in s)
+    double T_of_t(double time){
+        if( !stor::use_T_pulse ) return stor::T0;
+        const double dt = time - stor::T_pulse_t0;
+        return stor::T0 + stor::T_pulse_peak*exp(-dt*dt/(2.0*stor::T_pulse_sigma*stor::T_pulse_sigma));
+    }
+
+    // Set the current temperature and update Ms and everything depending on it
+    void set_temperature(double T){
+        stor::T_sim = T;
+        if( stor::use_Ms_T ){
+            stor::Ms = stor::Ms_T(T);
+            stor::update_magnetic_parameters();
+        }
+    }
+
+    // Called by the integrators at every evaluation of the right-hand side,
+    // i.e. also at the intermediate Runge-Kutta stages.
+    void update_temperature(double time){
+        if( stor::use_T_pulse ) stor::set_temperature(stor::T_of_t(time));
     }
 
     void initialize(){
@@ -69,6 +100,7 @@ namespace stor{
         // Temperature dependent saturation magnetisation
         // Ms from the input file is interpreted as Ms0 (T = 0 K) when use_Ms_T=1
         stor::Ms0 = stor::Ms;
+        stor::T0 = stor::T_sim;
         stor::use_Ms_T = ( inputs.get<int>("use_Ms_T", 0) > 0 );
         if( stor::use_Ms_T ){
             stor::Tc = inputs.get<double>("Tc", 0.0);
@@ -77,14 +109,31 @@ namespace stor{
                 std::cerr << "Error: use_Ms_T=1 requires Tc>0 and Ms_exponent>0 in the input file." << std::endl;
                 exit(-1);
             }
-            if( stor::T_sim >= stor::Tc ){
-                std::cerr << "Error: Temperature (" << stor::T_sim << " K) >= Tc (" << stor::Tc
-                          << " K); Ms vanishes and the 1D DW model is not defined." << std::endl;
+        }
+
+        // Gaussian temperature pulse
+        stor::use_T_pulse = ( inputs.get<int>("use_T_pulse", 0) > 0 );
+        if( stor::use_T_pulse ){
+            stor::T_pulse_peak  = inputs.get<double>("T_pulse_peak", 0.0);
+            stor::T_pulse_t0    = inputs.get<double>("T_pulse_t0", 0.0);
+            stor::T_pulse_sigma = inputs.get<double>("T_pulse_sigma", 0.0);
+            if( stor::T_pulse_sigma <= 0.0 ){
+                std::cerr << "Error: use_T_pulse=1 requires T_pulse_sigma>0." << std::endl;
                 exit(-1);
             }
-            stor::Ms = stor::Ms_T(stor::T_sim);
         }
+
+        // The maximum temperature reached must stay below Tc
+        const double T_max = stor::T0 + ( stor::use_T_pulse ? std::max(0.0, stor::T_pulse_peak) : 0.0 );
+        if( stor::use_Ms_T && T_max >= stor::Tc ){
+            std::cerr << "Error: maximum temperature (" << T_max << " K) >= Tc (" << stor::Tc
+                      << " K); Ms vanishes and the 1D DW model is not defined." << std::endl;
+            exit(-1);
+        }
+
+        stor::compute_demag_factors();
         stor::update_magnetic_parameters();
+        stor::set_temperature(stor::T_of_t(0.0));
         stor::freq = inputs.get<double>("f");
         stor::P= inputs.get<double>("P");
         stor::j_dens= inputs.get<double>("j");
@@ -181,7 +230,13 @@ namespace stor{
         std::cout<<"The program has been initialized with following parameters:"<<std::endl;
         if( stor::use_Ms_T ){
             std::cout<<"Ms(T) = Ms0*(1-T/Tc)^"<<stor::Ms_exponent<<", Ms0 = "<<stor::Ms0<<" A/m, Tc = "<<stor::Tc<<" K"<<std::endl;
-            std::cout<<"Saturation, Ms(T = "<<stor::T_sim<<" K) = "<<stor::Ms<<" A/m"<<std::endl;
+            std::cout<<"Saturation, Ms(T = "<<stor::T_sim<<" K) = "<<stor::Ms<<" A/m (at t = 0)"<<std::endl;
+        }
+        if( stor::use_T_pulse ){
+            std::cout<<"Gaussian T pulse: T0 = "<<stor::T0<<" K, peak rise = "<<stor::T_pulse_peak
+                     <<" K, t0 = "<<stor::T_pulse_t0<<" s, sigma = "<<stor::T_pulse_sigma<<" s"<<std::endl;
+            if( stor::use_Ms_T )
+                std::cout<<"Ms at pulse maximum = "<<stor::Ms_T(stor::T0+stor::T_pulse_peak)<<" A/m"<<std::endl;
         }
         else
             std::cout<<"Saturation, Ms = "<<stor::Ms<<" A/m"<<std::endl;
@@ -199,10 +254,6 @@ namespace stor{
         std::cout<<"=====================================================================<"<<std::endl;
 
         // Initialise the parameters for the integration
-        calculate::prefac1 =(-stor::alpha*stor::gamma)/((1+pow(stor::alpha,2))*2*stor::Ms*stor::Lz*stor::Ly);
-        calculate::prefac2 =stor::mu0*stor::gamma*stor::H_demag/2.0; //(2.0+2.0*stor::alpha*stor::alpha);
-        calculate::prefac3 =-stor::gamma/((1+ stor::alpha*stor::alpha)*2*stor::Ms*stor::Lz*stor::Ly);
-        calculate::prefac4 =-(stor::gamma*stor::alpha*stor::mu0*stor::H_demag)/(2+2*stor::alpha*stor::alpha);
         calculate::zeeman_prefac1 = stor::gamma*stor::mu0*stor::alpha/(stor::alpha*stor::alpha+1.0);
         calculate::zeeman_prefac2 = stor::gamma*stor::mu0/(1.0 + stor::alpha*stor::alpha);
     }

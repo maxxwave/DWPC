@@ -35,6 +35,8 @@ namespace integrate{
 
 	double euler( double &time){
 
+		stor::update_temperature(time);
+
 		//calculate::Zeeman(time);
 		//std::cout<<prefac1<<"\t"<<prefac2<<"\t"<<prefac3<<"\t"<<prefac4<<std::endl;
 

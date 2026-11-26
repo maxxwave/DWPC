@@ -19,3 +19,6 @@ The parameters can be changed from the input file. An example comes with the pac
 
 Note: All variables are set in SI units
 
+
+# Laser / thermal extension
+Temperature-dependent parameters, a two-temperature model for ultrafast laser heating, multi-wire fixes and cluster scripts are described in [docs/LASER_THERMAL.md](docs/LASER_THERMAL.md).

@@ -35,8 +35,8 @@ namespace stor{
 
 	// defining the Demag factors
 	//double Nx=0.021829576;
-	double Ny = 1 - (2/Pi)*atan(Ly/Lz) + (1/(2*Pi))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*Pi))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly));
-	double Nz = 1 - (2/Pi)*atan(Lz/Ly) + (1/(2*Pi))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*Pi))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz));
+	double Ny = 1 - (2/Pi)*atan(Ly/Lz) + (1/(2*Pi))*(Lz/Ly)*log(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*Pi))*(Ly/Lz)*log(1 + (Lz/Ly)*(Lz/Ly));
+	double Nz = 1 - (2/Pi)*atan(Lz/Ly) + (1/(2*Pi))*(Ly/Lz)*log(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*Pi))*(Lz/Ly)*log(1 + (Ly/Lz)*(Ly/Lz));
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;

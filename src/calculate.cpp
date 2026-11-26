@@ -115,14 +115,18 @@ namespace calculate{
         return Pi * sqrt( 2.0 * stor::A / K_eff(phi));
     }
     //In this function we implement the stochastic term
-    std::default_random_engine generator;
+    // 64-bit Mersenne Twister; the seed is spread through std::seed_seq so that
+    // neighbouring seeds (1, 2, 3, ... in an ensemble) give uncorrelated streams
+    std::mt19937_64 generator;
     std::normal_distribution<double> distribution(0.0, 1.0);
     std::uniform_real_distribution<double> uniform_dist(0.0,1.0);
 
-    unsigned random_seed = 1234;
+    unsigned long long random_seed = 1234;
 
-    void seed_rng(const unsigned seed) {
-        generator.seed(seed);
+    void seed_rng(const unsigned long long seed) {
+        std::seed_seq seq{ (unsigned)(seed & 0xffffffffULL), (unsigned)(seed >> 32) };
+        generator.seed(seq);
+        distribution.reset();
     }
 
     double Uniform()

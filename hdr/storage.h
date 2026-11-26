@@ -18,6 +18,25 @@ namespace stor{
 	extern double Lz, Ly;
 	extern double Ms, mu0;
 	extern double muMs;
+	// Temperature dependence of the saturation magnetisation
+	extern bool use_Ms_T;
+	extern double Ms0, Tc, Ms_exponent, Ms_rescaling_exponent;
+	extern double Aex0, Aex_exponent;
+	extern double pinning_exponent, Ms_pin_ref, pin_scale;
+	extern double Ms_T(double T);
+	extern void update_magnetic_parameters();
+	extern void compute_demag_factors();
+	// Time dependent temperature (Gaussian pulse)
+	extern bool use_T_pulse;
+	extern double T0, T_pulse_peak, T_pulse_t0, T_pulse_sigma;
+	extern double T_of_t(double time);
+	extern void set_temperature(double T);
+	extern void update_temperature(double time);
+	// Electron and lattice temperatures (equal to T_sim unless the TTM is used)
+	extern double T_e, T_l;
+	// Appends "\tT_e\tT_l\tMs" (at the given time) to an output line
+	extern void write_temperature_columns(std::ostream &out, double time);
+	extern const char *temperature_columns_header;
 	extern double Nx, Ny, Nz;
 	extern double alpha;
 	extern double A;

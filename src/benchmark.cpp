@@ -31,7 +31,7 @@ namespace programs{
         int Nout = std::round(integrate::out_time / integrate::Dt);
         double no_h_values=2;
 
-        outputfile << "#time(ns)       X(nm)           phi             H0           H		v(m/s)" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi             H0           H		v(m/s)" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
         double error;
@@ -58,14 +58,16 @@ namespace programs{
                     }
                 }
 
-                outputfile << std::setprecision(4)
+                outputfile << std::setprecision(10)
                     << time*1e9 << "\t\t"
                     << std::setprecision(8)
                     << stor::x_dw*1e9 << "\t"
                     << stor::phi_dw << "\t"
                     << stor::V0 << "\t"
                     << stor::V << "\t"
-                    << stor::vx <<std::endl;
+                    << stor::vx;
+                stor::write_temperature_columns(outputfile, time);
+                outputfile << std::endl;
 
             }
         }
@@ -90,7 +92,7 @@ namespace programs{
         std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
         std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
 
-        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
         double error = 0.0;
@@ -113,7 +115,7 @@ namespace programs{
                 }
             }
 
-            outputfile << std::fixed << std::setprecision(4)
+            outputfile << std::fixed << std::setprecision(10)
                 << time*1e9 << "\t\t"
                 << std::setprecision(12)
                 << stor::x_dw*1e9 << "\t"
@@ -122,8 +124,9 @@ namespace programs{
                 << stor::V << "\t"
                 << calculate::current(time, stor::j_dens) << "\t"
                 << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
-                << std::scientific << error
-                <<std::endl;
+                << std::scientific << error;
+            stor::write_temperature_columns(outputfile, time);
+            outputfile << std::endl;
 
         }
 
@@ -141,58 +144,48 @@ namespace programs{
     }//end of show_potential
 
     // in this subroutine we appply a oscillatory field and we extract the dynamics
+    // Time series of Nwires coupled DWs: x_i(t), phi_i(t) for every wire
     double benchmark3()
-
-    {	// declare the output file
+    {
         std::ofstream outputfile;
         outputfile.open("Benchmark3.data");
-        //perform some equilibration steps
         double time=0.0;
-        int Nsteps = std::round(integrate::totaltime / integrate::Dt);
-        int Nout = std::round(integrate::out_time / integrate::Dt);
+        long int Nsteps = std::lround(integrate::totaltime / integrate::Dt);
+        long int Nout = std::lround(integrate::out_time / integrate::Dt);
+
+        if( integrate::scheme.compare("RK4") != 0 ){
+            std::cerr << "ERROR: Benchmark3 (multi-DW) supports integrator=RK4 only." << std::endl;
+            exit(-1);
+        }
 
         std::cout << "Using integrator: " << integrate::scheme << std::endl;
         std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
         std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
 
-        outputfile << "#time(ns)       X(nm)           phi             dx/dt           V" << std::endl;
-        outputfile << std::fixed;
+        outputfile << "#time(ns)";
+        for( int k = 0; k < stor::Nwires; k++)
+            outputfile << "\tX" << k << "(nm)\tphi" << k;
+        outputfile << "\tH(A/m)" << stor::temperature_columns_header << std::endl;
 
-        double error = 0.0;
-
-        // perform some integrations
-        for (long int i=0; i<Nsteps/Nout; i++){
-            for(long int j=0; j<Nout; j++){
-                if( integrate::scheme.compare("EULER") == 0)
-                    integrate::euler(time);
-                else if( integrate::scheme.compare("RK4") == 0)
+        // initial state
+        long int loop_steps = Nsteps / Nout;
+        for (long int i=0; i<=loop_steps; i++){
+            if( i > 0 ){
+                for(long int j=0; j<Nout; j++)
                     integrate::multi_dw::runge_kutta( stor::x_coord, stor::phi_coord, time, integrate::Dt);
-                else if( integrate::scheme.compare("RK45") == 0)
-                    error = integrate::RK45::runge_kutta_45(time, integrate::Dt);
-                else {
-                    std::cerr << "ERROR: Integrator not identified!" << std::endl;
-                    exit(-1);
-                }
             }
-
-            outputfile << std::fixed << std::setprecision(4)
-                << time*1e9 << "\t\t"
-                << std::setprecision(4)
-                << stor::x_coord[0]*1e9 << "\t"
-                << stor::phi_coord[0] << "\t"
-                << stor::V << "\t"
-                //<< stor::x_coord[1]*1e9 << "\t"
-                //<< stor::phi_coord[1] << "\t"
-                //<< stor::x_coord[2]*1e9 << "\t"
-                //<< stor::phi_coord[2] << "\t"
-                << std::scientific << error
-                <<std::endl;
-
+            outputfile << std::fixed << std::setprecision(10) << time*1e9;
+            outputfile << std::setprecision(6);
+            // initial state is written before the first step
+            for( int k = 0; k < stor::Nwires; k++)
+                outputfile << "\t" << stor::x_coord[k]*1e9 << "\t" << stor::phi_coord[k];
+            outputfile << "\t" << stor::V0_mdw[0]*sin(stor::omega*time);
+            stor::write_temperature_columns(outputfile, time);
+            outputfile << std::endl;
         }
-
-
-
-    }// end of benchmark2
+        outputfile.close();
+        return 1;
+    }// end of benchmark3
 
    // double multi_DW(){
 
@@ -211,7 +204,7 @@ namespace programs{
         int Nout = std::round(integrate::out_time / integrate::Dt);
         double no_h_values=10;
 
-        outputfile << "#time(ns)       X(nm)           phi            J_dens           H		v(m/s)" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi            J_dens           H		v(m/s)" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
 	    double const amp=stor::j_dens;
@@ -237,14 +230,16 @@ namespace programs{
                     }
                 }
 
-                outputfile << std::setprecision(4)
+                outputfile << std::setprecision(10)
                     << time*1e9 << "\t\t"
                     << std::setprecision(8)
                     << stor::x_dw*1e9 << "\t"
                     << stor::phi_dw << "\t"
                     << stor::j_dens << "\t"
                     << stor::V << "\t"
-                    << stor::vx <<std::endl;
+                    << stor::vx;
+                stor::write_temperature_columns(outputfile, time);
+                outputfile << std::endl;
 
             }
         }
@@ -272,7 +267,7 @@ double Lyapunov_exponent(){
         std::cout << "Runtime = " << integrate::totaltime << ", Nsteps = " << Nsteps << std::endl;
         std::cout << "Output time = " << integrate::out_time << ", Nout = " << Nout << std::endl;
 
-        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << std::endl;
+        outputfile << "#time(ns)       X(nm)           phi             dx/dt (m/s)           V" << stor::temperature_columns_header << std::endl;
         outputfile << std::fixed;
 
         double error = 0.0;
@@ -294,7 +289,7 @@ double Lyapunov_exponent(){
                     exit(-1);}//end of else loop
             }//end of Nout loop
 
-            outputfile << std::fixed << std::setprecision(4)
+            outputfile << std::fixed << std::setprecision(10)
                 << time*1e9 << "\t\t"
                 << std::setprecision(12)
                 << stor::x_dw*1e9 << "\t"
@@ -303,8 +298,9 @@ double Lyapunov_exponent(){
                 << stor::V << "\t"
                 << calculate::current(time, stor::j_dens) << "\t"
                 << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
-                << std::scientific << error
-                <<std::endl;
+                << std::scientific << error;
+            stor::write_temperature_columns(outputfile, time);
+            outputfile << std::endl;
 	    //std::cout<<"value of field is ....."<<stor::V<<std::endl;
 	    //if(stor::V0-0.0001<stor::V){
 		//std::cout<<"value of V is...."<<stor::V<<std::endl;
@@ -335,7 +331,7 @@ double Lyapunov_exponent(){
                     exit(-1);}//end of else loop
             }//end of Nout loop
 
-            outputfile << std::fixed << std::setprecision(4)
+            outputfile << std::fixed << std::setprecision(10)
                 << time*1e9 << "\t\t"
                 << std::setprecision(12)
                 << stor::x_dw*1e9 << "\t"
@@ -344,8 +340,9 @@ double Lyapunov_exponent(){
                 << stor::V << "\t"
                 << calculate::current(time, stor::j_dens) << "\t"
                 << calculate::calculate_DW(stor::phi_dw)*1e9 << "\t"
-                << std::scientific << error
-                <<std::endl;
+                << std::scientific << error;
+            stor::write_temperature_columns(outputfile, time);
+            outputfile << std::endl;
 	    	data_series2.push_back(stor::x_dw); 
 	    //}
 

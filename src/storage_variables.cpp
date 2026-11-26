@@ -35,11 +35,41 @@ namespace stor{
 
 	// defining the Demag factors
 	//double Nx=0.021829576;
-	double Ny = 1 - (2/Pi)*atan(Ly/Lz) + (1/(2*Pi))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*Pi))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly));
-	double Nz = 1 - (2/Pi)*atan(Lz/Ly) + (1/(2*Pi))*(Ly/Lz)*log10(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*Pi))*(Lz/Ly)*log10(1 + (Ly/Lz)*(Ly/Lz));
+	double Ny = 1 - (2/Pi)*atan(Ly/Lz) + (1/(2*Pi))*(Lz/Ly)*log(1 + (Ly/Lz)*(Ly/Lz)) - (1/(2*Pi))*(Ly/Lz)*log(1 + (Lz/Ly)*(Lz/Ly));
+	double Nz = 1 - (2/Pi)*atan(Lz/Ly) + (1/(2*Pi))*(Ly/Lz)*log(1 + (Lz/Ly)*(Lz/Ly)) - (1/(2*Pi))*(Lz/Ly)*log(1 + (Ly/Lz)*(Ly/Lz));
 
 	// Declare the saturation magnetisation measured in Tesla as B= mu_0 Ms
 	double muMs=mu0*Ms;
+
+	// Temperature dependence of Ms: Ms(T) = Ms0*(1 - (T/Tc)^Ms_rescaling_exponent)^Ms_exponent
+	// Tc, Ms_exponent (beta) and Ms_rescaling_exponent (alpha) as fitted to atomistic
+	// (VAMPIRE) M(T) curves, e.g. Evans et al., PRB 91, 144425 (2015), Eq. (5)
+	bool use_Ms_T = false;
+	double Ms0 = 477e3;      // A/m, saturation magnetisation at T=0 K
+	double Tc = 0.0;         // K, Curie temperature
+	double Ms_exponent = 0.0; // critical exponent of M(T)
+	double Ms_rescaling_exponent = 1.0; // temperature rescaling exponent (1 = classical)
+
+	// Exchange stiffness: A(T) = Aex0*(Ms(T)/Ms0)^Aex_exponent (Aex_exponent=0: constant)
+	double Aex0 = 0.0;
+	double Aex_exponent = 0.0;
+
+	// Pinning energy E(x,T) = E(x)*(Ms(T)/Ms(T0))^pinning_exponent (0: no scaling)
+	double pinning_exponent = 0.0;
+	double Ms_pin_ref = 0.0;
+	double pin_scale = 1.0;
+
+	// Gaussian temperature pulse: T(t) = T0 + T_pulse_peak*exp(-(t-T_pulse_t0)^2/(2*T_pulse_sigma^2))
+	bool use_T_pulse = false;
+	double T0 = 0.0;            // K, base (bath) temperature
+	double T_pulse_peak = 0.0;  // K, peak temperature rise above T0
+	double T_pulse_t0 = 0.0;    // s, time of the pulse maximum
+	double T_pulse_sigma = 0.0; // s, standard deviation of the Gaussian
+
+	// Electron and lattice temperatures (two-temperature model)
+	double T_e = 0.0;
+	double T_l = 0.0;
+	const char *temperature_columns_header = "\tT_e(K)\tT_l(K)\tMs(A/m)";
 
 	// Gilbert Damping
 	double alpha=0.02;

@@ -7,6 +7,9 @@ Aex=1.05e-11
 alpha=0.02
 
 Nwires=1
+#optional initial DW positions/angles per wire: DW_x0_0=..., DW_phi0_0=...
+#optional fixed RNG seed for the thermal noise (0 = from clock)
+rng_seed=0
 #Energy profile
 a0=2.21117e-21
 a1=-3.8271e-15
@@ -23,6 +26,8 @@ H=990 #A/m
 f=500e6
 
 use_DW_coupling=0
+#edge-to-edge gap between wires (m); centre distance = rij + Ly
+rij=50e-9
 
 #roughnss parameters
 use_edge_roughness=0
@@ -39,6 +44,34 @@ integrator=RK4
 #Pinning field:
 pin=1
 Temperature=100
+#Temperature dependent Ms: Ms(T)=Ms*(1-(T/Tc)^Ms_rescaling_exponent)^Ms_exponent (Ms above is taken as Ms at 0 K)
+#Exchange: A(T)=Aex*(Ms(T)/Ms)^Aex_exponent (Aex above is taken as A at 0 K if Aex_exponent!=0)
+use_Ms_T=0
+Tc=0
+Ms_exponent=0
+Ms_rescaling_exponent=1
+Aex_exponent=0
+#Pinning energy E(x)*(Ms(T)/Ms(Temperature))^pinning_exponent
+pinning_exponent=0
+#Gaussian temperature pulse: T(t)=Temperature+T_pulse_peak*exp(-(t-T_pulse_t0)^2/(2*T_pulse_sigma^2))
+use_T_pulse=0
+T_pulse_peak=0
+T_pulse_t0=0
+T_pulse_sigma=0
+#Two-temperature model (use either TTM_P0 [W/m^3] or TTM_fluence [absorbed, J/m^2]):
+# gamma_e*Te dTe/dt = -G(Te-Tl) + P0*exp(-(t-TTM_t0)^2/(2*TTM_sigma^2))
+# C_l dTl/dt = G(Te-Tl) - C_l(Tl-Temperature)/TTM_tau_cool
+use_TTM=0
+TTM_gamma_e=0
+TTM_C_l=0
+TTM_G=0
+TTM_fluence=0
+TTM_t0=0
+TTM_sigma=0
+TTM_tau_cool=0
+TTM_tau_m=0
+TTM_spin_temperature=electron
+TTM_dt_max=1e-14
 #spin torque paramters
 P=0.7
 beta=0.04

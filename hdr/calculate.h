@@ -15,8 +15,8 @@
 #include "../hdr/storage.h"
 
 namespace calculate{
-    extern unsigned random_seed;
-    void seed_rng(const unsigned);
+    extern unsigned long long random_seed;
+    void seed_rng(const unsigned long long);
 	extern int N;
 	extern int a;
 	extern double rad;

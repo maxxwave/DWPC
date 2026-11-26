@@ -199,7 +199,7 @@ Thermal noise enters as Gaussian random terms on $\phi$ and $x$ whose amplitude 
 \begin{equation}
 \sigma=\sqrt{\frac{\alpha k_BT\gamma'}{M_sS\Delta\,\Delta t}},\qquad \delta\dot\phi=\sigma n_\phi,\qquad \delta\dot x=\sigma\Delta n_x ,
 \end{equation}
-with $n_\phi,n_x$ independent standard normal numbers drawn once per time step and used in every stage of the stochastic Heun or Runge--Kutta step. $T$ is the spin temperature: the constant \key{Temperature}, or $T(t)$ from Chapter~\ref{ch:thermal}. Section~\ref{sec:equipartition} checks that this amplitude reproduces equipartition. The generator is \texttt{std::default\_random\_engine}, seeded from the clock or from \key{rng_seed}.
+with $n_\phi,n_x$ independent standard normal numbers drawn once per time step and used in every stage of the stochastic Heun or Runge--Kutta step. $T$ is the spin temperature: the constant \key{Temperature}, or $T(t)$ from Chapter~\ref{ch:thermal}. Section~\ref{sec:equipartition} checks that this amplitude reproduces equipartition. The generator is the 64-bit Mersenne Twister \texttt{std::mt19937\_64}, seeded from the clock or from \key{rng_seed} through \texttt{std::seed\_seq}, so that consecutive seeds in an ensemble give uncorrelated noise streams. The noise temperature is the electron temperature $T_e$ when the two-temperature model is on (\key{TTM_spin_temperature=electron}, the default).
 
 %======================================================================
 \chapter{Physics: coupling between DWs in neighbouring wires}\label{ch:coupling}
@@ -721,7 +721,6 @@ Uniform heating over the thickness & absorption depth smaller than $L_z$ & optic
 \item \key{RK45} contains no thermal noise.
 \item The single-DW initial position is fixed at $x=0$, the top of the barrier; only multi-wire runs accept \key{DW_x0_<i>}.
 \item \key{H_const} is switched off after 25~ns and \key{Bifurcation} ignores \key{H}; both are hard-coded.
-\item The noise uses \texttt{std::default\_random\_engine} (\texttt{minstd\_rand0} with g++); use a stronger generator such as \texttt{std::mt19937\_64} before any statistical test of randomness.
 \item The Lyapunov estimate does not renormalise the separation.
 \item Three functions declared to return \texttt{double} end without a return statement (undefined behaviour at \texttt{-O3}), and the code builds with about 70 warnings under \texttt{-Wall -Wextra}.
 \item Results before commit \texttt{dd3d90c} used $\log_{10}$ in the demagnetising factors.

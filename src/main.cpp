@@ -1,3 +1,13 @@
+// DWPC - Domain Wall Propagation Code
+// Copyright (C) 2019-2026 Razvan-Vasile Ababei and Matt Ellis
+// SPDX-License-Identifier: GPL-3.0-or-later
+//
+// This program is free software: you can redistribute it and/or modify it under the terms of
+// the GNU General Public License as published by the Free Software Foundation, either version 3
+// of the License, or (at your option) any later version. It is distributed WITHOUT ANY WARRANTY;
+// see the file LICENSE for details. If you use DWPC in published work, please cite it as
+// described in CITATION.cff.
+
 // Author: Razvan Ababei
 // University of Sheffield
 // date 20th of August, 2019
@@ -23,8 +33,9 @@
 
 int main(){
 
-    std::cout<<"Developers: Razvan Ababei, Matt Ellis and Tom Hayward"<<std::endl;
-    std::cout<<"University of Sheffield"<<std::endl;
+    std::cout<<"DWPC - Domain Wall Propagation Code"<<std::endl;
+    std::cout<<"Developers: Razvan-Vasile Ababei and Matt Ellis"<<std::endl;
+    std::cout<<"University of Sheffield (2019); UAIC Iasi (2026). Licence: GPL-3.0-or-later"<<std::endl;
 	// In this step we initialize the variables from the input file set by the user
     //
 

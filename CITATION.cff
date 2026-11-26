@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use DWPC in your research, please cite the software and the article below."
+title: "DWPC: Domain Wall Propagation Code"
+type: software
+authors:
+  - family-names: Ababei
+    given-names: Razvan-Vasile
+    orcid: "https://orcid.org/0009-0000-5923-1717"
+    affiliation: "RECENT AIR Research Centre, Alexandru Ioan Cuza University of Iasi"
+  - family-names: Ellis
+    given-names: Matthew O. A.
+repository-code: "https://github.com/maxxwave/DWPC"
+license: GPL-3.0-or-later
+keywords:
+  - magnetic domain walls
+  - nanowires
+  - reservoir computing
+  - ultrafast demagnetisation
+  - two-temperature model
+preferred-citation:
+  type: article
+  title: "Neuromorphic computation with a single magnetic domain wall"
+  authors:
+    - family-names: Ababei
+      given-names: Razvan-Vasile
+    - family-names: Ellis
+      given-names: Matthew O. A.
+    - family-names: Vidamour
+      given-names: Ian T.
+    - family-names: Devadasan
+      given-names: Dhilan S.
+    - family-names: Allwood
+      given-names: Dan A.
+    - family-names: Vasilaki
+      given-names: Eleni
+    - family-names: Hayward
+      given-names: Thomas J.
+  journal: "Scientific Reports"
+  volume: 11
+  start: 15587
+  year: 2021
+  doi: "10.1038/s41598-021-94975-y"

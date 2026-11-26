@@ -170,7 +170,7 @@ namespace reservoir{
         STS.assign( N, N, 0.0);
 
         array_t<2,double> STY;
-        STY.assign( N, Nout, 0.0);
+        STY.assign( Nout, N, 0.0); // stored (Nout x N) so that memory is column-major (N x Nout) for LAPACK
 
         // Regularisation param
         double alpha = regression_factor;
@@ -190,9 +190,9 @@ namespace reservoir{
         std::cout<<"StS sizes are .... mxn :"<<"\t"<<STS.size(0)<<"\t"<<STS.size(1)<<std::endl;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < Nout; j++) {
-                STY(i,j) = 0.0;
+                STY(j,i) = 0.0;
                 for( int k = 0; k < S.size(0); k++) {
-                    STY(i,j) = STY(i,j) +  S(k,i) * input_y(k,j);
+                    STY(j,i) = STY(j,i) +  S(k,i) * input_y(k,j);
                 }
             }
         }
@@ -219,7 +219,7 @@ namespace reservoir{
             // Store the result as the transposed weights
             for( int i = 0; i < Nout; i++)
                 for (int j = 0; j < N; j++)
-                    Weights(i,j) = STY(j,i);
+                    Weights(i,j) = STY(i,j);
         } else {
             std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
         }
@@ -240,7 +240,7 @@ namespace reservoir{
         STS.assign( N, N, 0.0);
 
         array_t<2,double> STY;
-        STY.assign( N, Nout, 0.0);
+        STY.assign( Nout, N, 0.0); // stored (Nout x N) so that memory is column-major (N x Nout) for LAPACK
 
         // Regularisation param
         double alpha = regression_factor;
@@ -260,9 +260,9 @@ namespace reservoir{
         std::cout<<"StS sizes are .... mxn :"<<"\t"<<STS.size(0)<<"\t"<<STS.size(1)<<std::endl;
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < Nout; j++) {
-                STY(i,j) = 0.0;
+                STY(j,i) = 0.0;
                 for( int k = 0; k < S.size(0); k++) {
-                    STY(i,j) = STY(i,j) +  S(k,i) * input_y(k,j);
+                    STY(j,i) = STY(j,i) +  S(k,i) * input_y(k,j);
                 }
             }
         }
@@ -281,7 +281,7 @@ namespace reservoir{
             // Store the result as the transposed weights
             for( int i = 0; i < Nout; i++)
                 for (int j = 0; j < N; j++)
-                    Weights(i,j) = STY(j,i);
+                    Weights(i,j) = STY(i,j);
         } else {
             std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
         }
@@ -301,7 +301,7 @@ namespace reservoir{
         STS.assign( N, N, 0.0);
 
         array_t<2,double> STY;
-        STY.assign( N, Nout, 0.0);
+        STY.assign( Nout, N, 0.0); // stored (Nout x N) so that memory is column-major (N x Nout) for LAPACK
 
         // Regularisation param
         double alpha = 0.001;
@@ -320,7 +320,7 @@ namespace reservoir{
         for (int i = 0; i < N; i++) {
             for (int j = 0; j < Nout; j++) {
                 for( int k = 0; k < S.size(0); k++) {
-                    STY(i,j) = STY(i,j) + input_y[k] * S(k,i);
+                    STY(j,i) = STY(j,i) + input_y[k] * S(k,i);
                 }
             }
         }
@@ -339,7 +339,7 @@ namespace reservoir{
             // Store the result as the transposed weights
             for( int i = 0; i < Nout; i++)
                 for (int j = 0; j < N; j++)
-                    Weights(i,j) = STY(j,i);
+                    Weights(i,j) = STY(i,j);
         } else {
             std::cerr << "Lapack returned INFO != 0: INFO = " << INFO << std::endl;
         }
@@ -690,7 +690,7 @@ namespace reservoir{
             linear_model_spoken(Pred_vec, Xij, Weights);
 
             double err = 0.0;
-            err = MSE( Pred_vec, Xij);
+            err = MSE( Pred_vec, Y_vec);
 
             std::cout << "Mean Squared Error = " << err << std::endl;
 
@@ -708,7 +708,7 @@ namespace reservoir{
 
             int Ncorrect = accuracy_spoken(Pred_vec, Y_vec);
             std::cout<< "No of correct predictions:  " << Ncorrect << " out of " << Pred_vec.size(0) << std::endl;
-
+            return Ncorrect;
         }
 
         int run_spoken_recognition(){

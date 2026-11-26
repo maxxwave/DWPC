@@ -3,9 +3,16 @@
 This branch extends DWPC with temperature-dependent magnetic parameters, a
 two-temperature model (TTM) for ultrafast laser heating, fixes to the
 multi-wire (coupled DW) code, and scripts for running paired-noise ensembles on
-a Slurm cluster. All new options are off by default: with the shipped `input`
-the single-DW output columns are bit-identical to `master` (the time column is
-written with more digits and three temperature columns are appended).
+a Slurm cluster. All new options are off by default.
+
+**Results differ from `master`** because of one physics fix: the demagnetising
+factors Ny, Nz of the strip cross-section used `log10` where the formula for an
+infinitely long rectangular prism needs the natural logarithm. For Ly = 50 nm,
+Lz = 5 nm this gives Ny = 0.1211, Nz = 0.8789 (was 0.0885, 0.9115), checked
+against a numerical average of the surface-charge field, so H_demag = Ms(Nz − Ny)
+is 0.758 Ms instead of 0.823 Ms (8.6 % lower). Apart from this fix, with the
+new options off the single-DW output columns are identical to `master` (the time
+column is written with more digits and three temperature columns are appended).
 
 ## 1. Temperature-dependent material parameters
 
@@ -93,7 +100,8 @@ fs output intervals are resolved.
 
 ## 6. Verification done
 
-- Single-DW regression: with all new options off, output identical to `master`.
+- Single-DW regression (before the demagnetising-factor fix): with all new options off, output identical to `master`.
+- Demagnetising factors: Ny = 0.1211, Nz = 0.8789 for 50 × 5 nm, equal to a numerical average of the surface-charge field.
 - TTM vs an independent SciPy DOP853 solution: max |ΔTe| ≈ 2·10⁻⁶ K for the RK4, HEUN, RK45 and EULER DW integrators; τ_m mode within 2·10⁻⁴ Ms0.
 - TTM energy balance: γe/2 (Te² − T0²) + Cl (Tl − T0) equals the absorbed energy density.
 - Ms(T), Ms at the pulse maximum and the T ≥ Tc / Ms → 0 guards checked against hand calculations.

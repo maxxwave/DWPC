@@ -39,10 +39,13 @@ namespace stor{
         return stor::Ms0 * pow(1.0 - pow(T/stor::Tc, stor::Ms_rescaling_exponent), stor::Ms_exponent);
     }
 
-    // Demagnetising factors of the strip cross-section (depend only on Ly, Lz)
+    // Demagnetising factors of the strip cross-section (depend only on Ly, Lz):
+    // infinitely long rectangular prism, natural logarithms (Ny + Nz = 1).
+    // Checked against a numerical average of the surface-charge field:
+    // Ly = 50 nm, Lz = 5 nm -> Ny = 0.1211, Nz = 0.8789.
     void compute_demag_factors(){
-        stor::Ny = 1 - (2/Pi)*atan(stor::Ly/stor::Lz) + (1/(2*Pi))*(stor::Lz/stor::Ly)*log10(1 + (stor::Ly/stor::Lz)*(stor::Ly/stor::Lz)) - (1/(2*Pi))*(stor::Ly/stor::Lz)*log10(1 + (stor::Lz/stor::Ly)*(stor::Lz/stor::Ly));
-        stor::Nz = 1 - (2/Pi)*atan(stor::Lz/stor::Ly) + (1/(2*Pi))*(stor::Ly/stor::Lz)*log10(1 + (stor::Lz/stor::Ly)*(stor::Lz/stor::Ly)) - (1/(2*Pi))*(stor::Lz/stor::Ly)*log10(1 + (stor::Ly/stor::Lz)*(stor::Ly/stor::Lz));
+        stor::Ny = 1 - (2/Pi)*atan(stor::Ly/stor::Lz) + (1/(2*Pi))*(stor::Lz/stor::Ly)*log(1 + (stor::Ly/stor::Lz)*(stor::Ly/stor::Lz)) - (1/(2*Pi))*(stor::Ly/stor::Lz)*log(1 + (stor::Lz/stor::Ly)*(stor::Lz/stor::Ly));
+        stor::Nz = 1 - (2/Pi)*atan(stor::Lz/stor::Ly) + (1/(2*Pi))*(stor::Ly/stor::Lz)*log(1 + (stor::Lz/stor::Ly)*(stor::Lz/stor::Ly)) - (1/(2*Pi))*(stor::Lz/stor::Ly)*log(1 + (stor::Ly/stor::Lz)*(stor::Ly/stor::Lz));
     }
 
     // Recompute every quantity that depends on Ms (including the integration

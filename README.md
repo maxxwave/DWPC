@@ -37,3 +37,5 @@ If you use DWPC in published work, please cite it as described in [CITATION.cff]
 
 R. V. Ababei, M. O. A. Ellis, I. T. Vidamour, D. S. Devadasan, D. A. Allwood, E. Vasilaki and T. J. Hayward, *Neuromorphic computation with a single magnetic domain wall*, Sci. Rep. **11**, 15587 (2021). https://doi.org/10.1038/s41598-021-94975-y
 
+# Acknowledgements
+Parts of the laser/thermal extension, the tests and the user manual were prepared with the help of an AI assistant (Claude, Anthropic), under the direction of the developers. The AI assistant is not a developer or author of DWPC.
